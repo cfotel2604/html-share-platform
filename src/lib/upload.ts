@@ -6,6 +6,7 @@ export type SiteAsset = { path: string; body: Buffer; type: string };
 export const MAX_UPLOAD = 20 * 1024 * 1024;
 const MAX_UNPACKED = 100 * 1024 * 1024;
 const MAX_FILES = 500;
+const MAX_ENTRIES = 1000;
 const MAX_DEPTH = 12;
 const ALLOWED = new Map([
   [".html", "text/html; charset=utf-8"], [".htm", "text/html; charset=utf-8"],
@@ -61,6 +62,9 @@ export function unzip(data: Buffer): Promise<SiteAsset[]> {
       if (openError || !zip) return reject(new Error("ZIP không hợp lệ"));
       const files: SiteAsset[] = [];
       const names = new Set<string>();
+      const directories = new Set<string>();
+      const explicitDirectories = new Set<string>();
+      let entries = 0;
       let total = 0;
       let ended = false;
       function fail(error: Error) {
@@ -81,18 +85,33 @@ export function unzip(data: Buffer): Promise<SiteAsset[]> {
       });
       zip.on("entry", (entry) => {
         try {
-          if (entry.generalPurposeBitFlag & 1) throw new Error("ZIP mã hóa không được hỗ trợ");
+          if (++entries > MAX_ENTRIES) throw new Error("ZIP vượt 1000 entries");
+          if (entry.generalPurposeBitFlag & 0x41) throw new Error("ZIP mã hóa không được hỗ trợ");
           const name = entry.fileName;
-          if (name.endsWith("/")) {
-            safePath(name.slice(0, -1));
+          const directory = name.endsWith("/");
+          const path = safePath(directory ? name.slice(0, -1) : name);
+          const canonical = path.toLowerCase();
+          const unixMode = (entry.externalFileAttributes >>> 16) & 0o170000;
+          if (unixMode && unixMode !== (directory ? 0o040000 : 0o100000)) {
+            throw new Error("ZIP chứa symlink/file đặc biệt");
+          }
+          if (names.has(canonical) || (directory ? explicitDirectories.has(canonical) : directories.has(canonical))) {
+            throw new Error("ZIP chứa đường dẫn trùng hoặc xung đột file/thư mục");
+          }
+          const parts = canonical.split("/");
+          for (let index = 1; index < parts.length; index++) {
+            const parent = parts.slice(0, index).join("/");
+            if (names.has(parent)) throw new Error("ZIP có xung đột file/thư mục");
+            directories.add(parent);
+          }
+          if (directory) {
+            if (entry.uncompressedSize) throw new Error("ZIP có thư mục chứa dữ liệu");
+            directories.add(canonical);
+            explicitDirectories.add(canonical);
             zip.readEntry();
             return;
           }
-          const path = safePath(name);
-          const unixMode = (entry.externalFileAttributes >>> 16) & 0o170000;
-          if (unixMode && unixMode !== 0o100000) throw new Error("ZIP chứa symlink/file đặc biệt");
-          if (names.has(path.toLowerCase())) throw new Error("ZIP chứa đường dẫn trùng");
-          names.add(path.toLowerCase());
+          names.add(canonical);
           if (names.size > MAX_FILES) throw new Error("ZIP vượt 500 file");
           total += entry.uncompressedSize;
           if (total > MAX_UNPACKED) throw new Error("ZIP vượt 100 MiB giải nén");

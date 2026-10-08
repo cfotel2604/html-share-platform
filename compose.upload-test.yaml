@@ -1,0 +1,43 @@
+# Overlay ONLY for an isolated, disposable test project; never apply to the owner lab.
+services:
+  db:
+    ports: !reset []
+  minio:
+    ports: !reset []
+  migrate:
+    build: !reset null
+    image: ${UPLOAD_TEST_IMAGE:?Set UPLOAD_TEST_IMAGE to the candidate image}
+    pull_policy: never
+  web:
+    build: !reset null
+    image: ${UPLOAD_TEST_IMAGE:?Set UPLOAD_TEST_IMAGE to the candidate image}
+    pull_policy: never
+  gateway:
+    build: !reset null
+    image: ${UPLOAD_TEST_IMAGE:?Set UPLOAD_TEST_IMAGE to the candidate image}
+    pull_policy: never
+  upload-checks:
+    image: ${UPLOAD_TEST_IMAGE:?Set UPLOAD_TEST_IMAGE to the candidate image}
+    pull_policy: never
+    profiles: [checks]
+    command: [node, tests/integration/upload.mjs]
+    volumes:
+      - ./tests:/app/tests:ro
+    environment:
+      UPLOAD_TEST_GUARD: isolated-upload-test
+      PGHOST: db
+      PGPORT: "5432"
+      PGUSER: ${POSTGRES_USER:?Set POSTGRES_USER}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB:?Set POSTGRES_DB}
+      LOCAL_DEMO_PASSWORD: ${LOCAL_DEMO_PASSWORD:?Set LOCAL_DEMO_PASSWORD}
+      STORAGE_ENDPOINT: http://minio:9000
+      STORAGE_REGION: us-east-1
+      STORAGE_BUCKET: html-share-local
+      STORAGE_ACCESS_KEY: ${MINIO_ROOT_USER:?Set MINIO_ROOT_USER}
+      STORAGE_SECRET_KEY: ${MINIO_ROOT_PASSWORD:?Set MINIO_ROOT_PASSWORD}
+    depends_on:
+      web:
+        condition: service_healthy
+      gateway:
+        condition: service_healthy

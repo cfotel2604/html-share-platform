@@ -27,6 +27,8 @@ Theo báo cáo test của phiên trước và xác nhận của owner: Local MVP
 
 ## Quyết định owner đã ghi nhận
 
+- **Issue #9 đang kiểm chứng:** owner giao sửa backend upload và cập nhật Docker local giữ UI Studio. Bản sửa `a74be7f` đã vào Draft PR #5: body counter trước parser, ownership trước ingest/storage, row lock và cleanup exact keys; 50 regression tests cùng lint/typecheck/build pass. Đang ghép vào PR #12 và kiểm thử Docker cô lập; image owner vẫn là `ui-908901b` tại mốc merge này.
+
 - **UI, 2026-10-08:** owner chọn **Studio tập trung**, giao thay UI và deploy lại stack Docker Desktop `html-share-local-mvp` tại cổng 3100; đã hoàn tất. Branch UI `codex/11-studio-ui` dựa trên head PR #5 `192d1af`; PR #12 base `codex/local-mvp` để review đúng phần UI, đổi base về main sau khi #5 merge. Presentation, workflow và typed HTTP adapter tách biệt theo [ADR-0002](adr/0002-replaceable-studio-ui.md); backend Next.js hiện vẫn cùng container web, gateway riêng. Có thể thay UI qua API contract mà không đổi schema/storage.
 
 - Dashboard/API nội bộ cùng Next.js: `studio.ods.vn`, API `/api/*` chung container; đăng nhập Google qua Clerk Development giai đoạn lab, allowlist email kiểm tra server-side.

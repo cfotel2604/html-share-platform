@@ -1,5 +1,5 @@
 import {
-  CreateBucketCommand, HeadBucketCommand, PutObjectCommand, S3Client,
+  CreateBucketCommand, DeleteObjectsCommand, HeadBucketCommand, PutObjectCommand, S3Client,
 } from "@aws-sdk/client-s3";
 
 const globalStore = globalThis as typeof globalThis & { __htmlShareS3?: S3Client };
@@ -40,4 +40,13 @@ export async function storeFile(key: string, body: Buffer, type: string) {
   await storage().send(new PutObjectCommand({
     Bucket: bucket, Key: key, Body: body, ContentType: type,
   }));
+}
+
+export async function removeFiles(keys: string[]) {
+  if (!keys.length) return;
+  const result = await storage().send(new DeleteObjectsCommand({
+    Bucket: bucket, Delete: { Objects: keys.map((Key) => ({ Key })), Quiet: true },
+  }));
+  // S3 may return HTTP 200 with per-object failures. Treat them as failed cleanup.
+  if (result.Errors?.length) throw new Error("Không dọn được toàn bộ staging objects");
 }
