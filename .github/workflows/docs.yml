@@ -1,0 +1,19 @@
+name: Documentation checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  validate-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install YAML parser
+        run: python3 -m pip install --disable-pip-version-check 'PyYAML==6.0.2'
+      - name: Validate required docs and local links
+        run: python3 scripts/check_docs.py
+      - name: Validate GitHub YAML syntax
+        run: python3 scripts/check_yaml.py
