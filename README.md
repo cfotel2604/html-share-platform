@@ -6,13 +6,15 @@ Nền tảng nội bộ để nhân viên tải lên HTML/CSS/JavaScript hoặc 
 
 ## Trạng thái
 
-**P0 — Planning:** tài liệu và quyết định owner đã được merge vào `main` qua PR #2. **P1 — Foundation** đang ở Draft PR #4; bản local MVP ở Draft PR #5. Chưa triển khai domain production.
+**P0 — Planning:** tài liệu và quyết định owner đã được merge vào `main` qua PR #2. **P1 — Foundation** đã merge vào `main` qua PR #4; bản local MVP vẫn ở Draft PR #5. Chưa triển khai domain production. Xem [tiến độ được kiểm chứng gần nhất](docs/PROJECT_STATUS.md) trước khi bắt đầu công việc mới.
 
 - [PLAN và roadmap P0–P7](PLAN.md)
 - [Kiến trúc và luồng upload/publish](docs/ARCHITECTURE.md)
 - [ADR-0001 — cô lập origin HTML được upload](docs/adr/0001-public-site-origin-isolation.md)
 - [Quy trình GitHub Issue → Branch → Draft PR → Review](docs/WORKFLOW.md)
 - [Hướng dẫn cho coding agents](AGENTS.md)
+- [Tiến độ dự án và các hạng mục còn mở](docs/PROJECT_STATUS.md)
+- [Bàn giao công việc giữa các phiên AI Agent](docs/AI_HANDOFF.md)
 
 ## Nguyên tắc bảo mật
 
