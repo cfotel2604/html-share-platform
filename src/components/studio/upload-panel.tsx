@@ -18,10 +18,12 @@ export function UploadPanel({
     const selected = files?.[0];
     if (!selected) return;
     if (files!.length !== 1 || !/\.(html?|zip)$/i.test(selected.name)) {
+      setFile(null);
       setError("Vui lòng chọn một file HTML hoặc ZIP.");
       return;
     }
     if (selected.size === 0 || selected.size > 20 * 1024 * 1024) {
+      setFile(null);
       setError("File phải có nội dung và không vượt quá 20 MiB.");
       return;
     }
@@ -34,6 +36,10 @@ export function UploadPanel({
   }
   async function submit(event: FormEvent) {
     event.preventDefault();
+    if (!name.trim()) {
+      setError("Vui lòng nhập tên website.");
+      return;
+    }
     if (!file) {
       setError("Hãy chọn file trước khi tạo website.");
       return;

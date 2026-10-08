@@ -12,6 +12,7 @@
   --studio-sub: light-dark(#62626d, #a1a1aa);
   --studio-line: light-dark(#e4e4e7, #2b2b31);
   --studio-blue: light-dark(#0f7ec1, #2a9dde);
+  --studio-action: light-dark(#0d76b5, #2a9dde);
   --studio-blue-ink: light-dark(#ffffff, #0a0a0b);
   --studio-ok: light-dark(#4d7c0f, #c2f04a);
   --studio-error: light-dark(#b91c1c, #fca5a5);
@@ -299,13 +300,13 @@ input:disabled {
   opacity: 0.45;
 }
 .studio-primary {
-  background: var(--studio-blue);
+  background: var(--studio-action);
   color: var(--studio-blue-ink);
-  border-color: var(--studio-blue);
+  border-color: var(--studio-action);
 }
 .studio-primary:hover:not(:disabled) {
-  background: var(--studio-blue);
-  border-color: var(--studio-blue);
+  background: var(--studio-action);
+  border-color: var(--studio-action);
   filter: brightness(0.94);
 }
 .studio-full-width {

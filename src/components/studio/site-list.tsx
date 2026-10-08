@@ -28,6 +28,7 @@ function SiteRow({
   const preview = `/view/${site.id}`;
   async function copy() {
     setCopyError(false);
+    setCopied(false);
     try {
       await navigator.clipboard.writeText(
         new URL(preview, window.location.origin).href,
