@@ -8,14 +8,18 @@
 | --- | --- | --- |
 | P0 — Planning | PR #2 đã merge vào `main` | [PR #2](https://github.com/cfotel2604/html-share-platform/pull/2) |
 | P1 — Foundation | PR #4 đã merge vào `main` | [PR #4](https://github.com/cfotel2604/html-share-platform/pull/4) |
-| `main` từ remote | HEAD `40eb104` | `git log -1 origin/main` tại lúc kiểm tra |
+| `main` từ remote | HEAD `78cb7ca`; PR #7 đã merge | Git log và GitHub đã đối chiếu trong phiên |
 | Local HTML Share MVP | PR #5 **Draft**, base `main`, head `codex/local-mvp`, chưa merge | [PR #5](https://github.com/cfotel2604/html-share-platform/pull/5) |
-| PR #5 conflict / CI | `MERGEABLE` / `CLEAN`; `application` và `validate-docs` đều `SUCCESS` | PR #5, commit `1506241` |
-| Issue | #1 (P0) và #3 (P1) vẫn **OPEN** dù PR tương ứng đã merge | [Issue #1](https://github.com/cfotel2604/html-share-platform/issues/1), [Issue #3](https://github.com/cfotel2604/html-share-platform/issues/3) |
+| PR #5 conflict / CI | Sync `origin/main`, giải quyết README tại `c30c55a`; `MERGEABLE` / `CLEAN`, hai checks `SUCCESS` | [application](https://github.com/cfotel2604/html-share-platform/actions/runs/37776296488), [validate-docs](https://github.com/cfotel2604/html-share-platform/actions/runs/37776296510) |
+| Review PR #5 | Hai finding upload còn mở; giữ Draft dù CI pass | [Báo cáo review](reviews/2026-10-08-pr5.md), [Issue #9](https://github.com/cfotel2604/html-share-platform/issues/9) |
+| Issue hoàn tất | #1 (P0), #3 (P1), #6 (handoff) đã **CLOSED** | Đóng phạm vi planning/foundation; các gate tiếp tục ở #8/#9/#10 |
+| Issue kế tiếp | #8 Auth/RBAC; #9 upload hardening; #10 P4 gates; #11 UI ODS | [Danh sách Issue mở](https://github.com/cfotel2604/html-share-platform/issues) |
 
-Việc chuẩn hóa tài liệu trạng thái/handoff được theo dõi tại [Issue #6](https://github.com/cfotel2604/html-share-platform/issues/6), [Draft PR #7](https://github.com/cfotel2604/html-share-platform/pull/7) trên branch `codex/ai-handoff`; chưa có trong `main` khi snapshot này được lập.
+Tài liệu handoff ban đầu đã vào `main` qua [PR #7](https://github.com/cfotel2604/html-share-platform/pull/7), [Issue #6](https://github.com/cfotel2604/html-share-platform/issues/6) đã đóng. Bản cập nhật sync/review này nằm trong PR #5, chưa vào `main` đến khi PR đó được merge. Owner đã đồng ý công việc sync/review và chuẩn hóa tracking, chưa chỉ định merge/deploy.
 
 Theo báo cáo test của phiên trước và xác nhận của owner: Local MVP đã thử Studio, upload file HTML và preview thành công. Đây là **kết quả lịch sử**, không phải kiểm thử runtime mới trong lần cập nhật tài liệu này. PR #5 còn Draft nên chưa coi MVP đã được duyệt merge hoặc sẵn sàng cho Internet.
+
+**Đã chạy lại trong phiên sync/review:** lint, typecheck, 4 tests và build pass; ZIP hợp lệ và 11 nhóm rejection pass qua production-function probes. Tái hiện body upload >23 MiB không Content-Length vẫn được chấp nhận và storage write xảy ra trước ownership check (DB/storage stubs). Chưa chạy lại Docker/browser smoke; chi tiết và giới hạn trong [báo cáo review](reviews/2026-10-08-pr5.md).
 
 ## Quyết định owner đã ghi nhận
 
@@ -30,10 +34,10 @@ Chi tiết và điều kiện bảo mật bắt buộc: [kiến trúc](ARCHITECT
 
 ## Chưa hoàn thành / cần review
 
-1. **PR #5:** review tính năng Local MVP và bảo mật (demo password, upload validation, guest/API boundary, CSP iframe/direct navigation). Giữ Draft cho đến khi đủ tiêu chí; không tự merge hoặc deploy production.
-2. **P2 — Authentication/RBAC:** Google/Clerk, email allowlist phía server, phân quyền và kiểm thử API quản trị. Local MVP hiện dùng mật khẩu demo, không phải cơ chế production.
-3. **P3/P4 và các phase tiếp theo theo [PLAN](../PLAN.md):** tích hợp Cloudflare R2 thật, gateway/domain/TLS, cookie-domain isolation, wildcard ảnh hưởng các site cũ, browser/Zalo compatibility, quota/retention và các gate trước public.
-4. **Issue hygiene:** xác nhận với owner khi nào đóng Issue #1/#3; việc merge PR không tự đóng các Issue đang OPEN.
+1. **PR #5 / [#9](https://github.com/cfotel2604/html-share-platform/issues/9):** sửa byte cap trước multipart parsing và ownership trước storage writes, thêm regression/integration tests; giữ Draft cho đến khi review findings được xử lý và có smoke/browser proof phù hợp.
+2. **P2 — [#8](https://github.com/cfotel2604/html-share-platform/issues/8):** Google/Clerk, email allowlist phía server, Employee/Admin và API ownership tests; demo password không phải cơ chế production. Chưa triển khai P2 trong đợt review.
+3. **P4 — [#10](https://github.com/cfotel2604/html-share-platform/issues/10):** R2/gateway/domain/TLS, cookie isolation, reserved DNS/route inventory, browser/Zalo và cache gates; ADR vẫn Proposed. P5/P6/P7 còn retention, audit/atomicity, hardening, staging/pilot/rollback theo [PLAN](../PLAN.md).
+4. **UI — [#11](https://github.com/cfotel2604/html-share-platform/issues/11):** khả thi áp dụng ODS SIP2 tokens/patterns (blue action, neutral/graphite surfaces, small radius, Geist/Mono; green chỉ trạng thái). Đã khảo sát code hiện tại; hai layout Studio/Console đang là đề xuất, chưa đổi giao diện runtime.
 
 ## Cách kiểm chứng lại trong phiên tiếp theo
 
