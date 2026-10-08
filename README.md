@@ -62,3 +62,26 @@ Migrations là SQL có version trong `db/migrations/`. `scripts/migrate.mjs` ki�
 ### Giới hạn giai đoạn này
 
 Stack và DB schema hiện là nền móng phát triển theo [Issue P1 #3](https://github.com/cfotel2604/html-share-platform/issues/3). Cloudflare R2 đã được chọn làm provider production, nhưng chưa được provision hoặc kiểm thử với credentials thật. Domain/origin isolation, auth, quota, retention, gateway, backup và hosting vẫn cần chốt tại [PR P0 #2](https://github.com/cfotel2604/html-share-platform/pull/2). P2 bổ sung auth/RBAC trước khi bất kỳ endpoint upload/quản trị nào được công khai. Origin isolation của site publish được triển khai và kiểm thử ở P4.
+
+## Local MVP — thử upload và chia sẻ HTML (nhánh `codex/local-mvp`)
+
+MVP này mở rộng P1 để thử toàn bộ chu trình tại **máy cá nhân**: đăng nhập demo, upload `.html` hoặc ZIP chứa `index.html`, tự xuất bản, xem preview, cập nhật phiên bản, tắt/bật chia sẻ. Đăng nhập hiện dùng một mật khẩu demo trong `.env`; **chưa tích hợp Clerk/Google hay allowlist email**. Không mở các cổng này ra Internet.
+
+```powershell
+Copy-Item .env.example .env
+# Đặt mật khẩu mạnh riêng cho POSTGRES_PASSWORD, MINIO_ROOT_PASSWORD,
+# LOCAL_DEMO_PASSWORD và LOCAL_DEMO_SESSION_SECRET.
+# Tránh trùng stack P1 bằng APP_PORT=3100, POSTGRES_PORT=55432,
+# MINIO_PORT=19000, MINIO_CONSOLE_PORT=19001, GATEWAY_PORT=4100.
+docker compose -p html-share-local-mvp up --build -d
+docker compose -p html-share-local-mvp ps
+```
+
+Mở **http://127.0.0.1:3100** (hoặc cổng trong `APP_PORT`), đăng nhập bằng `LOCAL_DEMO_PASSWORD` trong `.env`, rồi tải file `examples/hello.html` hoặc ZIP chứa `index.html` ở thư mục gốc. Bấm **Mở preview** để xem trang `/view/<site-id>`; nội dung HTML chạy trong iframe trên origin riêng `http://127.0.0.1:4100`. Đường dẫn asset trong ZIP cần là đường dẫn tương đối (`./style.css`, `assets/logo.png`), vì gateway local dùng `/s/<site-id>/`. Cổng preview chỉ phục vụ site đang published. Đăng xuất, tắt chia sẻ, cập nhật phiên bản đều có trên giao diện.
+
+```powershell
+docker compose -p html-share-local-mvp logs --tail=60 web gateway
+docker compose -p html-share-local-mvp down # giữ volume thử nghiệm
+```
+
+Chỉ thử nội bộ: wildcard DNS / kiểm kê ảnh hưởng tới `matbao.one`, Cloudflare R2 thật, `studio.ods.vn` / `view.ods.vn`, Clerk/Google, email allowlist, quota theo tài khoản và lưu trữ phiên bản nâng cao được xử lý ở các giai đoạn sau. Mặc dù CSP và sandbox hạn chế nội dung tải lên, đây chưa phải cấu hình phục vụ công khai.

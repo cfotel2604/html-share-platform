@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>ODS Preview Demo</title>
+    <style>
+      body { font: 16px system-ui,sans-serif; background: #eef6fb; margin: 0; min-height: 100vh; display: grid; place-items: center; }
+      main { background: white; padding: 3rem; max-width: 36rem; border-radius: 20px; box-shadow: 0 12px 40px #09345a20; text-align: center; }
+      button { background: #0369a1; color: white; padding: .8rem 1.4rem; border: 0; border-radius: 9px; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Xin chào từ ODS!</h1>
+      <p>Đây là HTML mẫu có JavaScript. Nội dung được chạy trong iframe cách ly.</p>
+      <button id="test">Kiểm tra JavaScript</button>
+      <p id="result" aria-live="polite"></p>
+    </main>
+    <script>
+      document.getElementById("test").addEventListener("click", () => {
+        document.getElementById("result").textContent = "JavaScript hoạt động ✅";
+      });
+    </script>
+  </body>
+</html>

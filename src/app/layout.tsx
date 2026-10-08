@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "HTML Share Platform — Foundation",
-  description: "Development foundation for the HTML sharing dashboard",
+  title: "ODS Studio · HTML Share",
+  description: "Tạo, xem trước và chia sẻ trang HTML trong môi trường local",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
