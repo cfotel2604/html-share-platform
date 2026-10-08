@@ -1,5 +1,8 @@
 node_modules/
 .next/
+*.tsbuildinfo
+__pycache__/
+*.py[cod]
 dist/
 coverage/
 .env
@@ -10,7 +13,5 @@ coverage/
 Thumbs.db
 uploads/
 tmp/
-__pycache__/
-*.py[cod]
 .pytest_cache/
 .venv/
