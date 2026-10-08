@@ -23,6 +23,8 @@ Theo báo cáo test của phiên trước và xác nhận của owner: Local MVP
 
 ## Quyết định owner đã ghi nhận
 
+- **UI, 2026-10-08:** owner chọn **Studio tập trung**, giao thay UI và deploy lại stack Docker Desktop `html-share-local-mvp` tại cổng 3100. Branch UI `codex/11-studio-ui` dựa trên head PR #5 `192d1af`, PR riêng sẽ base `codex/local-mvp` để review đúng phần UI; đổi base về main sau khi #5 merge. Đã triển khai presentation/API adapter tách biệt theo [ADR-0002](adr/0002-replaceable-studio-ui.md). Lint/typecheck/build, 9 tests và docs/YAML pass; Docker/browser validation đang chờ thực hiện tại thời điểm commit triển khai đầu tiên.
+
 - Dashboard/API nội bộ cùng Next.js: `studio.ods.vn`, API `/api/*` chung container; đăng nhập Google qua Clerk Development giai đoạn lab, allowlist email kiểm tra server-side.
 - Link gửi khách: `https://view.ods.vn/<site-id>` là viewer shell tin cậy, nhúng nội dung upload từ `https://<site-id>.matbao.one/` qua sandbox iframe.
 - Một wildcard DNS `*.matbao.one` có thể sử dụng về sau; chưa thay đổi DNS. Kiểm kê hostname/record/route cũ và chứng minh an toàn cookie parent-domain trước khi bật public gateway.

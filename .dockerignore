@@ -9,4 +9,6 @@ node_modules
 coverage
 tmp
 uploads
+.playwright-cli
+output
 README.md

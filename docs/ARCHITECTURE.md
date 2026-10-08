@@ -14,6 +14,10 @@ flowchart TD
   P -->|read immutable assets| S
 ```
 
+## Ranh giới UI có thể thay thế
+
+Theo [ADR-0002](adr/0002-replaceable-studio-ui.md), Studio dùng component presentation → workflow hook → typed HTTP adapter → `/api/*` Route Handlers → server services. Components/features không import database, storage hoặc server auth; ESLint enforce ranh giới này. Vì vậy có thể thay giao diện hoặc client mà không viết lại ingest/publish/storage. Backend vẫn cùng container Next.js ở lab; tách process/service về sau là quyết định deployment riêng, giữ session/CSRF và origin isolation.
+
 ## Data model dự kiến
 
 - `users`: id, external_identity, role, status, created_at.
