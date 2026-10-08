@@ -13,7 +13,8 @@ Dự án này xuất bản HTML/CSS/JavaScript do nhân viên upload lên HTTPS 
 
 - Nhân viên đăng nhập và có RBAC khi upload/đổi trạng thái; guest chỉ được truy cập public site đang published.
 - HTML/JS upload không được chạy cùng origin/eTLD+1 với dashboard, cũng không được chạy server-side.
-- Mỗi site phải có hostname publish riêng. Không giảm mức cô lập origin để đơn giản hóa tính năng preview.
+- Mỗi site phải có hostname publish riêng (`<site-id>.matbao.one`), viewer `view.ods.vn/<site-id>` chỉ serve shell tin cậy; iframe và HTTP response HTML upload phải có sandbox không `allow-same-origin`. Không giảm mức cô lập origin để đơn giản hóa tính năng preview.
+- DNS wildcard `*.matbao.one` không được ghi đè record/route website có sẵn. Kiểm kê reserved hostnames và ngăn cookie `Domain=matbao.one` từ HTML upload (kể cả khi mở trực tiếp) trước khi triển khai P4.
 - ZIP phải được kiểm tra đầy đủ trước khi publish: traversal, symlink, bomb, quá quota, entry đè nhau, định dạng không cho phép.
 - Lưu trữ asset theo version bất biến; đổi bản publish một cách atomic; unpublish thực sự chặn nội dung theo cache policy được công bố.
 - Kiểm thử quyền sở hữu site, API authorization, upload validation và origin boundary khi thay đổi các lớp đó.

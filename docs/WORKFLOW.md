@@ -18,7 +18,7 @@
 
 - Docs only: đọc lại đường dẫn nội bộ, syntax Markdown/YAML, `git diff --check`.
 - Code: lint + typecheck + unit test; API permissions, upload validation, gateway isolation có integration test.
-- Release: mobile/Zalo compatibility, backup restore và rollback chứng minh trên staging.
+- Release: mobile/Zalo compatibility, cookie/origin isolation và rollback chứng minh trên staging; backup/restore ngoài MVP theo lựa chọn owner, phải ghi rõ rủi ro mất dữ liệu.
 - Merge/deploy: không tự động merge hay deploy production từ agent nếu chưa có chỉ dẫn rõ.
 
 ## Ghi chép và theo dõi
