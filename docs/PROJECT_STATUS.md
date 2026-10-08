@@ -23,6 +23,8 @@ Theo báo cáo test của phiên trước và xác nhận của owner: Local MVP
 
 ## Quyết định owner đã ghi nhận
 
+- **Issue #9 được giao sửa:** owner đã giao sửa upload và cập nhật Docker local sau kiểm thử. Branch `codex/9-upload-hardening` dựa trên PR #5 `192d1af`; cập nhật backend vào Draft PR #5, giữ UI trong PR #12. Đã có byte cap 22 MiB trước multipart parser, ownership trước ingest/storage, row lock, cleanup exact keys và regression suite 50 tests pass. Lint/typecheck/build pass; đang chuẩn bị Docker integration cô lập trước khi ghép UI/deploy. UI Studio đã được owner chọn và deploy ở phiên trước; xem branch PR #12 để có handoff UI đầy đủ.
+
 - Dashboard/API nội bộ cùng Next.js: `studio.ods.vn`, API `/api/*` chung container; đăng nhập Google qua Clerk Development giai đoạn lab, allowlist email kiểm tra server-side.
 - Link gửi khách: `https://view.ods.vn/<site-id>` là viewer shell tin cậy, nhúng nội dung upload từ `https://<site-id>.matbao.one/` qua sandbox iframe.
 - Một wildcard DNS `*.matbao.one` có thể sử dụng về sau; chưa thay đổi DNS. Kiểm kê hostname/record/route cũ và chứng minh an toàn cookie parent-domain trước khi bật public gateway.

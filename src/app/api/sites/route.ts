@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { ownerId, sameOrigin } from "@/lib/demo-auth";
 import { db } from "@/lib/db";
-import { readUpload, uploadVersion } from "@/lib/site-ops";
+import { uploadVersion } from "@/lib/site-ops";
+import { readUpload } from "@/lib/upload-request";
+import { UploadError } from "@/lib/upload-error";
 
 export const runtime = "nodejs";
 
@@ -27,8 +29,8 @@ export async function POST(request: Request) {
     return NextResponse.json(site, { status: 201 });
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Upload thất bại" },
-      { status: 400 },
+      { error: error instanceof UploadError ? error.message : "Upload thất bại. Vui lòng thử lại." },
+      { status: error instanceof UploadError ? error.status : 500 },
     );
   }
 }

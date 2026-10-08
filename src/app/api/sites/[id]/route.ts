@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { ownerId, sameOrigin } from "@/lib/demo-auth";
 import { db } from "@/lib/db";
-import { readUpload, uploadVersion } from "@/lib/site-ops";
+import { assertSiteOwner, uploadVersion } from "@/lib/site-ops";
+import { readUpload } from "@/lib/upload-request";
+import { UploadError } from "@/lib/upload-error";
 
 export const runtime = "nodejs";
 type Context = { params: Promise<{ id: string }> };
@@ -14,12 +16,14 @@ export async function PUT(request: Request, context: Context) {
   const { id } = await context.params;
   if (!ID.test(id)) return NextResponse.json({ error: "ID không hợp lệ" }, { status: 400 });
   try {
+    // Reject unknown/foreign/deleted sites before reading or parsing an upload body.
+    await assertSiteOwner(owner, id);
     const { upload, name } = await readUpload(request);
     return NextResponse.json(await uploadVersion(owner, upload, name, id));
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Update thất bại" },
-      { status: 400 },
+      { error: error instanceof UploadError ? error.message : "Update thất bại. Vui lòng thử lại." },
+      { status: error instanceof UploadError ? error.status : 500 },
     );
   }
 }

@@ -10,3 +10,5 @@ coverage
 tmp
 uploads
 README.md
+.playwright-cli
+output

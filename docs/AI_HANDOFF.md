@@ -22,6 +22,8 @@ gh issue list --state open
 
 ## Bàn giao tại mốc này
 
+- **Công việc đang xử lý:** owner giao sửa #9, test stack cô lập rồi cập nhật Docker lab giữ UI Studio. Branch `codex/9-upload-hardening` tại worktree `html-share-platform-pr5-sync`, base PR #5 `192d1af`; code backend sẽ cập nhật PR #5. 50 tests và lint/typecheck/build pass. Docker integration (`compose.upload-test.yaml` + `tests/integration/upload.mjs`) đang chờ chạy; chưa thay Docker owner trong mốc commit này. Ghép backend mới vào PR #12 trước deploy để giữ UI.
+
 - **Mốc đã xong:** P0 PR #2, P1 PR #4 và handoff PR #7 đã merge. `origin/main` là `78cb7ca`. Đồng bộ lại PR #5 với main, giải quyết conflict `README.md` và push `c30c55a`; CI `application` và `validate-docs` đều SUCCESS, GitHub báo MERGEABLE/CLEAN. PR #5 **vẫn Draft**, chưa merge.
 - **Ghi nhận thử nghiệm:** owner đã xác nhận Studio, HTML upload và preview chạy được tại máy cá nhân ở phiên trước. Không suy diễn đây là kiểm tra security hoặc production deployment.
 - **Review hoàn tất ở phạm vi code/function probes:** [báo cáo](reviews/2026-10-08-pr5.md). Lint/typecheck/build và 4 tests pass; ZIP hợp lệ + 11 rejection probes pass. Hai finding: body cap bypass khi thiếu Content-Length, object writes trước ownership. Theo dõi [#9](https://github.com/cfotel2604/html-share-platform/issues/9); chưa sửa runtime, chưa có browser/Docker proof mới. Không đổi PR sang Ready chỉ vì hết conflict/CI xanh.
