@@ -99,7 +99,8 @@ test("persistent cleanup failure emits a bounded recovery event with no uploaded
 test("uncertain COMMIT never deletes a possibly active version", async t => {
   const warn = t.mock.method(console, "warn", () => {});
   const f = fixture({ failAt: "COMMIT" });
-  await assert.rejects(f.uploadVersion("owner", new File(["probe"], "probe.html"), "Fixture", id));
+  await assert.rejects(f.uploadVersion("owner", new File(["probe"], "probe.html"), "Fixture", id),
+    error => error.status === 503 && error.message.includes("làm mới danh sách"));
   assert.equal(f.removed.length, 0); assert.equal(f.released(), true);
   assert.equal(warn.mock.calls[0].arguments[0], "upload.commit_outcome_unknown");
 });
