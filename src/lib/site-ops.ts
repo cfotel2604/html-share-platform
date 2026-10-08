@@ -79,6 +79,7 @@ export async function uploadVersion(owner: string, file: File, name: string, exi
       // COMMIT response loss is ambiguous. Deleting here could remove an active version.
       discardConnection = true;
       console.warn("upload.commit_outcome_unknown", { version });
+      throw new UploadError("Chưa xác nhận được kết quả xuất bản. Hãy làm mới danh sách trước khi thử lại.", 503);
     }
     throw error;
   } finally {
