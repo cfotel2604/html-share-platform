@@ -2,6 +2,15 @@
 
 Dự án này xuất bản HTML/CSS/JavaScript do nhân viên upload lên HTTPS để người có link có thể xem. Nội dung upload là **untrusted code** chạy trong trình duyệt người xem.
 
+## Bắt đầu một phiên Agent mới
+
+1. Xác nhận đúng repository và worktree bằng `git status --short --branch`, `git worktree list` và `git remote -v`. **Không giả định** nhánh `main` trong workspace đã cập nhật; kiểm tra `git fetch origin --prune` rồi đối chiếu `origin/main`. Giữ nguyên file chưa được Git theo dõi và dữ liệu Docker; không tự động reset/clean worktree.
+2. Đọc `AGENTS.md`, `README.md`, `PLAN.md`, `docs/ARCHITECTURE.md`, `docs/WORKFLOW.md`, `docs/adr/`, sau đó đọc [PROJECT_STATUS](docs/PROJECT_STATUS.md) và [AI_HANDOFF](docs/AI_HANDOFF.md).
+3. Xác minh lại các thông tin dễ thay đổi bằng GitHub (`gh pr list`, `gh issue list`, `gh pr view <id> --json state,isDraft,baseRefName,headRefName,mergeable,statusCheckRollup`) và log `origin/main`. Trạng thái ghi trong Markdown là **snapshot tại ngày cập nhật**, không thay thế kiểm chứng GitHub.
+4. Nêu ngắn gọn phase đã xong, PR/Issue còn mở, rủi ro và bước tiếp theo trước khi bắt tay vào việc mới. Phân biệt rõ **đã kiểm chứng**, **theo ghi nhận phiên trước** và **chưa xác minh**.
+
+Khi kết thúc một mốc công việc (merge PR, đổi base, giải quyết conflict, đổi kiến trúc, hoàn tất review), cập nhật `docs/PROJECT_STATUS.md` và `docs/AI_HANDOFF.md` trong **branch/PR được giao**, ghi ngày, commit, PR/Issue, kết quả kiểm tra và việc còn lại. Không cập nhật trực tiếp `main` từ một phiên chat. Không ghi secrets, token, mật khẩu, dữ liệu upload hoặc thông tin khách hàng vào tài liệu bàn giao. Nếu chưa được giao quyền sửa branch, đưa đề xuất cập nhật để owner xem xét.
+
 ## Trước khi sửa code
 
 - Đọc [PLAN.md](PLAN.md), [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/WORKFLOW.md](docs/WORKFLOW.md) và [ADR-0001](docs/adr/0001-public-site-origin-isolation.md).

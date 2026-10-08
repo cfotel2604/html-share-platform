@@ -11,6 +11,8 @@ DOCS = [
     ROOT / "AGENTS.md",
     ROOT / "docs/ARCHITECTURE.md",
     ROOT / "docs/WORKFLOW.md",
+    ROOT / "docs/PROJECT_STATUS.md",
+    ROOT / "docs/AI_HANDOFF.md",
     ROOT / "docs/adr/0001-public-site-origin-isolation.md",
 ]
 REQUIRED = DOCS + [
