@@ -1,0 +1,36 @@
+name: Feature or task
+description: Plan a scoped product or engineering task
+title: "[Task] "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context / problem
+      description: What problem needs to be solved, and for whom?
+      placeholder: Describe the current behavior or missing capability.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Describe observable success and edge cases.
+      placeholder: "- [ ] Employee can ..."
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and dependencies
+      description: Identify phase (P0–P7), exclusions and blocked decisions.
+    validations:
+      required: false
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification plan
+      description: What evidence or tests will demonstrate completion?
+    validations:
+      required: false

@@ -13,3 +13,5 @@ coverage/
 Thumbs.db
 uploads/
 tmp/
+.pytest_cache/
+.venv/

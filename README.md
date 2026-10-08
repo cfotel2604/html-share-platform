@@ -1,13 +1,47 @@
 # HTML Share Platform
 
-Nền tảng nội bộ cho nhân viên tải lên trang HTML tĩnh và chia sẻ bằng đường dẫn HTTPS công khai.
+Nền tảng nội bộ để nhân viên tải lên HTML/CSS/JavaScript hoặc website tĩnh đóng gói ZIP và nhận **URL HTTPS công khai** để chia sẻ qua Zalo, Messenger, email hay trình duyệt mobile.
 
-- **Mô hình A:** chỉ nhân viên có tài khoản mới có quyền tải lên và quản lý; người nhận link có thể mở mà không cần đăng nhập.
-- Hỗ trợ 1 file HTML độc lập và gói ZIP chứa `index.html` cùng các tài nguyên tĩnh.
-- Dùng một domain phục vụ nội dung riêng biệt để cô lập JavaScript do người dùng tải lên.
-- Trạng thái: đang lập kế hoạch. Xem `PLAN.md` khi nhánh kế hoạch được merge.
+**Mô hình A:** Employee/Admin cần đăng nhập để quản lý và upload; người xem đường dẫn public không cần đăng nhập. Hệ thống chỉ phục vụ static assets; không chạy mã backend được upload.
 
-Mọi thay đổi sẽ được thực hiện qua branch và GitHub Pull Request.
+## Trạng thái
+
+**P0 — Planning:** tài liệu và quyết định owner đã được merge vào `main` qua PR #2. **P1 — Foundation** đã merge vào `main` qua PR #4; bản local MVP đang ở Draft PR #5. Chưa triển khai domain production.
+
+- [PLAN và roadmap P0–P7](PLAN.md)
+- [Kiến trúc và luồng upload/publish](docs/ARCHITECTURE.md)
+- [ADR-0001 — cô lập origin HTML được upload](docs/adr/0001-public-site-origin-isolation.md)
+- [Quy trình GitHub Issue → Branch → Draft PR → Review](docs/WORKFLOW.md)
+- [Hướng dẫn cho coding agents](AGENTS.md)
+
+## Nguyên tắc bảo mật
+
+Dashboard dùng `studio.ods.vn`; viewer tin cậy dùng `view.ods.vn/<site-id>` và iframe HTML từ `<site-id>.matbao.one`. Tách origin không tự ngăn cookie `Domain=matbao.one` giữa các site; đây là gate bảo mật phải kiểm chứng trước P4. Đường dẫn công khai dành cho người có link; chỉ upload nội dung được phép chia sẻ.
+
+## Kiểm tra tài liệu
+
+Yêu cầu Python 3:
+
+```sh
+python scripts/check_docs.py
+```
+
+GitHub Actions chạy kiểm tra trên pull request và push vào `main`. P1 bổ sung application CI (lint, typecheck, tests, build).
+
+YAML workflow và Issue templates được parse bằng `scripts/check_yaml.py` (yêu cầu `PyYAML==6.0.2`), cùng với kiểm tra tài liệu Markdown. Check YAML sẽ fail nếu cú pháp sai hoặc top-level không phải mapping.
+
+## Quyết định triển khai MVP (owner, 2026-10-08)
+
+- Dashboard và Next.js API: `studio.ods.vn` (`/api/*` cùng container), đăng nhập Google qua Clerk Development khi lab và email allowlist server-side.
+- Link gửi khách: `https://view.ods.vn/<site-id>` chỉ hiển thị viewer shell tin cậy, nhúng HTML từ `https://<site-id>.matbao.one/` trong iframe sandbox. HTTP response HTML upload cũng phải bật CSP sandbox ở chế độ mở trực tiếp.
+- Một DNS wildcard `*.matbao.one` có thể trỏ mọi site hợp lệ về gateway; tạo site bằng ID trong database, không tự tạo DNS record cho từng site. Named records hiện có của `matbao.one` ưu tiên hơn wildcard nhưng phải kiểm kê trước P4; chưa đổi DNS production.
+- Object storage private Cloudflare R2; VPS/Docker Compose khi triển khai, lab trên PC. Quota ZIP 20 MiB, giải nén 100 MiB, tối đa 500 file, depth 12. Retention configurable; không làm backup/restore trong MVP theo yêu cầu owner.
+
+Cookie parent-domain `matbao.one` và tính tương thích iframe/opaque-origin trên mobile/Zalo còn là P4 security gates bắt buộc. Xem [PLAN](PLAN.md) và [ADR-0001](docs/adr/0001-public-site-origin-isolation.md).
+
+## Làm việc với GitHub
+
+Tạo Issue, branch theo phạm vi nhỏ, mở Draft PR và ghi rõ vấn đề, thay đổi, kết quả kiểm thử, các điểm còn mở. Quyết định kiến trúc được lưu dưới `docs/adr/` thay vì chỉ nằm trong chat.
 
 ## P1 — Foundation (development only)
 
@@ -19,7 +53,7 @@ P1 cung cấp Next.js App Router/TypeScript, PostgreSQL schema với migrations,
 - **Development P1:** cho phép image `bitnamilegacy/minio:2025.7.23-debian-12-r5` **chỉ dùng local** với cổng bind `127.0.0.1`, volume test và mật khẩu trong `.env`. Đây là ngoại lệ có phạm vi hẹp vì image legacy không còn là lựa chọn phù hợp cho môi trường dùng chung; **không được deploy image này lên staging/production**.
 - **P3/P4:** triển khai S3 client dùng endpoint `https://<ACCOUNT_ID>.r2.cloudflarestorage.com` và region `auto`; kiểm tra CRUD, IAM, URL preview có thời hạn và serving qua gateway. Chưa tạo bucket/token Cloudflare hay xác minh tích hợp R2 thật ở P1. Credentials phải nằm trong secret store và token chỉ được quyền trên bucket được chọn.
 
-Đây là quyết định **provider**, không đồng nghĩa phê duyệt kiến trúc domain/cookie isolation trong P0. Ghi nhận và chốt các lựa chọn còn lại tại [Issue P0 #1](https://github.com/cfotel2604/html-share-platform/issues/1) và [PR P0 #2](https://github.com/cfotel2604/html-share-platform/pull/2).
+Đây là quyết định **provider**; kiểm chứng bảo mật domain/cookie isolation vẫn là gate P4. Xem [Issue P0 #1](https://github.com/cfotel2604/html-share-platform/issues/1) và [PR P0 #2 (đã merge)](https://github.com/cfotel2604/html-share-platform/pull/2).
 
 ### Yêu cầu
 
@@ -61,7 +95,7 @@ Migrations là SQL có version trong `db/migrations/`. `scripts/migrate.mjs` ki�
 
 ### Giới hạn giai đoạn này
 
-Stack và DB schema hiện là nền móng phát triển theo [Issue P1 #3](https://github.com/cfotel2604/html-share-platform/issues/3). Cloudflare R2 đã được chọn làm provider production, nhưng chưa được provision hoặc kiểm thử với credentials thật. Domain/origin isolation, auth, quota, retention, gateway, backup và hosting vẫn cần chốt tại [PR P0 #2](https://github.com/cfotel2604/html-share-platform/pull/2). P2 bổ sung auth/RBAC trước khi bất kỳ endpoint upload/quản trị nào được công khai. Origin isolation của site publish được triển khai và kiểm thử ở P4.
+Stack và DB schema hiện là nền móng phát triển theo [Issue P1 #3](https://github.com/cfotel2604/html-share-platform/issues/3). Cloudflare R2 đã được chọn làm provider production, nhưng chưa được provision hoặc kiểm thử với credentials thật. Các quyết định P0 đã được ghi nhận trong [PR #2 (đã merge)](https://github.com/cfotel2604/html-share-platform/pull/2); auth/RBAC, quota/retention, gateway và domain/cookie isolation vẫn cần triển khai hoặc kiểm chứng ở các phase tiếp theo. Backup/restore nằm ngoài MVP theo quyết định owner. P2 bổ sung auth/RBAC trước khi bất kỳ endpoint upload/quản trị nào được công khai. Origin isolation của site publish được triển khai và kiểm thử ở P4.
 
 ## Local MVP — thử upload và chia sẻ HTML (nhánh `codex/local-mvp`)
 
