@@ -24,7 +24,7 @@ gh issue list --state open
 
 - **Mốc đã xong:** P0 PR #2 và P1 PR #4 đã merge. Local MVP PR #5 được đổi base sang `main`, giải quyết conflict trong `README.md`, push commit `1506241`. CI `application` và `validate-docs` đã pass; GitHub báo `CLEAN`. PR #5 **vẫn Draft** và chưa merge.
 - **Ghi nhận thử nghiệm:** owner đã xác nhận Studio, HTML upload và preview chạy được tại máy cá nhân ở phiên trước. Không suy diễn đây là kiểm tra security hoặc production deployment.
-- **Việc hiện tại:** [Issue #6](https://github.com/cfotel2604/html-share-platform/issues/6) chuẩn hóa tài liệu bàn giao (`AGENTS.md`, `PROJECT_STATUS.md`, `AI_HANDOFF.md`, liên kết trong `README.md`) trên branch `codex/ai-handoff` dựa trên `origin/main` commit `40eb104`. Chỉ được coi là có trong `main` **sau khi PR tài liệu này được merge**.
+- **Việc hiện tại:** [Issue #6](https://github.com/cfotel2604/html-share-platform/issues/6), [Draft PR #7](https://github.com/cfotel2604/html-share-platform/pull/7) chuẩn hóa tài liệu bàn giao (`AGENTS.md`, `PROJECT_STATUS.md`, `AI_HANDOFF.md`, liên kết trong `README.md`) trên branch `codex/ai-handoff` dựa trên `origin/main` commit `40eb104`. Chỉ được coi là có trong `main` **sau khi PR tài liệu này được merge**.
 - **Workspace lưu ý:** checkout mặc định `C:\Users\admin\Documents\Codex\html-share-platform` được thấy ở `e2b98e4`, chậm hơn `origin/main` 8 commit và có file chưa theo dõi; không được tự xóa hay ghi đè. Worktree Local MVP nằm riêng; tránh ảnh hưởng Docker/data của owner.
 - **Bước kỹ thuật kế tiếp:** review PR #5 trước khi merge; sau đó lập kế hoạch P2 Google/Clerk + email allowlist/RBAC. Cloudflare R2, DNS wildcard và cookie isolation cần gate riêng; chưa làm production.
 

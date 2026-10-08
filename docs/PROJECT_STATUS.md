@@ -13,7 +13,7 @@
 | PR #5 conflict / CI | `MERGEABLE` / `CLEAN`; `application` và `validate-docs` đều `SUCCESS` | PR #5, commit `1506241` |
 | Issue | #1 (P0) và #3 (P1) vẫn **OPEN** dù PR tương ứng đã merge | [Issue #1](https://github.com/cfotel2604/html-share-platform/issues/1), [Issue #3](https://github.com/cfotel2604/html-share-platform/issues/3) |
 
-Việc chuẩn hóa tài liệu trạng thái/handoff được theo dõi tại [Issue #6](https://github.com/cfotel2604/html-share-platform/issues/6), trên branch `codex/ai-handoff`; chưa có trong `main` khi snapshot này được lập.
+Việc chuẩn hóa tài liệu trạng thái/handoff được theo dõi tại [Issue #6](https://github.com/cfotel2604/html-share-platform/issues/6), [Draft PR #7](https://github.com/cfotel2604/html-share-platform/pull/7) trên branch `codex/ai-handoff`; chưa có trong `main` khi snapshot này được lập.
 
 Theo báo cáo test của phiên trước và xác nhận của owner: Local MVP đã thử Studio, upload file HTML và preview thành công. Đây là **kết quả lịch sử**, không phải kiểm thử runtime mới trong lần cập nhật tài liệu này. PR #5 còn Draft nên chưa coi MVP đã được duyệt merge hoặc sẵn sàng cho Internet.
 
