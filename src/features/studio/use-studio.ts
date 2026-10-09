@@ -120,5 +120,13 @@ export function useStudio(client: StudioApi = studioApi) {
           ? `Đã xuất bản lại “${site.display_name}”.`
           : `Đã tắt chia sẻ “${site.display_name}”.`;
       }),
+    rotateShare: (site: SiteSummary) => mutate(site.id, async () => {
+      await client.rotateShare(site.id);
+      return `Đã tạo link xem mới cho “${site.display_name}”. Hãy sao chép và gửi lại link mới.`;
+    }),
+    revokeShare: (site: SiteSummary) => mutate(site.id, async () => {
+      await client.revokeShare(site.id);
+      return `Đã thu hồi link xem của “${site.display_name}”. Nội dung trực tiếp còn mở nếu website đang xuất bản.`;
+    }),
   };
 }

@@ -6,6 +6,7 @@ import { UploadError } from "./upload-error";
 import { lockActor, type Actor } from "./auth-policy";
 import { createHash } from "node:crypto";
 import { shareUrl } from "./public-url";
+import { allocateShareCode } from "../../scripts/share-codes.mjs";
 
 export async function assertSiteOwner(actor: Actor, id: string) {
   const result = await db().query(
@@ -39,6 +40,7 @@ export async function uploadVersion(actor: Actor, file: File, name: string, exis
         "INSERT INTO sites (id, owner_id, display_name, status) VALUES ($1, $2, $3, 'draft')",
         [id, owner, name.trim()],
       );
+      await allocateShareCode(client, id);
     }
     // Existing-site ownership is locked before ZIP ingest and every storage side effect.
     let assets;
@@ -97,10 +99,11 @@ export async function uploadVersion(actor: Actor, file: File, name: string, exis
 
 export async function listSites(actor: Actor) {
   return (await db().query(
-    `SELECT id,display_name,status,updated_at,active_version_id FROM sites
-     WHERE (owner_id=$1 OR $2='admin') AND status<>'deleted' ORDER BY updated_at DESC LIMIT 200`,
+    `SELECT s.id,s.display_name,s.status,s.updated_at,s.active_version_id,l.code AS share_code FROM sites s
+     LEFT JOIN site_share_links l ON l.site_id=s.id AND l.revoked_at IS NULL
+     WHERE (s.owner_id=$1 OR $2='admin') AND s.status<>'deleted' ORDER BY s.updated_at DESC LIMIT 200`,
     [actor.id, actor.role],
-  )).rows.map(site => ({ ...site, share_url: shareUrl(site.id) }));
+  )).rows.map(site => ({ ...site, share_url: shareUrl(site.share_code) }));
 }
 
 export async function setPublished(actor: Actor, id: string, published: boolean) {

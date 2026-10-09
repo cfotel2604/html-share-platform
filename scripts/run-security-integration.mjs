@@ -13,5 +13,5 @@ if(!/^POSTGRES_DB=upload_test$/m.test(readFileSync(envFile,"utf8"))) throw new E
 const env={...process.env,UPLOAD_TEST_IMAGE:process.env.UPLOAD_TEST_IMAGE??"html-share-security:ci"};
 const args=["compose","-p","html-share-security-checks","--env-file",envFile,"-f","compose.yaml","-f","compose.upload-test.yaml"];
 const run=extra=>execFileSync("docker",[...args,...extra],{cwd:root,env,stdio:"inherit",windowsHide:true});
-try {run(["config","--quiet"]);run(["up","-d","--no-build"]);run(["run","--rm","upload-checks"]);run(["run","--rm","auth-origin-checks"]);}
+try {run(["config","--quiet"]);run(["up","-d","--no-build"]);run(["run","--rm","upload-checks"]);run(["run","--rm","auth-origin-checks"]);run(["run","--rm","share-link-checks"]);}
 finally {run(["down"]);} // Retain named test volumes/env; never affect owner projects.

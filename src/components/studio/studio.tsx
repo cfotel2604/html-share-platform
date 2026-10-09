@@ -86,6 +86,8 @@ export function Studio() {
               onRefresh={studio.refresh}
               onUpdate={studio.update}
               onToggle={studio.toggle}
+              onRotateShare={studio.rotateShare}
+              onRevokeShare={studio.revokeShare}
             />
           </div>
         )}
@@ -94,7 +96,7 @@ export function Studio() {
         <span>ODS HTML Studio</span>
         <span>
           <ShieldCheck size={13} aria-hidden="true" />
-          Local lab · Link chỉ mở trên máy này
+          Nội dung công khai khi xuất bản
         </span>
       </footer>
     </div>

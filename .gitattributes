@@ -1,2 +1,3 @@
 # Pin the new migration bytes across Windows/Linux; leave applied 0001 unchanged.
 db/migrations/0002_auth_and_manifests.sql text eol=lf
+db/migrations/0003_site_share_links.sql text eol=lf

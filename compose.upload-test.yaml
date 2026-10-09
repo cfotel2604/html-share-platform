@@ -57,3 +57,16 @@ services:
     depends_on:
       web:
         condition: service_healthy
+  share-link-checks:
+    image: ${UPLOAD_TEST_IMAGE:?Set UPLOAD_TEST_IMAGE}
+    pull_policy: never
+    profiles: [checks]
+    command: [node, tests/integration/share-links.mjs]
+    volumes:
+      - ./tests:/app/tests:ro
+      - ./src:/app/src:ro
+      - ./node_modules/typescript:/app/node_modules/typescript:ro
+    environment: *test_env
+    depends_on:
+      web:
+        condition: service_healthy

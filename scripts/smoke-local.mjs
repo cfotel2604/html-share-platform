@@ -7,8 +7,7 @@ const password = process.env.LOCAL_DEMO_PASSWORD;
 assert.ok(password, "Set LOCAL_DEMO_PASSWORD in .env");
 
 async function expectStatus(response, expected) {
-  const body = await response.clone().text();
-  assert.equal(response.status, expected, `${response.url}: expected ${expected}, got ${response.status}: ${body.slice(0, 250)}`);
+  assert.equal(response.status, expected, `expected ${expected}, got ${response.status}`);
   return response;
 }
 
@@ -38,7 +37,13 @@ const createdResponse = await expectStatus(await fetch(`${web}/api/sites`, {
 const { id } = await createdResponse.json();
 assert.match(id, /^[a-f0-9]{32}$/);
 
-const preview = `${web}/view/${id}`;
+async function viewerUrl(siteId) {
+  const { sites } = await (await expectStatus(await fetch(`${web}/api/sites`, { headers }), 200)).json();
+  const site = sites.find(item => item.id === siteId);
+  assert.ok(site?.share_url);
+  return new URL(site.share_url, web).href;
+}
+const preview = await viewerUrl(id);
 const asset = `${gateway}/s/${id}/`;
 await expectStatus(await fetch(preview), 200);
 const firstAsset = await expectStatus(await fetch(asset), 200);
@@ -87,7 +92,7 @@ if (zipPath) {
   assert.match(await zipHtml.text(), /ZIP sample/);
   const zipCss = await expectStatus(await fetch(`${gateway}/s/${zipId}/style.css`), 200);
   assert.match(await zipCss.text(), /font-weight/);
-  console.log(`Published ZIP sample: ${web}/view/${zipId}`);
+  console.log(`Published ZIP sample: ${await viewerUrl(zipId)}`);
 }
 
 console.log(`PASS: auth, CSRF, upload, version, preview CSP, unpublish/republish`);
