@@ -63,12 +63,12 @@ Tại source branch #13, xem [SECURITY_LAB](../SECURITY_LAB.md). Đối chiếu 
 $labRoot = (Resolve-Path ../html-share-platform-local-mvp).Path
 $sourceRoot = (Get-Location).Path
 $env:SECURITY_IMAGE = 'html-share-studio:security-613f2b7'
-$env:AUTH_MODE = 'local-demo'
+Remove-Item Env:AUTH_MODE -ErrorAction SilentlyContinue
 docker compose -p html-share-local-mvp --project-directory $labRoot --env-file "$labRoot/.env" -f "$labRoot/compose.yaml" -f "$sourceRoot/compose.security.yaml" config --quiet
 docker compose -p html-share-local-mvp --project-directory $labRoot --env-file "$labRoot/.env" -f "$labRoot/compose.yaml" -f "$sourceRoot/compose.security.yaml" up -d --no-deps --no-build --wait web gateway
 ```
 
-Migration/backfill đã chạy; lab legacy khác phải stop web/migrate/backfill theo SECURITY_LAB **trước** gateway mới. Bật Clerk sau keys/Admin allowlist/smoke, bỏ AUTH_MODE local-demo trong shell và dùng mode được kiểm trong `.env`.
+Migration/backfill đã chạy; lab legacy khác phải stop web/migrate/backfill theo SECURITY_LAB **trước** gateway mới. Lab hiện AUTH_MODE=clerk trong `.env`; xóa shell override local-demo để không lùi auth. Mốc deploy hostname đầu tiên ở bảng trên dùng local-demo; mốc Clerk bên dưới là cấu hình mới nhất.
 
 Rollback override Git-ignored, image only; dùng owner Compose, **không security overlay** để khôi phục gateway path config:
 
@@ -88,9 +88,19 @@ docker compose -p html-share-local-mvp --project-directory $labRoot --env-file "
 
 Giữ schema/manifests, không down --volumes/đảo migration. Rollback config đã resolve/so credentials và images retained; **không chạy vòng rollback downtime sau smoke**. Sau có Clerk site/identity mới, review ownership compatibility; không reassign tự động.
 
+## Cập nhật Clerk thật — 2026-10-09
+
+Owner đặt NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY/CLERK_SECRET_KEY trong `.env` checkout owner và giao chọn roles. Compose thêm publishable alias fallback, CLERK_PUBLISHABLE_KEY ưu tiên; normalize runtime, không đưa secret sang gateway/migrate/client. Không rebuild image, runtime vẫn 613f2b7. Preflight thật xác minh Development instance và BAPI/FAPI JWKS cùng signing key, không in key/instance/user details.
+
+Cấp 2 active allowlist policies qua stdin operator CLI, 1 Admin/1 Employee, có audit. Thêm AUTH_MODE=clerk vào env private, giữ byte nội dung keys/DB/storage credentials. Recreate riêng web, health PASS; **10 site giữ nguyên metadata**, gateway/DB/MinIO container IDs và mọi data mounts/image IDs không đổi. Không migrate/backfill hoặc ghi/xóa storage ở mốc này.
+
+Clerk lab probes PASS: anonymous auth báo provider clerk/available, guest và spoof headers API 401, unknown Host 404, cross-origin logout 403, POST demo disabled 503. Chrome hiển thị Continue with Google; click đến đúng Google sign-in. Owner **xác nhận Google Admin đăng nhập thành công và thấy danh sách website**. Server/BAPI kiểm primary email verified, Google external identity khớp và server Admin policy active. Không ghi email/session/token vào tài liệu. Session-list probe sau smoke thấy session đã removed; không khẳng định còn active hoặc logout flow đã được kiểm end-to-end. Một lỗi console ở Clerk telemetry CORS không cản login, không phải lỗi gateway/auth API.
+
+Employee/deny/revoke/logout thật chưa smoke đầy đủ; không tạo/giả lập account thật hoặc revoke session owner để thay bằng chứng. Giữ #8 OPEN và PR Draft đến khi gate tương ứng đạt/review.
+
 ## Gate chưa đạt
 
-- #8: owner có Clerk Development, sẽ đặt keys vào `.env` owner và gửi email/role. Tại deploy chưa nhận inputs; chưa real Clerk/allowlist/Google deny/revoke/logout smoke. Production Clerk/OAuth/quota kiểm riêng.
+- #8: keys/allowlist/Admin Google login/list đã xong. Còn Employee owner-only, Admin mutation/audit, deny/disabled/revoke/logout với session thật; production Clerk/OAuth/quota kiểm riêng.
 - #10: DNS/Workers/reserved inventory/regression/rollback thật; wildcard Edge TLS/Origin CA Full (strict); R2 private/IAM/API write+cleanup/gateway read-only; preview hostname log/analytics redaction; Safari/iOS/Android/Zalo + representative packages; owner/security ADR-0001 review, staging/pilot. Không đổi DNS/provision R2 từ Issue.
 - P5/P6: durable orphan/reconciliation, retention, rate/global concurrency, expired grant cleanup/monitoring. no-store không thu hồi tab đã tải; public link không cho nội dung bí mật.
 

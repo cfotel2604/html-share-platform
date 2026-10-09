@@ -7,13 +7,13 @@ Implementation #8/#10 ở [PR #13](https://github.com/cfotel2604/html-share-plat
 Trong Clerk Development instance, bật Google; tắt các phương thức login khác để phù hợp mô hình đã chọn. Server còn kiểm tra primary email verified và Google external account khớp email. Lưu keys trong `.env` của **checkout owner** `html-share-platform-local-mvp`, không checkout main/Issue/chat:
 
 ```dotenv
-CLERK_PUBLISHABLE_KEY=
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
 AUTH_MODE=local-demo
 AUTH_TRUSTED_ORIGINS=http://127.0.0.1:3100,http://localhost:3100
 ```
 
-Điền keys thật trực tiếp trong local secret file; gửi owner/operator danh sách email kèm role Admin/Employee. **Giữ local-demo trong bước chuẩn bị**; operator chuyển AUTH_MODE=clerk sau cấp allowlist Admin và xác minh cấu hình. Publishable key được đưa vào Clerk client theo thiết kế; secret key không có trong UI/bundle. Không dùng env prefix NEXT_PUBLIC cho secret. Clerk mode không nhận mật khẩu demo hoặc fallback khi có lỗi. Tại mốc deploy 2026-10-09, lab vẫn local-demo, chưa nhận keys/email thật.
+Điền keys trong local secret file; gửi operator email/role. **Giữ local-demo khi chuẩn bị**; chuyển AUTH_MODE=clerk sau cấp Admin allowlist/xác minh key pair. Compose nhận tên chuẩn NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY hoặc CLERK_PUBLISHABLE_KEY; tên thứ hai ưu tiên nếu có cả hai, runtime normalize về CLERK_PUBLISHABLE_KEY. Publishable key public theo thiết kế; secret không UI/bundle/gateway/migrate, không prefix NEXT_PUBLIC cho secret. Clerk không nhận demo/fallback. **Lab hiện đã bật Clerk**, keys Development cùng instance, 1 Admin/1 Employee active, owner xác nhận Google Admin login/list; không cần cấp lại policy hoặc nhập lại keys.
 
 Migrations phải chạy trước auth policy. Chuẩn bị JSON trong file **Git-ignored** `tmp/auth-policy.json` ở checkout source mới (email ví dụ, thay bằng email được owner giao):
 
@@ -32,6 +32,18 @@ Lần bootstrap do operator có quyền DB; actor null trong audit. Các lần t
 Google/Clerk tạo identity mới; site lab giữ owner cũ. Admin được quản lý mọi site và audit; Employee bắt đầu với site mình tạo. Không chuyển site/owner tự động. Request sau revoke/disabled bị từ chối; role từ frontend/JWT không thay role DB. API bị chặn trên viewer/unknown Host, mutation còn yêu cầu exact configured Origin.
 
 Sau khi keys/allowlist có đủ, recreate riêng web bằng security overlay; thử Google sign-in, email ngoài allowlist, Employee A/B, Admin, revoke và logout. Không có key/Google identity thật thì chỉ có bằng chứng unit/SDK JWT + DB integration, chưa hoàn thành end-to-end #8. Clerk production/OAuth credentials và vận hành provider quota là gate release riêng.
+
+Lab đã migrate/backfill: bật/restart auth không cần rebuild hoặc recreate gateway/DB/MinIO. Khi `.env` owner có AUTH_MODE=clerk, xóa AUTH_MODE override local-demo khỏi shell hiện tại trước khi recreate web. Dùng image đã kiểm:
+
+```powershell
+$labRoot = (Resolve-Path ../html-share-platform-local-mvp).Path
+$sourceRoot = (Get-Location).Path
+$env:SECURITY_IMAGE = 'html-share-studio:security-613f2b7'
+Remove-Item Env:AUTH_MODE -ErrorAction SilentlyContinue
+docker compose -p html-share-local-mvp --project-directory $labRoot --env-file "$labRoot/.env" -f "$labRoot/compose.yaml" -f "$sourceRoot/compose.security.yaml" up -d --no-deps --no-build --wait web
+```
+
+Đặt labRoot/sourceRoot như phần deploy bên dưới. Rollback riêng auth dùng cùng security image, AUTH_MODE=local-demo và recreate web; không đổi gateway/schema hoặc xóa allowlist. Chỉ dùng khi operator quyết định rollback, không tự fallback từ lỗi Clerk. Nếu rollback cần tồn tại sau phiên shell, cập nhật AUTH_MODE trong env private; giữ keys nguyên vẹn.
 
 ## Deploy/rollback local
 

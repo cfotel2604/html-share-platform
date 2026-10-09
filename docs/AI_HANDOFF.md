@@ -17,7 +17,7 @@
 - 79 unit tests, lint/typecheck/build local/Docker PASS; upload 9 nhóm và DB/MinIO auth-origin 6 nhóm PASS. CI `5ab1807` application/docs/security SUCCESS. Runner fresh guarded test DB, không owner credentials.
 - Chrome 154 HTTPS `.test` PASS direct/nested HTML + iframe sandbox, cookie/storage/worker/service worker/popup/top navigation, root CSS/classic/modules/fetch/HTTPS CDN, preview/viewer denial; parent cookie/storage/www/mail fixtures giữ nguyên. Self-signed/DNS override local, không chứng minh DNS/TLS/Safari/Zalo thật.
 - Owner web/gateway **html-share-studio:security-613f2b7** healthy, http://127.0.0.1:3100. 17 legacy versions backfill, 0 missing. 9 sites giữ metadata; DB/MinIO IDs/mounts không đổi. 6 published serve sandbox/no-store/no cookie, 3 private 404. Thêm 1 synthetic HTML→ZIP fixture để unpublished. Studio 1280/390/320, private preview/logout/API 401 PASS. Browser đóng/cookie state tạm đã xóa.
-- **Clerk thật chưa bật**: user đã có instance, sẽ đặt keys và gửi email/roles; tại deploy chưa nhận inputs. AUTH_MODE=local-demo trong Compose invocation, không chỉnh owner `.env`. Chưa real Google/allowlist/OAuth smoke; không ghi email/key trong docs.
+- **Mốc Clerk tiếp theo đã bật**: user đặt NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY/CLERK_SECRET_KEY và giao chọn roles. Key pair khớp Development instance qua BAPI/JWKS; allowlist 1 Admin/1 Employee audited, không ghi emails vào docs. AUTH_MODE=clerk được lưu trong `.env` owner; Compose alias chuyển publishable key vào runtime CLERK_PUBLISHABLE_KEY, secret chỉ web. Chỉ web recreate cùng image, 10 sites và gateway/DB/MinIO IDs/mounts không đổi. Guest/spoof 401, unknown Host 404, CSRF 403, demo POST 503. Owner xác nhận Google Admin login/thấy website; BAPI primary verified Google identity + active server policy đã đối chiếu. Employee/deny/revoke/logout session thật còn chờ; không coi credential preflight là toàn bộ #8 end-to-end.
 
 ## Worktrees và vận hành
 
@@ -29,7 +29,7 @@
 
 ## Bước tiếp theo
 
-1. Owner đặt CLERK_PUBLISHABLE_KEY/CLERK_SECRET_KEY trong `.env` owner và gửi email/role. Kiểm presence, không in secrets/config đầy đủ. Operator auth-allowlist qua stdin theo SECURITY_LAB; bật Clerk/smoke Google deny/revoke/logout. Owner thao tác Google login, không gửi credentials. Giữ owner cũ; Clerk Admin quản lý tất cả, Employee có owner mới.
+1. Không yêu cầu keys/emails lại: đã nhận/cấu hình xong; Google Admin login/list đã owner xác nhận. Role/email thực chỉ trong private DB/operator input. Giữ AUTH_MODE=clerk trong `.env` owner (shell override local-demo sẽ lùi mode). Tiếp smoke Employee owner-only, Admin mutation/audit, deny/revoke/logout thật bằng fixture; không tự reassign owner cũ. Không in keys/config/token/session/user details. Server probe sau smoke thấy session đã removed, không khẳng định còn active hoặc logout end-to-end đã được kiểm.
 2. Review #5 → #12 → #13; sau merge dependency đổi base/check CI. Giữ #13 Draft đến gate/review; không tự merge/DNS/production.
 3. #10: DNS/Workers/reserved inventory read-only, wildcard diff/rollback, staging TLS/Full (strict), R2 private/IAM/cleanup, hostname log redaction, Safari/iOS/Android/Zalo, representative packages. ADR-0001/0003 Proposed. P5/P6 orphan/rate/concurrency/retention còn mở.
 
