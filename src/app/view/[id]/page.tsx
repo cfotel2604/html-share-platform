@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
+import { publicSiteUrl } from "@/lib/public-url";
 
 export const dynamic = "force-dynamic";
 type Props = { params: Promise<{ id: string }> };
@@ -25,8 +26,7 @@ export default async function ViewPage({ params }: Props) {
   const { id } = await params;
   const site = await getSite(id);
   if (!site) notFound();
-  const gateway = process.env.GATEWAY_PUBLIC_ORIGIN ?? "http://127.0.0.1:4100";
-  const url = `${gateway}/s/${id}/`;
+  const url = publicSiteUrl(id);
   return (
     <main className="h-dvh w-full overflow-hidden">
       <iframe

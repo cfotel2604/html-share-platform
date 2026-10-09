@@ -1,12 +1,15 @@
 "use client";
 import { useState, type FormEvent } from "react";
 import { ArrowRight, LockKeyhole } from "lucide-react";
+import Link from "next/link";
 export function LoginPanel({
   busy,
   onLogin,
+  provider = "local-demo",
 }: {
   busy: boolean;
   onLogin: (password: string) => Promise<boolean>;
+  provider?: string;
 }) {
   const [password, setPassword] = useState("");
   async function submit(event: FormEvent) {
@@ -23,7 +26,11 @@ export function LoginPanel({
       <p className="studio-description">
         Đăng nhập để tạo website và quản lý các đường link của bạn.
       </p>
-      <form onSubmit={submit}>
+      {provider === "clerk" ? (
+        <Link className="studio-button studio-primary studio-full-width" href="/sign-in">
+          Đăng nhập bằng Google <ArrowRight size={16} aria-hidden="true" />
+        </Link>
+      ) : <form onSubmit={submit}>
         <label className="studio-label" htmlFor="password">
           Mật khẩu workspace
         </label>
@@ -45,7 +52,7 @@ export function LoginPanel({
           {busy ? "Đang đăng nhập…" : "Vào Studio"}
           <ArrowRight size={16} aria-hidden="true" />
         </button>
-      </form>
+      </form>}
       <p className="studio-caption">Môi trường thử nghiệm nội bộ.</p>
     </section>
   );

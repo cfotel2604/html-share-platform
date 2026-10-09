@@ -1,0 +1,39 @@
+# Isolated test project only. Self-signed TLS is NOT Cloudflare/Origin CA evidence.
+services:
+  web:
+    environment:
+      GATEWAY_MODE: hostname
+      PUBLIC_SITE_DOMAIN: matbao.test
+      PUBLIC_SITE_SCHEME: https
+      PUBLIC_SITE_PORT: "4443"
+      VIEWER_PUBLIC_ORIGIN: https://view.ods.test:4443
+      GATEWAY_FRAME_SOURCE: https://*.matbao.test:4443
+  gateway:
+    environment:
+      GATEWAY_MODE: hostname
+      PUBLIC_SITE_DOMAIN: matbao.test
+      PUBLIC_SITE_SCHEME: https
+      PUBLIC_SITE_PORT: "4443"
+      GATEWAY_VIEWER_ORIGIN: https://view.ods.test:4443
+      GATEWAY_PREVIEW_ORIGIN: https://studio.ods.test:4443
+  origin-front:
+    image: ${UPLOAD_TEST_IMAGE:?Set UPLOAD_TEST_IMAGE}
+    pull_policy: never
+    command: [node, tests/integration/origin-front.mjs]
+    ports: ["127.0.0.1:4443:4443"]
+    volumes:
+      - ./tests:/app/tests:ro
+      - ./tmp/origin-tls:/app/tls:ro
+      - ./tmp/origin-browser:/app/browser-artifacts:ro
+    depends_on:
+      web:
+        condition: service_healthy
+      gateway:
+        condition: service_healthy
+  origin-fixtures:
+    extends:
+      file: compose.upload-test.yaml
+      service: auth-origin-checks
+    command: [node, tests/integration/origin-browser-fixture.mjs]
+    volumes:
+      - ./tmp/origin-browser:/app/browser-artifacts

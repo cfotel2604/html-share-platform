@@ -59,6 +59,7 @@ export function createStudioApi(
       await request("/auth", { method: "DELETE" });
     },
     createSite: (file, name) => upload("/sites", "POST", file, name),
+    preview: (id) => request(`/sites/${encodeURIComponent(id)}/preview`, { method: "POST" }),
     updateSite: (id, file, name) =>
       upload(`/sites/${encodeURIComponent(id)}`, "PUT", file, name),
     setPublished: async (id, published) => {

@@ -1,12 +1,13 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { db } from "./db";
+import { authMode } from "./auth-config";
 
 const COOKIE_NAME = "ods_local_demo_session";
 const SEVEN_DAYS = 7 * 24 * 60 * 60;
 
 export function demoEnabled() {
-  return process.env.LOCAL_DEMO_MODE === "1" &&
+  return authMode() === "local-demo" && process.env.LOCAL_DEMO_MODE === "1" &&
     Boolean(process.env.LOCAL_DEMO_PASSWORD && process.env.LOCAL_DEMO_SESSION_SECRET);
 }
 
@@ -51,20 +52,9 @@ export async function ownerId(): Promise<string | null> {
   const result = await db().query<{ id: string }>(
     `INSERT INTO users (external_identity, role, status)
      VALUES ('local-demo:owner', 'admin', 'active')
-     ON CONFLICT (external_identity) DO UPDATE SET status = 'active'
+     ON CONFLICT (external_identity) DO UPDATE SET external_identity=EXCLUDED.external_identity
+       WHERE users.status='active'
      RETURNING id`,
   );
-  return result.rows[0].id;
-}
-
-export function sameOrigin(request: Request) {
-  const origin = request.headers.get("origin");
-  const host = request.headers.get("host");
-  if (!origin || !host) return false;
-  try {
-    return new URL(origin).host === host &&
-      ["http:", "https:"].includes(new URL(origin).protocol);
-  } catch {
-    return false;
-  }
+  return result.rows[0]?.id ?? null;
 }

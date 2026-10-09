@@ -6,8 +6,9 @@ export type SiteSummary = {
   status: SiteStatus;
   updated_at: string;
   active_version_id?: string | null;
+  share_url?: string | null;
 };
-export type AuthStatus = { signedIn: boolean; demoAvailable: boolean };
+export type AuthStatus = { signedIn: boolean; demoAvailable: boolean; available?: boolean; provider?: "clerk" | "local-demo" | "disabled"; role?: "employee" | "admin" | null; denied?: boolean };
 export type UploadResult = { id: string; fileCount: number };
 export interface StudioApi {
   auth(): Promise<AuthStatus>;
@@ -17,4 +18,5 @@ export interface StudioApi {
   createSite(file: File, name: string): Promise<UploadResult>;
   updateSite(id: string, file: File, name: string): Promise<UploadResult>;
   setPublished(id: string, published: boolean): Promise<void>;
+  preview(id: string): Promise<{url:string;displayName:string;expiresAt:string}>;
 }
