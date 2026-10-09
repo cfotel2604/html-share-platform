@@ -48,7 +48,7 @@ Chạy backend tùy ý của website upload (PHP, Node, Python), xử lý form s
 
 Origin tách biệt: trang quản trị `studio.ods.vn`, link khách `view.ods.vn/<share-code>` (**chỉ shell được kiểm soát**) và origin thực thi HTML `https://<site-id>.space-ods.cfvn.cloud/`. Không bao giờ chạy raw HTML trong `studio.ods.vn/view/*`, `view.ods.vn/*` hoặc proxy raw HTML dưới URL path chung. Hostname riêng ngăn chia sẻ localStorage/service worker theo origin nhưng **không tự chặn cookie `Domain=cfvn.cloud` giữa các site**; iframe sandbox bỏ `allow-same-origin` là chế độ mặc định cho viewer và phải kiểm chứng với trình duyệt trước P4. Chế độ mở site trực tiếp/cho phép storage chưa được phê duyệt khi chưa có biện pháp cô lập cookie (ví dụ PSL đủ điều kiện).
 
-Mã viewer ngắn là thiết kế đã chốt, chưa triển khai: cần mapping server/UNIQUE/CSPRNG, migration additive và xử lý alias cũ khi rotation. Đổi mã không thu hồi direct URL khi site còn published; unpublish/delete chặn request mới, không thu hồi tab đã tải.
+Mã viewer ngắn đã triển khai trong Draft PR #15/Issue #14: mapping server/UNIQUE/CSPRNG, migration 0003 additive, backfill và rotate/revoke; không giữ alias host ID cũ. [Kiểm chứng local](docs/validation/2026-10-09-short-viewer-links.md) đã pass; [cutover](docs/SHARE_LINKS.md) trên VM/owner Desktop chưa thực hiện. Đổi mã không thu hồi direct URL khi site còn published; unpublish/delete chặn request mới, không thu hồi tab đã tải.
 
 Xem [kiến trúc và luồng dữ liệu](docs/ARCHITECTURE.md), [ADR-0001](docs/adr/0001-public-site-origin-isolation.md) và [quy trình GitHub](docs/WORKFLOW.md).
 

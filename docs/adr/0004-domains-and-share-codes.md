@@ -2,7 +2,7 @@
 
 - **Status:** Accepted — quyết định domain và thiết kế link được owner chốt; không phải phê duyệt release.
 - **Date:** 2026-10-09
-- **Refs:** #8, #10, PR #13; [ADR-0001](0001-public-site-origin-isolation.md), [ADR-0003](0003-server-rbac-and-preview-capabilities.md).
+- **Refs:** #8, #10, #14, PR #13/#15; [ADR-0001](0001-public-site-origin-isolation.md), [ADR-0003](0003-server-rbac-and-preview-capabilities.md).
 - **Supersedes:** lựa chọn `matbao.one` và yêu cầu Cloudflare Edge/Origin CA bắt buộc trong kế hoạch domain trước đây; giữ nguyên các boundary bảo mật.
 
 ## Decision
@@ -26,9 +26,9 @@ Lab và production content vẫn chung parent `cfvn.cloud`. Wildcard và hostnam
 - Đổi/revoke mã chỉ làm link viewer cũ không còn resolve. Khi triển khai rotation, các alias viewer theo host ID phải bị tắt hoặc có chính sách migration hữu hạn; không giữ đường dẫn bypass lâu dài.
 - Direct URL vẫn truy cập được khi site còn published. Muốn chặn request nội dung mới phải unpublish/delete; không thu hồi được nội dung đã tải. Rotation host ID là thay đổi riêng cần thiết kế/review. Mã ngẫu nhiên không thay thế authentication cho nội dung bí mật.
 
-**Trạng thái implementation:** PR #13 tại `417c50d` vẫn sinh/resolve viewer bằng site ID 32 hex. Share code, mapping, rotation và migration alias **chưa triển khai**; ví dụ trong bảng là cấu trúc đã chốt, chưa phải URL lab đang hoạt động.
+**Trạng thái implementation:** PR #15/Issue #14 tại runtime commit `1c183f50c0d90c109ff23ef84e23e04adff5a7c7` triển khai share code/mapping/rotate/revoke/reissue, migration 0003 và backfill; alias host ID bị tắt. [Kiểm chứng local](../validation/2026-10-09-short-viewer-links.md) pass, [cutover/rollback](../SHARE_LINKS.md) chưa chạy trên VM/owner Desktop. VM tại nghiệm thu `417c50d` vẫn dùng link dài; bảng không khẳng định trusted lab hostname đã public end-to-end.
 
-Runtime hỗ trợ domain mới qua cấu hình; default trong `origin-config.mjs` vẫn là domain cũ, còn `.env.example` là loopback lab. Khi triển khai phải đặt PUBLIC_SITE_DOMAIN rõ theo môi trường; mốc tài liệu này không sửa default/code/test fixtures hoặc redeploy.
+Runtime hỗ trợ domain mới qua cấu hình; default trong `origin-config.mjs` vẫn là domain cũ, còn `.env.example` là loopback lab. Khi triển khai phải đặt PUBLIC_SITE_DOMAIN rõ theo môi trường; PR #15 không đổi default domain hoặc redeploy owner.
 
 ### DNS/TLS
 

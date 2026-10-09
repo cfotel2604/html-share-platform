@@ -115,7 +115,7 @@ services:
 
 Security overlay suy GATEWAY_VIEWER_ORIGIN từ VIEWER_PUBLIC_ORIGIN và GATEWAY_PREVIEW_ORIGIN từ STUDIO_PUBLIC_ORIGIN. Kiểm cấu hình bằng `docker compose ... config --quiet` rồi chỉ lọc các field public được phép; không dump toàn config/env chứa secrets. Production dùng cấu hình tương ứng trong ADR-0004 và wildcard certificate/gia hạn riêng.
 
-Viewer hiện nhận site ID 32 hex; thiết kế share code 10 base62 chưa có trong runtime. Không hứa revoke nội dung bằng đổi mã: viewer alias cũ phải được xử lý, direct URL còn public cho đến unpublish/delete.
+PR #15/Issue #14 đã triển khai viewer 10 base62, mapping và rotate/revoke/reissue; [kiểm chứng local](validation/2026-10-09-short-viewer-links.md) pass. VM/owner Desktop chưa cutover candidate; runtime tại nghiệm thu trước đó vẫn dùng site ID 32 hex. Triển khai sau review cần migration 0003 + [backfill/runbook](SHARE_LINKS.md); candidate trả 404 cho alias host ID, owner cần gửi link ngắn mới. Không rollback binary cũ bật lại alias sau revocation. Đổi mã không chặn direct URL; unpublish/delete mới chặn request nội dung mới.
 
 ## Gate trước public (#10 vẫn mở)
 
