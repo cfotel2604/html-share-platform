@@ -13,7 +13,7 @@ AUTH_MODE=local-demo
 AUTH_TRUSTED_ORIGINS=http://127.0.0.1:3100,http://localhost:3100
 ```
 
-Điền keys trong local secret file; gửi operator email/role. **Giữ local-demo khi chuẩn bị**; chuyển AUTH_MODE=clerk sau cấp Admin allowlist/xác minh key pair. Compose nhận tên chuẩn NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY hoặc CLERK_PUBLISHABLE_KEY; tên thứ hai ưu tiên nếu có cả hai, runtime normalize về CLERK_PUBLISHABLE_KEY. Publishable key public theo thiết kế; secret không UI/bundle/gateway/migrate, không prefix NEXT_PUBLIC cho secret. Clerk không nhận demo/fallback. **Lab hiện đã bật Clerk**, keys Development cùng instance, 1 Admin/1 Employee active, owner xác nhận Google Admin login/list; không cần cấp lại policy hoặc nhập lại keys.
+Điền keys trong local secret file; gửi operator email/role. **Giữ local-demo khi chuẩn bị**; chuyển AUTH_MODE=clerk sau cấp Admin allowlist/xác minh key pair. Compose nhận tên chuẩn NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY hoặc CLERK_PUBLISHABLE_KEY; tên thứ hai ưu tiên nếu có cả hai, runtime normalize về CLERK_PUBLISHABLE_KEY. Publishable key public theo thiết kế; secret không UI/bundle/gateway/migrate, không prefix NEXT_PUBLIC cho secret. Clerk không nhận demo/fallback. **Lab hiện đã bật Clerk**, keys Development cùng instance, 1 Admin/1 Employee active, owner xác nhận Google Admin login/list và Employee login; không cần cấp lại policy hoặc nhập lại keys.
 
 Migrations phải chạy trước auth policy. Chuẩn bị JSON trong file **Git-ignored** `tmp/auth-policy.json` ở checkout source mới (email ví dụ, thay bằng email được owner giao):
 
@@ -77,9 +77,49 @@ Runner tạo env synthetic riêng trong tmp và project html-share-security-chec
 
 Browser probe dùng `compose.origin-browser-test.yaml` trên project test, certificate self-signed chỉ local trong tmp/origin-tls, synthetic fixture trong tmp/origin-browser. Chạy service origin-fixtures ngay trước browser để grant còn TTL; origin-front trả fixture IDs không chứa token. Playwright CLI nạp `tests/browser/origin.js`; config ignoreHTTPSErrors và host-resolver-rules chỉ cho .test ở local. Không dùng bypass chứng chỉ này cho production. Desktop Chrome đã kiểm iframe/direct index/nested .htm, cookie/storage, service worker/worker, popup/top navigation, root CSS/classic/modules/fetch/HTTPS CDN, private preview, viewer route denial và existing host fixtures.
 
+## VM lab và domain đã chốt
+
+[ADR-0004](adr/0004-domains-and-share-codes.md) chốt production Studio/viewer/content và lab `studio-lab.ods.vn`, `view-lab.ods.vn`, `*.lab-space-ods.cfvn.cloud`. [Nghiệm thu VM](validation/2026-10-09-lab-domain-tls.md) ghi runtime riêng `security-417c50d`/project `hsp-lab`, certificate thật, loopback app ports và timer gia hạn. Docker Desktop vẫn image `security-613f2b7`; không đồng nhất hai stack.
+
+**VM hiện tại:** AUTH_MODE=clerk, auth/iframe origins loopback qua SSH tunnel, VIEWER_PUBLIC_ORIGIN rỗng; content dùng HTTPS lab domain và PUBLIC_SITE_PORT rỗng. Không đổi sang hostname Studio/viewer mới chỉ bằng sửa env: cần trusted vhosts/DNS/TLS, Clerk redirects và browser/CSRF/frame-ancestors proof trước. Có thể kiểm qua `ssh lab-b` theo SSH config owner, không ghi key/VM credentials vào Git.
+
+**Đích cấu hình sau khi các gate hostname trusted đạt** (chưa áp dụng vào VM):
+
+```dotenv
+AUTH_MODE=clerk
+STUDIO_PUBLIC_ORIGIN=https://studio-lab.ods.vn
+AUTH_TRUSTED_ORIGINS=https://studio-lab.ods.vn
+VIEWER_PUBLIC_ORIGIN=https://view-lab.ods.vn
+GATEWAY_MODE=hostname
+PUBLIC_SITE_DOMAIN=lab-space-ods.cfvn.cloud
+PUBLIC_SITE_SCHEME=https
+PUBLIC_SITE_PORT=
+GATEWAY_FRAME_SOURCE=https://*.lab-space-ods.cfvn.cloud
+```
+
+compose.security.yaml hiện gán PUBLIC_SITE_PORT từ GATEWAY_PORT nên env rỗng ở trên **chưa đủ**. Thêm overlay cuối như runbook đang dùng để override effective environment, giữ port bind loopback 3100/4100:
+
+```yaml
+services:
+  db:
+    ports: !reset []
+  minio:
+    ports: !reset []
+  web:
+    environment:
+      PUBLIC_SITE_PORT: ""
+  gateway:
+    environment:
+      PUBLIC_SITE_PORT: ""
+```
+
+Security overlay suy GATEWAY_VIEWER_ORIGIN từ VIEWER_PUBLIC_ORIGIN và GATEWAY_PREVIEW_ORIGIN từ STUDIO_PUBLIC_ORIGIN. Kiểm cấu hình bằng `docker compose ... config --quiet` rồi chỉ lọc các field public được phép; không dump toàn config/env chứa secrets. Production dùng cấu hình tương ứng trong ADR-0004 và wildcard certificate/gia hạn riêng.
+
+Viewer hiện nhận site ID 32 hex; thiết kế share code 10 base62 chưa có trong runtime. Không hứa revoke nội dung bằng đổi mã: viewer alias cũ phải được xử lý, direct URL còn public cho đến unpublish/delete.
+
 ## Gate trước public (#10 vẫn mở)
 
-Kiểm kê Cloudflare DNS, Workers routes, redirects, reserved names và website hiện hữu bằng credentials read-only; review diff wildcard và rollback trước thay đổi. Xác minh Edge/wildcard TLS và Origin CA Full (strict) trên staging được giao. R2 bucket private, IAM gateway read-only/API write+cleanup và không public r2.dev. Redact preview-capability hostname khỏi access/log/analytics, không ghi Cookie/Authorization/query/HTML. Kiểm Safari/iOS, Android Chrome thật, Zalo và compatibility fixtures; owner/security review ADR-0001, staging/pilot trước production. Không đánh dấu các gate này xong từ test .test/self-signed/MinIO.
+Kiểm kê DNS/route/redirect/reserved names và website hiện hữu bằng credentials read-only (Workers nếu có); review wildcard diff/regression/rollback trước thay đổi. TLS content lab đã kiểm trên VM; tiếp kiểm trusted Studio/viewer hostname và production wildcard/renewal riêng. Baseline nginx + Let's Encrypt DNS-01 không yêu cầu Cloudflare Edge/Origin CA. R2 bucket private, IAM gateway read-only/API write+cleanup và không public r2.dev. Redact preview-capability hostname khỏi access/log/analytics, không ghi Cookie/Authorization/query/HTML; kiểm cả error/DNS/collector, không suy ra toàn pipeline an toàn từ access log count 0. Kiểm Safari/iOS, Android Chrome thật, Zalo và compatibility fixtures; owner/security review ADR-0001, staging/pilot trước production. Không đánh dấu các gate này xong từ test .test/self-signed/MinIO hoặc chỉ từ nghiệm thu TLS. VM hiện MinIO legacy không publish storage ports; hiện trạng này không mở rộng ngoại lệ legacy cho staging/pilot/production. Cần private R2 trước bước đó.
 
 ## Nguồn kỹ thuật đã đối chiếu
 
