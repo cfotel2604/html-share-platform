@@ -6,7 +6,7 @@ Nền tảng nội bộ để nhân viên tải lên HTML/CSS/JavaScript hoặc 
 
 ## Trạng thái
 
-**P0 — Planning:** tài liệu và quyết định owner đã được merge vào `main` qua PR #2. **P1 — Foundation** đã merge vào `main` qua PR #4; bản local MVP vẫn ở Draft PR #5. Chưa triển khai domain production. Xem [tiến độ được kiểm chứng gần nhất](docs/PROJECT_STATUS.md) trước khi bắt đầu công việc mới.
+**P0 — Planning:** tài liệu và quyết định owner đã merge qua PR #2. **P1 — Foundation** đã merge qua PR #4; local MVP PR #5 và Studio PR #12 đã Ready for review, chưa merge. Upload hardening #9 đã kiểm chứng và deploy local cùng Studio. Chưa triển khai domain production. Xem [tiến độ gần nhất](docs/PROJECT_STATUS.md) trước công việc mới.
 
 - [PLAN và roadmap P0–P7](PLAN.md)
 - [Kiến trúc và luồng upload/publish](docs/ARCHITECTURE.md)
@@ -15,6 +15,7 @@ Nền tảng nội bộ để nhân viên tải lên HTML/CSS/JavaScript hoặc 
 - [Hướng dẫn cho coding agents](AGENTS.md)
 - [Tiến độ dự án và các hạng mục còn mở](docs/PROJECT_STATUS.md)
 - [Bàn giao công việc giữa các phiên AI Agent](docs/AI_HANDOFF.md)
+- [Upload hardening, kiểm chứng Docker và rollback](docs/validation/2026-10-09-upload-hardening.md)
 
 ## Nguyên tắc bảo mật
 

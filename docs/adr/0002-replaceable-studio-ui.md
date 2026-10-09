@@ -32,6 +32,6 @@ Errors dùng HTTP status phù hợp và JSON `{ error: string }`. Demo auth là 
 
 ## Consequences và validation
 
-Giữ API/schema/gateway không đổi trong PR UI; không cần migrate dữ liệu. Unit tests chạy production HTTP adapter với fetch stub để xác nhận methods, cookies, multipart boundary và errors. Browser/API smoke trên Docker kiểm tra workflow thật; lint kiểm tra chiều phụ thuộc. Các findings #9 và gate #10 vẫn mở, độc lập với việc đổi UI.
+Giữ API/schema/gateway không đổi trong phần UI; không cần migrate dữ liệu. Unit tests chạy production HTTP adapter với fetch stub để xác nhận methods, cookies, multipart boundary và errors. Browser/API smoke trên Docker kiểm tra workflow thật; lint kiểm tra chiều phụ thuộc. Upload hardening #9 và public gate #10 thuộc backend/security, được kiểm chứng riêng với phần UI.
 
 Sau khi #5 merge, PR UI phải đổi base về main và xác minh CI/mergeability. Deploy local chỉ cập nhật image web có tag riêng bằng Compose override; giữ nguyên project, services dữ liệu, ports và named volumes. Rollback dùng image web trước deploy.
