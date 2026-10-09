@@ -20,7 +20,8 @@ const login = await fetch(web + "/api/auth", { method: "POST", headers: { Origin
 assert.equal(login.status, 200);
 const cookie = login.headers.get("set-cookie").split(";")[0];
 const headers = { Cookie: cookie, Origin: origin,Host:host };
-await pool.query("UPDATE users SET role='employee' WHERE external_identity='local-demo:owner'");
+assert.equal((await fetch(web+"/api/auth",{headers})).status,200); // Provision the identity on a fresh database.
+assert.equal((await pool.query("UPDATE users SET role='employee' WHERE external_identity='local-demo:owner' RETURNING id")).rowCount,1);
 async function listKeys() {
   const keys = []; let token;
   do {
