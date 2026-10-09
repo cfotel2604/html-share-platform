@@ -9,11 +9,11 @@ Trong Clerk Development instance, bật Google; tắt các phương thức login
 ```dotenv
 CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
-AUTH_MODE=clerk
+AUTH_MODE=local-demo
 AUTH_TRUSTED_ORIGINS=http://127.0.0.1:3100,http://localhost:3100
 ```
 
-Điền keys thật trực tiếp trong local secret file. Publishable key được đưa vào Clerk client theo thiết kế; secret key không có trong UI/bundle. Không dùng env prefix NEXT_PUBLIC cho secret. Không bật Clerk mode trước khi allowlist có Admin và instance đã được kiểm thử; mode này không nhận mật khẩu demo hoặc fallback khi có lỗi.
+Điền keys thật trực tiếp trong local secret file; gửi owner/operator danh sách email kèm role Admin/Employee. **Giữ local-demo trong bước chuẩn bị**; operator chuyển AUTH_MODE=clerk sau cấp allowlist Admin và xác minh cấu hình. Publishable key được đưa vào Clerk client theo thiết kế; secret key không có trong UI/bundle. Không dùng env prefix NEXT_PUBLIC cho secret. Clerk mode không nhận mật khẩu demo hoặc fallback khi có lỗi. Tại mốc deploy 2026-10-09, lab vẫn local-demo, chưa nhận keys/email thật.
 
 Migrations phải chạy trước auth policy. Chuẩn bị JSON trong file **Git-ignored** `tmp/auth-policy.json` ở checkout source mới (email ví dụ, thay bằng email được owner giao):
 
@@ -42,16 +42,17 @@ $labRoot = (Resolve-Path ../html-share-platform-local-mvp).Path
 $sourceRoot = (Get-Location).Path
 $env:SECURITY_IMAGE = 'html-share-studio:security-<verified-commit>'
 docker compose -p html-share-local-mvp --project-directory $labRoot --env-file "$labRoot/.env" -f "$labRoot/compose.yaml" -f "$sourceRoot/compose.security.yaml" config --quiet
+docker compose -p html-share-local-mvp --project-directory $labRoot --env-file "$labRoot/.env" -f "$labRoot/compose.yaml" -f "$sourceRoot/compose.security.yaml" stop web
 docker compose -p html-share-local-mvp --project-directory $labRoot --env-file "$labRoot/.env" -f "$labRoot/compose.yaml" -f "$sourceRoot/compose.security.yaml" run --rm --no-deps migrate
 docker compose -p html-share-local-mvp --project-directory $labRoot --env-file "$labRoot/.env" -f "$labRoot/compose.yaml" -f "$sourceRoot/compose.security.yaml" run --rm --no-deps --entrypoint node web scripts/backfill-manifests.mjs
 docker compose -p html-share-local-mvp --project-directory $labRoot --env-file "$labRoot/.env" -f "$labRoot/compose.yaml" -f "$sourceRoot/compose.security.yaml" up -d --no-deps --no-build web gateway
 ```
 
-Migration 0002 thêm email/allowlist, asset manifest, preview grants; runner checksum/advisory lock giữ nguyên. Backfill đọc assets và so fingerprint, chỉ ghi manifest. Không sửa site metadata/pointer hoặc storage bytes. Nếu bất kỳ version không khớp hash thì dừng deploy, giữ image gateway cũ. Kiểm manifest idempotent; kiểm baseline site IDs/status/active version/updated_at, DB/MinIO identities/mounts, health và browser sau deploy.
+Migration 0002 thêm email/allowlist, asset manifest, preview grants; runner checksum/advisory lock giữ nguyên. Stop web ngắn tránh code cũ tạo version NULL manifest giữa backfill/deploy. Backfill đọc assets/so fingerprint, chỉ ghi manifest; không site pointer/storage bytes. Nếu thất bại thì dừng candidate, **khởi động lại web/gateway bằng rollback images ngay**, giữ schema bổ sung. Kiểm baseline sites, DB/MinIO IDs/mounts và health/browser. Lab owner đã chạy 0002/backfill 17 versions, image security-613f2b7; các lần recreate cùng image không cần stop/migrate/backfill lại nếu manifests không thiếu.
 
 Default overlay dùng local-demo, `*.uploads.localhost:4100` cho root assets. Chrome resolve localhost subdomains về loopback, không cần chỉnh hosts/DNS máy. URL `/view/<id>` cũ vẫn là trusted shell. Host không hợp lệ/path gateway cũ trả 404 sau hostname mode; link viewer giữ nguyên.
 
-Rollback: đặt `AUTH_MODE=local-demo` nếu đã đổi Clerk, dùng đúng image/overlay trước release (tag và commands trong validation). Recreate **web và gateway** với Compose owner + `compose.studio-ui.yaml`, đặt STUDIO_WEB_IMAGE=image web trước, gateway dùng image cũ của owner. Giữ additive schema và manifests; không down --volumes, không đảo migration. Nếu đã tạo Clerk ownership thực, review tính tương thích/ownership trước rollback; không tự reassign dữ liệu.
+Rollback: dùng **Compose owner + override chỉ hai rollback images** trong validation, không security overlay; tags web html-share-studio:rollback-before-security-20261009 và gateway html-share-gateway:rollback-before-security-20261009. Recreate cả web/gateway, khôi phục gateway path config. Giữ additive schema/manifests, không down --volumes/đảo migration. Nếu đã có Clerk ownership thật, review compatibility trước rollback; không reassign tự động.
 
 ## Kiểm thử riêng
 

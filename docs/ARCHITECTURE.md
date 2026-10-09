@@ -2,6 +2,8 @@
 
 Trạng thái: **Proposed**. Triển khai thực tế phải đối chiếu với [ADR-0001](adr/0001-public-site-origin-isolation.md).
 
+Implementation lab #13 đã có Clerk server auth/RBAC, gateway hostname/manifest, trusted viewer và private preview theo [ADR-0003](adr/0003-server-rbac-and-preview-capabilities.md). [Validation](validation/2026-10-09-auth-origin-gates.md) phân biệt code/Chrome local đã kiểm với Google/DNS/TLS/R2/Safari/Zalo còn chờ; không đổi trạng thái Proposed thành production approval.
+
 ```mermaid
 flowchart TD
   E[Employee browser] -->|studio.ods.vn, Clerk Google + email allowlist| A[Next.js dashboard and API]
@@ -20,9 +22,11 @@ Theo [ADR-0002](adr/0002-replaceable-studio-ui.md), Studio dùng component prese
 
 ## Data model dự kiến
 
-- `users`: id, external_identity, role, status, created_at.
+- `users`: id, external_identity, email, role, status, created_at; identity từ Clerk Google nhưng quyền từ DB.
+- `auth_allowlist`: email đã chuẩn hóa, role, status, updated_at; operator quản lý server-side, không JWT/UI metadata.
 - `sites`: id (unguessable), owner_id, display_name, status, active_version_id, created_at, updated_at.
-- `site_versions`: id, site_id, storage_prefix, uploaded_by, manifest_hash, created_at, published_at.
+- `site_versions`: id, site_id, storage_prefix, uploaded_by, manifest_hash, asset_manifest (path/type/size/SHA-256), created_at, published_at.
+- `preview_grants`: token_hash, site_id, immutable version_id, actor_id, expires_at; token 128-bit, TTL 3 phút, không lưu raw grant.
 - `audit_events`: actor_id, action, target_type, target_id, timestamp, request_id.
 
 Site ID xuất hiện trong hostname public; dùng giá trị random đủ entropy (ít nhất 128 bits). ID không đại diện cho quyền truy cập bí mật.
@@ -50,6 +54,12 @@ Site ID xuất hiện trong hostname public; dùng giá trị random đủ entro
 ### Local upload hardening (#9)
 
 Local MVP áp byte cap 22 MiB cho toàn multipart body trước parser (file quota 20 MiB), không tin Content-Length. PUT preflight owner trước body ingest và kiểm tra lại dưới row lock trước ZIP/storage. Reserve immutable version/prefix, ghi toàn bộ assets, rồi active pointer/audit trong cùng transaction. Lỗi trước COMMIT rollback và cleanup exact new keys, retry tối đa 3 lần; COMMIT response không xác định giữ objects và trả 503 để client refresh. Cleanup failure/process crash cần operator reconciliation; durable orphan lifecycle còn P5/P6. Chi tiết và bằng chứng trong [validation #9](validation/2026-10-09-upload-hardening.md); không thay origin policy hoặc auth production.
+
+### Auth và preview lab (#8/#10)
+
+API xác minh session bằng Clerk SDK trực tiếp, strip spoof headers, không qua Next proxy để giữ stream cap #9. Session active online + verified primary Google email + allowlist/user active trên server; Employee owner-only, Admin mọi site với audit actual actor. Mutation CSRF exact Origin/Host; transaction recheck/khóa policy/user để revoke/downgrade không vượt authorization race. Local demo chỉ exact loopback, Clerk không fallback.
+
+Gateway hostname public `<id>.matbao.one` và preview `<id>--<grant>.matbao.one`, cùng root assets. Preview là bearer capability scope actor/site/version; DB hash, TTL 3 phút, recheck policy/ownership khi serve. Viewer không Clerk/provider/cookie; preview shell authenticated trên Studio nhưng iframe không nhận session. Mọi asset phải khớp manifest/size/hash trước trả bytes; manifests legacy backfill bằng fingerprint gốc. HTTP CSP sandbox mọi HTML, CORS asset không credentials; published frame-ancestors viewer, preview frame-ancestors Studio. Redact hostname grant trong DNS/access/analytics trước staging.
 
 ## Serving
 

@@ -6,7 +6,7 @@ Nền tảng nội bộ để nhân viên tải lên HTML/CSS/JavaScript hoặc 
 
 ## Trạng thái
 
-**P0 — Planning:** tài liệu và quyết định owner đã merge qua PR #2. **P1 — Foundation** đã merge qua PR #4; local MVP PR #5 và Studio PR #12 đã Ready for review, chưa merge. Upload hardening #9 đã kiểm chứng và deploy local cùng Studio. Chưa triển khai domain production. Xem [tiến độ gần nhất](docs/PROJECT_STATUS.md) trước công việc mới.
+**P0/P1** đã merge. Local MVP #5 và Studio #12 Ready, chưa merge; **Draft PR #13** bổ sung Clerk/RBAC và hostname sandbox, đã kiểm thử/deploy Docker local. Lab vẫn đăng nhập demo trong khi chờ Clerk keys/allowlist và Google smoke thật. DNS/TLS/R2/Safari/Zalo còn gate trước public. Xem [tiến độ gần nhất](docs/PROJECT_STATUS.md).
 
 - [PLAN và roadmap P0–P7](PLAN.md)
 - [Kiến trúc và luồng upload/publish](docs/ARCHITECTURE.md)
@@ -16,6 +16,8 @@ Nền tảng nội bộ để nhân viên tải lên HTML/CSS/JavaScript hoặc 
 - [Tiến độ dự án và các hạng mục còn mở](docs/PROJECT_STATUS.md)
 - [Bàn giao công việc giữa các phiên AI Agent](docs/AI_HANDOFF.md)
 - [Upload hardening, kiểm chứng Docker và rollback](docs/validation/2026-10-09-upload-hardening.md)
+- [Cấu hình Clerk/allowlist và Docker security lab](docs/SECURITY_LAB.md)
+- [Bằng chứng auth/origin và rollback image hiện tại](docs/validation/2026-10-09-auth-origin-gates.md)
 
 ## Nguyên tắc bảo mật
 
@@ -102,7 +104,7 @@ Stack và DB schema hiện là nền móng phát triển theo [Issue P1 #3](http
 
 ## Local MVP — thử upload và chia sẻ HTML (nhánh `codex/local-mvp`)
 
-MVP này mở rộng P1 để thử toàn bộ chu trình tại **máy cá nhân**: đăng nhập demo, upload `.html` hoặc ZIP chứa `index.html`, tự xuất bản, xem preview, cập nhật phiên bản, tắt/bật chia sẻ. Đăng nhập hiện dùng một mật khẩu demo trong `.env`; **chưa tích hợp Clerk/Google hay allowlist email**. Không mở các cổng này ra Internet.
+Phần này mô tả PR #5 trước auth/origin #13: demo password, gateway `/s/<id>`. **Owner lab hiện chạy #13**, cần Compose security overlay và image đã kiểm ở SECURITY_LAB; không dùng lệnh build checkout cũ bên dưới để cập nhật lab hiện hữu. #13 dùng mỗi hostname `*.uploads.localhost:4100`, hỗ trợ root assets và “Xem riêng” khi unpublished, viewer link giữ nguyên. Google thật chờ keys/allowlist. Không mở các cổng này ra Internet.
 
 ```powershell
 Copy-Item .env.example .env
@@ -129,7 +131,7 @@ Studio tập trung dùng ODS blue, hỗ trợ sáng/tối, kéo/chọn HTML/ZIP,
 
 ### Cập nhật riêng web trên Docker lab hiện có
 
-Thực hiện tại checkout UI đã kiểm thử; dùng đúng đường dẫn Compose/.env của lab đang chạy. Không in `docker compose config` đầy đủ vì output chứa credentials; dùng `config --quiet`.
+Các lệnh UI-only này dành cho mốc **trước #13**. Owner lab đã chuyển security image cho **cả web/gateway** và migration 0002; cập nhật hiện tại phải theo [SECURITY_LAB](docs/SECURITY_LAB.md) và [validation/rollback #13](docs/validation/2026-10-09-auth-origin-gates.md). Không in `docker compose config` đầy đủ vì chứa credentials; dùng `config --quiet`.
 
 ```powershell
 $labRoot = (Resolve-Path ../html-share-platform-local-mvp).Path
