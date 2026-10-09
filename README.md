@@ -15,6 +15,7 @@ Nền tảng nội bộ để nhân viên tải lên HTML/CSS/JavaScript hoặc 
 - [Hướng dẫn cho coding agents](AGENTS.md)
 - [Tiến độ dự án và các hạng mục còn mở](docs/PROJECT_STATUS.md)
 - [Bàn giao công việc giữa các phiên AI Agent](docs/AI_HANDOFF.md)
+- [Upload hardening, kiểm chứng Docker và rollback](docs/validation/2026-10-09-upload-hardening.md)
 
 ## Nguyên tắc bảo mật
 
