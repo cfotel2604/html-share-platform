@@ -4,6 +4,8 @@
 
 ## Public origins lab — đã đạt 2026-10-21
 
+**Sự cố mới nhất:** migrate 8.2.2 trên image b1e3c26 lỗi EACCES vì migration/script root-owned0600 sau checkout umask077. DB vẫn0001/0002; agent đã khôi phục web cũ security-417c50d healthy, gateway/DB/storage giữ nguyên. Dừng retry bằng image cũ, đang sửa Dockerfile + CI restrictive-mode regression và chuẩn bị candidate mới trong [#16](https://github.com/cfotel2604/html-share-platform/issues/16). [Hồ sơ sự cố](validation/2026-10-21-runtime-permissions.md) phân biệt dữ liệu đã kiểm và bước tiếp theo; owner tiếp tục 8.2.2 sau candidate/preflight mới, không bật 8.2.3 trước backfill/metadata checks.
+
 Owner xác nhận Studio/viewer HTTPS, step-5 retests và private preview hoạt động. Agent kiểm độc lập qua SSH/HTTPS: Studio200, viewer published200/no-store/no-cookie, viewer API404; direct content200/HTTP sandbox/frame-ancestors đúng viewer public. Effective origins/content domain/port rỗng đúng cấu hình. Không cần chờ hai hostname nữa.
 
 Runtime web/gateway VM vẫn `417c50d`, cùng DB/storage healthy. Owner đã hoàn tất 8.2.1: source checkout detached `b1e3c26019443d434b620eec2382c45982396eb3` và build `html-share-studio:share-b1e3c2601944`; agent kiểm SSH chỉ đọc, image ID `sha256:d51e137cdac7b674602a2c5e7520a0a8368d8e3e4def190f597a5c20e2846c66`, revision label đúng reviewed SHA. DB vẫn 0001/0002, chưa bảng mã chia sẻ, 2 sites/2 versions; không so với Desktop lịch sử. PR #15 candidate chưa phục vụ; #13/#15 vẫn Draft. Mốc public-origin và trạng thái GitHub trước build ở [readiness](validation/2026-10-21-lab-public-origins.md).

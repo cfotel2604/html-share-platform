@@ -25,5 +25,9 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
+      - name: Reproduce restrictive Git checkout permissions
+        run: chmod -R go-rwx scripts db
       - run: docker build -t html-share-security:ci .
+      - name: Verify runtime files as the image non-root user
+        run: node scripts/check-runtime-image.mjs html-share-security:ci
       - run: node scripts/run-security-integration.mjs
