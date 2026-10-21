@@ -2,6 +2,16 @@
 
 Refs [Issue #10](https://github.com/cfotel2604/html-share-platform/issues/10), [#8](https://github.com/cfotel2604/html-share-platform/issues/8), [#14](https://github.com/cfotel2604/html-share-platform/issues/14), [Draft PR #15](https://github.com/cfotel2604/html-share-platform/pull/15). Snapshot theo Asia/Saigon; kiểm VM qua SSH `lab-b` chỉ đọc tại `/opt/hsp/src`.
 
+## Đính chính phạm vi public — network gate chưa đạt
+
+Sau câu hỏi của owner về UFW, SSH chỉ đọc xác minh: default deny incoming, allow office/VPN và IPv4 Cloudflare TCP, không có public443 rule; public53 phục vụ acme-dns. Studio/viewer resolve IP Cloudflare; content hostname resolve trực tiếp IP VM. Port443 do nginx host listen IPv4/IPv6. NS cfvn.cloud thuộc cloudfone.vn, runbook quản lý DNS bằng PowerDNS.
+
+Trình duyệt tải iframe bằng kết nối riêng từ IP khách, không kế thừa đường Cloudflare của viewer shell. Vì vậy khách ngoài allowlist sẽ không tải được content direct theo cấu hình hiện tại. Các HTTP200 từ máy agent trong mạng cho phép/VM bên dưới không chứng minh Internet end-to-end. Chưa có probe thành công từ mạng ngoài allowlist; kết luận gate public ở phần lịch sử dưới đây bị giới hạn bởi finding này.
+
+Các phương án để owner chọn: (1) proxy public cho wildcard content, giữ UFW origin giới hạn; (2) public reverse proxy/IP riêng nếu giữ PowerDNS và không đưa zone vào Cloudflare; (3) public443 trên VM hiện tại, nhưng UFW không phân biệt hostname nên cần kiểm/restrict từng nginx vhost hoặc tách gateway. Không đổi eTLD+1/sandbox để xử lý mạng. Nếu dùng Cloudflare, phải có DNS onboarding và edge certificate phủ `*.lab-space-ods.cfvn.cloud`; certificate Let's Encrypt trên VM chỉ phục vụ origin leg, Universal SSL của full zone cfvn.cloud không tự phủ hostname hai cấp. [Proxy status](https://developers.cloudflare.com/dns/proxy-status/), [TLS limits](https://developers.cloudflare.com/ssl/edge-certificates/universal-ssl/limitations/), [partial DNS setup](https://developers.cloudflare.com/dns/zone-setups/partial-setup/) và [Tunnel DNS](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/routing-to-tunnel/dns/) là tài liệu tham chiếu; chưa chấp nhận phương án hạ tầng mới.
+
+Nghiệm thu bổ sung: từ 4G/mạng ngoài office và tắt VPN, mở viewer và content direct, kiểm HTML/CSS/JS/iframe/private preview, sandbox/frame-ancestors/no-store và unpublish. Nếu thêm proxy/CDN cần kiểm không cache vượt policy hoặc thay CSP/cookie headers. Lần kiểm này không đổi UFW/DNS/nginx/tunnel hoặc runtime ứng dụng.
+
 ## Owner xác nhận
 
 Studio `https://studio-lab.ods.vn` và viewer canonical `https://view-lab.ods.vn/<code>` đã có public HTTPS; tunnel/DNS/hostname routing end-to-end hoạt động, toàn bộ step-5 retests đã pass, private preview vẫn hoạt động. Direct content giữ `https://<host-id>.lab-space-ods.cfvn.cloud/`. Không yêu cầu owner cấu hình lại hai hostname.

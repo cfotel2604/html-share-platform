@@ -1,8 +1,10 @@
 # Project status — HTML Share Platform
 
-> Snapshot **2026-10-21 (Asia/Saigon)**: GitHub và VM đã đối chiếu chỉ đọc; public Studio/viewer lab sẵn sàng. Candidate short-link chưa cutover. Các kết quả unit/integration/browser ngày09/10 dưới đây là lịch sử, không rerun ngày21/10. Đọc cùng [AI_HANDOFF](AI_HANDOFF.md), [readiness mới](validation/2026-10-21-lab-public-origins.md), [PLAN](../PLAN.md) và [AGENTS](../AGENTS.md). Markdown không thay GitHub live.
+> Snapshot **2026-10-21 (Asia/Saigon)**: Studio/viewer có public DNS/HTTPS qua Cloudflare, nhưng content trỏ trực tiếp VM đang giới hạn UFW; chưa đạt truy cập viewer end-to-end từ Internet ngoài allowlist. Migration/backfill 8.2.2 PASS; candidate web activation chưa xác nhận. Các kết quả unit/integration/browser ngày09/10 dưới đây là lịch sử. Đọc cùng [AI_HANDOFF](AI_HANDOFF.md), [readiness và giới hạn mạng](validation/2026-10-21-lab-public-origins.md), [PLAN](../PLAN.md) và [AGENTS](../AGENTS.md). Markdown không thay GitHub live.
 
 ## Public origins lab — đã đạt 2026-10-21
+
+**Giới hạn mạng mới xác minh:** UFW deny incoming, HTTPS chỉ cho office/VPN/Cloudflare; Studio/viewer resolve IP Cloudflare nhưng content hostname resolve IP VM, nginx host listen443. Trình duyệt khách ngoài allowlist tải iframe trực tiếp nên bị chặn; kết quả HTTP200 từ văn phòng/VM trước đây không chứng minh external end-to-end. Cần chọn proxy public cho content (đủ DNS/edge TLS) hoặc mở ingress443 sau kiểm các nginx vhosts/tách gateway public, rồi test từ 4G/mạng ngoài VPN. Agent chưa đổi UFW/DNS/nginx/tunnel; chi tiết [network gate](validation/2026-10-21-lab-public-origins.md).
 
 **Mốc mới nhất — 8.2.2 PASS:** owner đã chạy lại migration/backfill bằng candidate fix `dc7560ea1c34cbe060779fbe69bb2f574e170431`. Ảnh SQL và SSH chỉ đọc xác nhận DB có 0001/0002/0003, 2 active share links, 0 revoked, 0 site thiếu history. Fingerprint metadata trước/sau giống nhau và khớp DB hiện tại: giữ 2 sites/2 versions. Web đang dừng có chủ đích giữa 8.2.2 và 8.2.3; gateway/DB/storage vẫn running/healthy. Tiếp owner bật riêng web bằng `html-share-studio:share-dc7560ea1c34` theo 8.2.3, rồi smoke HTTPS/Clerk/canonical links/lifecycle/private preview. Agent chỉ xác minh, chưa kích hoạt candidate. Các đoạn trước retry bên dưới là lịch sử; xem [bằng chứng mới nhất](validation/2026-10-21-runtime-permissions.md).
 
