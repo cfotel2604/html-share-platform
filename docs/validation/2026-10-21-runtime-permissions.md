@@ -27,3 +27,9 @@ CI mô phỏng checkout hạn chế bằng `chmod -R go-rwx scripts db` trước
 - Runbook operator đã đổi pin sang fix SHA, umask022 cho checkout/build, umask077 cho artifact, thêm image preflight non-root trước khi stop web và đoạn khôi phục EACCES cho cả phiên Bash mới. Không dùng lại image b1e, không chạy migration root.
 
 Owner không cần build lại; export SECURITY_IMAGE sang `html-share-studio:share-dc7560ea1c34`, khôi phục hàm hsp nếu phiên cũ đã thoát, rồi chạy lại toàn bộ 8.2.2 để lấy baseline metadata mới vì web cũ đã bật lại. Chỉ bật 8.2.3 khi migration/backfill/history/fingerprint đạt. `.env` chỉ lưu tag mới sau nghiệm thu theo runbook; không merge/Ready/production tự động.
+
+## Owner hoàn tất 8.2.2 — kiểm chứng sau retry
+
+Owner gửi kết quả SQL: schema_migrations có 0001/0002/0003, sites_without_share_history=0. SSH chỉ đọc xác nhận 2 active share links, 0 revoked; fingerprint files trước/sau giống nhau và fingerprint metadata hiện tại khớp artifact sau, giữ 2 sites/2 versions. Source VM vẫn fix SHA `dc7560ea1c34cbe060779fbe69bb2f574e170431`; candidate record `html-share-studio:share-dc7560ea1c34`, rollback `html-share-studio:security-417c50d`.
+
+Web cũ exited sau stop của 8.2.2, health cũ unhealthy không phải kết quả kiểm candidate; gateway/DB/MinIO vẫn running/healthy. Migration/backfill đã do owner thực hiện; agent chỉ đọc kiểm chứng, chưa recreate/start candidate. 8.2.2 PASS, tiếp ngay 8.2.3: export đúng candidate rồi `hsp up -d --no-deps --no-build --wait web`. Sau healthy cần smoke HTTPS, Google Admin/Employee, canonical link 10 base62, rotate/revoke/reissue/unpublish và private preview theo runbook; chưa coi SQL PASS là nghiệm thu toàn bộ cutover/security gates.
