@@ -21,3 +21,15 @@ Viewer chỉ active code + published/active version, aliases host ID bị tắt;
 - [Browser/candidate proof trước đây](2026-10-09-short-viewer-links.md) và [public origins lab](2026-10-21-lab-public-origins.md) giữ lịch sử riêng; không suy CI/minio/self-signed local thành mọi release gates đã đạt.
 
 Runbook operator ngoài Git đã ghim TARGET_SHA vào mục 8.2.1. Bước này fetch/check source và build image có revision label; chưa migrate/backfill/recreate runtime. Bước 8.2.2 mới dừng web/chạy migration/backfill, 8.2.3 bật web và nghiệm thu. Khi build xong đối chiếu image revision với reviewed SHA; rollout/rollback theo [SHARE_LINKS](../SHARE_LINKS.md), không bật lại aliases bằng binary cũ sau revocation.
+
+## Owner hoàn tất 8.2.1 — đã xác minh SSH chỉ đọc
+
+Owner gửi ảnh output image inspect và rollback record ngày 21/10. Agent xác nhận độc lập:
+
+- Source detached HEAD đúng reviewed SHA `b1e3c26019443d434b620eec2382c45982396eb3`; chỉ compose.lab.yaml/compose.edge.yaml untracked, giữ nguyên.
+- Candidate tag `html-share-studio:share-b1e3c2601944`, image ID `sha256:d51e137cdac7b674602a2c5e7520a0a8368d8e3e4def190f597a5c20e2846c66`; revision label khớp reviewed SHA.
+- `tmp/share-cutover-images.txt`: previous SHA `417c50dcfdd30c6ec5b387b43b6fb61b5bcc2661`, previous web image `html-share-studio:security-417c50d`, candidate image đúng tag trên.
+- Bốn Compose files base/security/lab/edge với SECURITY_IMAGE candidate chọn đúng image cho web/migrate/gateway. AUTH_MODE=clerk, trusted/public origins, HTTPS content domain/frame-src và PUBLIC_SITE_PORT rỗng giữ nguyên; storage không publish ports.
+- Các container vẫn healthy; web/gateway còn image cũ `security-417c50d`, chưa recreate. Read-only DB vẫn 0001/0002, chưa site_share_links, 2 sites/2 versions.
+
+Kết luận: 8.2.1 PASS; tiếp 8.2.2 theo đầy đủ runbook, trong cùng phiên Bash giữ SECURITY_IMAGE/hàm hsp. Bước này mới dừng web, ghi fingerprint metadata trước, explicit migrate/backfill, đối chiếu fingerprint và kiểm history thiếu=0; chỉ sang 8.2.3 khi các kiểm tra metadata/history PASS. Gateway tiếp tục phục vụ direct published content khi web dừng. Lượt xác minh này không chạy migrate/backfill/stop/restart, không xác nhận schema 0003 hay short links đã hoạt động.

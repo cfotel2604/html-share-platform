@@ -6,13 +6,15 @@
 
 Owner xác nhận Studio/viewer HTTPS, step-5 retests và private preview hoạt động. Agent kiểm độc lập qua SSH/HTTPS: Studio200, viewer published200/no-store/no-cookie, viewer API404; direct content200/HTTP sandbox/frame-ancestors đúng viewer public. Effective origins/content domain/port rỗng đúng cấu hình. Không cần chờ hai hostname nữa.
 
-VM vẫn source/image `417c50d`, web/gateway/DB/storage healthy; DB mới có0001/0002, chưa bảng mã chia sẻ. Hai sites/2versions ở VM là inventory riêng, không so với Desktop lịch sử. PR #15 head `9d363c1` chưa deploy; mọi PR stack OPEN/MERGEABLE/checks SUCCESS, #13/#15 Draft. Chi tiết [readiness](validation/2026-10-21-lab-public-origins.md).
+Runtime web/gateway VM vẫn `417c50d`, cùng DB/storage healthy. Owner đã hoàn tất 8.2.1: source checkout detached `b1e3c26019443d434b620eec2382c45982396eb3` và build `html-share-studio:share-b1e3c2601944`; agent kiểm SSH chỉ đọc, image ID `sha256:d51e137cdac7b674602a2c5e7520a0a8368d8e3e4def190f597a5c20e2846c66`, revision label đúng reviewed SHA. DB vẫn 0001/0002, chưa bảng mã chia sẻ, 2 sites/2 versions; không so với Desktop lịch sử. PR #15 candidate chưa phục vụ; #13/#15 vẫn Draft. Mốc public-origin và trạng thái GitHub trước build ở [readiness](validation/2026-10-21-lab-public-origins.md).
 
 Ưu tiên tiếp: review/cutover #15 sau khi được giao, migration0003/backfill và smoke HTTPS thật, rồi hoàn tất real-session #8 và các gate #10/R2/mobile/pilot. Không deploy/merge hoặc đổi VM từ lần kiểm chỉ đọc này.
 
 Runbook update cùng ngày 21/10: owner yêu cầu giải thích merge/migration và bổ sung mục 8 ứng dụng. Đã tách 8.1 cài mới, 8.2 nâng cấp PR #15; ghi rõ base #13 không phải main, source → image → migration 0003 → backfill → web, metadata checks và rollback trước/sau go-live. Mục 11 là tháo hạ tầng. Đối chiếu Compose effective bằng image placeholder chỉ đọc và kiểm 6 Bash blocks/READ ONLY SQL trên VM PASS; không build/deploy/migrate/backfill/merge. Repo trước cập nhật docs `4cf3e0c`, code candidate không đổi. Chi tiết [SHARE_LINKS](SHARE_LINKS.md).
 
 Review build lab cùng ngày: đã review diff #15 head `b1e3c26019443d434b620eec2382c45982396eb3` so với base #13 `4ac9689`, chưa phát hiện blocker cho bước lấy source/build. Đã ghim SHA đó trong runbook 8.2.1; local 86 unit/lint/typecheck/docs PASS và 3 CI jobs của reviewed SHA SUCCESS. [Hồ sơ review](validation/2026-10-21-pr15-build-review.md) ghi phạm vi/giới hạn. PR vẫn Draft; không merge, build VM, migrate/backfill hoặc restart từ phiên này. Không tự thay pin bằng docs HEAD mới.
+
+Nghiệm thu 8.2.1 cùng ngày: owner gửi image/revision và `tmp/share-cutover-images.txt`; SSH xác nhận source/image/rollback record khớp, Compose đủ base/security/lab/edge chọn candidate đúng cho web/migrate/gateway, Clerk/public origins/port rỗng giữ nguyên, storage không publish ports. Agent không thực hiện mutation VM. Tiếp owner chạy trọn 8.2.2 trong cùng phiên Bash (metadata trước/sau, migrate0003/backfill, history thiếu=0); bước đó mới dừng web. Chưa bật web candidate ở 8.2.3. Kết quả chi tiết cập nhật cuối [hồ sơ review/build](validation/2026-10-21-pr15-build-review.md).
 
 ## Tiến độ code và nghiệm thu lịch sử 2026-10-09
 
