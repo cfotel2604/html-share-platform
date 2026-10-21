@@ -16,4 +16,14 @@ Dockerfile chuẩn hóa `a+rX` cho `/app/scripts` và `/app/db` sau COPY, giữ 
 
 CI mô phỏng checkout hạn chế bằng `chmod -R go-rwx scripts db` trước Docker build, rồi chạy checker trước full security integration. Runbook sẽ dùng umask022 cho checkout/build, umask077 chỉ cho artifact private, và yêu cầu preflight image trước khi dừng web.
 
-Lint/typecheck/docs/YAML/diff check đã pass khi chuẩn bị patch. Candidate thay thế, CI regression và preflight VM đang kiểm; không cho phép tiếp tục bằng image b1e3c26 lỗi. Kết quả cuối sẽ bổ sung tại đây trước khi owner retry 8.2.2.
+## Kết quả khắc phục đã kiểm chứng
+
+- Fix commit `dc7560ea1c34cbe060779fbe69bb2f574e170431`; runtime application/share-link logic và migration bytes không đổi. Lint/typecheck/docs/YAML/diff check local PASS.
+- CI đúng fix commit: [application](https://github.com/cfotel2604/html-share-platform/actions/runs/39593677232), [docs](https://github.com/cfotel2604/html-share-platform/actions/runs/39593677253), [security](https://github.com/cfotel2604/html-share-platform/actions/runs/39593677187) đều SUCCESS. Security job build từ scripts/db mode hạn chế, non-root image preflight PASS rồi 9 upload + 6 auth/origin + 5 share groups PASS.
+- Trên VM, checker tái hiện EACCES với image b1e lỗi. Agent fetch/switch đúng fix SHA (giữ env/overlays), build `html-share-studio:share-dc7560ea1c34`, image ID `sha256:7967815b1c25611fc4237f929bc3cf21c21243f242524073f1509e3a3654232a`; revision khớp fix SHA, Config.User=node. Checker real image read-only/no-network PASS UID1000, 21 readable files.
+- Đối chiếu image SQL hashes với schema_migrations hiện tại: 0001/0002 khớp; 0003 byte-for-byte khớp bản b1e trước đó. Không sửa checksum/schema để bỏ qua runner, chưa chạy migration/backfill bằng image mới.
+- Đã chỉ đổi candidate_image trong `tmp/share-cutover-images.txt` sang tag mới, giữ previous_sha/previous_web_image. Web cũ đã khôi phục, gateway/DB/storage không recreate; private env/allowlist/data/volumes giữ nguyên.
+- Kiểm cuối: cả bốn containers running/healthy, DB vẫn 0001/0002 và chưa site_share_links. Fingerprint sites/versions hiện tại khớp artifact trước lần migrate lỗi; vẫn 2 sites/2 versions. Không dùng lại fingerprint này cho retry: cần lấy baseline mới sau khi stop web theo toàn bộ 8.2.2.
+- Runbook operator đã đổi pin sang fix SHA, umask022 cho checkout/build, umask077 cho artifact, thêm image preflight non-root trước khi stop web và đoạn khôi phục EACCES cho cả phiên Bash mới. Không dùng lại image b1e, không chạy migration root.
+
+Owner không cần build lại; export SECURITY_IMAGE sang `html-share-studio:share-dc7560ea1c34`, khôi phục hàm hsp nếu phiên cũ đã thoát, rồi chạy lại toàn bộ 8.2.2 để lấy baseline metadata mới vì web cũ đã bật lại. Chỉ bật 8.2.3 khi migration/backfill/history/fingerprint đạt. `.env` chỉ lưu tag mới sau nghiệm thu theo runbook; không merge/Ready/production tự động.

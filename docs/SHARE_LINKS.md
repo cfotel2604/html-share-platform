@@ -28,6 +28,8 @@ Viewer tại `view*/<code>`; nếu chưa có VIEWER_PUBLIC_ORIGIN thì canonical
 
 ## Backfill và deploy được giao sau review
 
+**Operator pin cập nhật sau EACCES #16:** dùng `dc7560ea1c34cbe060779fbe69bb2f574e170431` / image `html-share-studio:share-dc7560ea1c34`, không dùng candidate b1e cũ. [Khắc phục permissions](validation/2026-10-21-runtime-permissions.md): Dockerfile chuẩn hóa scripts/db, CI checkout hạn chế + non-root image check PASS; runbook umask022 cho source,077 cho private artifact và preflight trước stop web. Khi retry8.2.2, export đúng image mới và lấy baseline metadata mới vì web cũ đã restore. Không chạy migration bằng root hoặc sửa bytes SQL.
+
 ### Merge, image và database là các bước riêng
 
 PR #15 hiện có base `codex/8-10-auth-origin-gates` (#13), không phải main. Merge #15 trực tiếp lúc này chỉ nhập vào nhánh #13. Đưa toàn stack vào main theo thứ tự review/merge #5 → #12 → #13 → #15, đổi base/check CI ở từng bước. Lab có thể nghiệm thu commit PR đã review trước khi merge main; không tự merge hoặc deploy từ việc cập nhật runbook.

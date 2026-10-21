@@ -1,5 +1,7 @@
 # Review PR #15 để bắt đầu build lab — 2026-10-21
 
+> Cập nhật sau sự cố 8.2.2: pin/image b1e dưới đây chỉ là lịch sử. Review và label check ban đầu thiếu kiểm quyền file với user runtime; image build dưới umask077 đã EACCES. Thay bằng fix/candidate `dc7560ea1c34cbe060779fbe69bb2f574e170431`, đã kiểm non-root actual image và CI restrictive-mode regression. [Hồ sơ #16](2026-10-21-runtime-permissions.md) ghi kết quả khắc phục/SQL checksums/rollback record. Không dùng lại image b1e; mapping DB chưa migrate/backfill.
+
 ## Commit và phạm vi
 
 - Reviewed head: `b1e3c26019443d434b620eec2382c45982396eb3` trong [PR #15](https://github.com/cfotel2604/html-share-platform/pull/15), base `4ac96894b3ac75d0a80c7190d8c70d1c00602a61` (#13).
