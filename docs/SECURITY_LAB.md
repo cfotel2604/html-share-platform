@@ -81,9 +81,9 @@ Browser probe dùng `compose.origin-browser-test.yaml` trên project test, certi
 
 [ADR-0004](adr/0004-domains-and-share-codes.md) chốt production Studio/viewer/content và lab `studio-lab.ods.vn`, `view-lab.ods.vn`, `*.lab-space-ods.cfvn.cloud`. [Nghiệm thu VM](validation/2026-10-09-lab-domain-tls.md) ghi runtime riêng `security-417c50d`/project `hsp-lab`, certificate thật, loopback app ports và timer gia hạn. Docker Desktop vẫn image `security-613f2b7`; không đồng nhất hai stack.
 
-**VM hiện tại:** AUTH_MODE=clerk, auth/iframe origins loopback qua SSH tunnel, VIEWER_PUBLIC_ORIGIN rỗng; content dùng HTTPS lab domain và PUBLIC_SITE_PORT rỗng. Không đổi sang hostname Studio/viewer mới chỉ bằng sửa env: cần trusted vhosts/DNS/TLS, Clerk redirects và browser/CSRF/frame-ancestors proof trước. Có thể kiểm qua `ssh lab-b` theo SSH config owner, không ghi key/VM credentials vào Git.
+**Cập nhật VM 2026-10-21:** public Studio/viewer HTTPS đã sẵn sàng; owner xác nhận step-5 retests/private preview. Agent kiểm nguồn/runtime417c50d healthy, effective trusted Studio HTTPS/canonical viewer HTTPS, gateway preview/viewer origins và content domain đúng lab; PUBLIC_SITE_PORT rỗng cả web/gateway. Studio/viewer published200, viewer API404, direct HTTP sandbox/frame-ancestors đúng viewer. [Readiness mới](validation/2026-10-21-lab-public-origins.md) thay snapshot tunnel-only cũ; giữ compose.lab.yaml/compose.edge.yaml untracked. Short-link candidate chưa deploy, DB mới0001/0002. Có thể kiểm qua `ssh lab-b`, không ghi key/VM credentials vào Git.
 
-**Đích cấu hình sau khi các gate hostname trusted đạt** (chưa áp dụng vào VM):
+**Cấu hình public origins lab đã áp dụng** (STUDIO_PUBLIC_ORIGIN cũng dùng để suy gateway preview origin; trusted origins có thể còn loopback cho vận hành):
 
 ```dotenv
 AUTH_MODE=clerk

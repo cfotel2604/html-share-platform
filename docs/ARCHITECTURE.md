@@ -4,6 +4,8 @@ Trạng thái: **Proposed** cho release/security; domain và thiết kế link *
 
 Implementation lab #13 đã có Clerk server auth/RBAC, gateway hostname/manifest, trusted viewer và private preview theo [ADR-0003](adr/0003-server-rbac-and-preview-capabilities.md). [Validation](validation/2026-10-09-auth-origin-gates.md) ghi code/Chrome local đã kiểm; [nghiệm thu VM](validation/2026-10-09-lab-domain-tls.md) bổ sung owner-confirmed Admin/Employee login và TLS content lab, không coi R2/domain viewer/mobile gates đạt; không đổi trạng thái Proposed thành production approval.
 
+[Cập nhật 2026-10-21](validation/2026-10-21-lab-public-origins.md): public Studio/viewer lab HTTPS đã sẵn sàng, owner xác nhận private preview/retests và agent kiểm routes/headers/VM chỉ đọc. Runtime VM vẫn `417c50d`, DB chỉ 0001/0002, chưa short-link cutover; các mô tả tunnel ở nghiệm thu 09/10 là lịch sử. R2/cookie/mobile/security review còn riêng.
+
 ```mermaid
 flowchart TD
   E[Employee browser] -->|studio.ods.vn, Clerk Google + email allowlist| A[Next.js dashboard and API]

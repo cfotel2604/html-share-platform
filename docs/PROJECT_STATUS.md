@@ -1,8 +1,16 @@
 # Project status — HTML Share Platform
 
-> Snapshot **2026-10-09 (Asia/Saigon)**, mốc short viewer links: GitHub #5/#12/#13/#15 và Issues đã đối chiếu; candidate runtime `1c183f5` kiểm local. Docker owner/VM bên dưới là lịch sử nghiệm thu, không phải lần recheck/deploy này. Đọc cùng [AI_HANDOFF](AI_HANDOFF.md), [PLAN](../PLAN.md) và [AGENTS](../AGENTS.md). Markdown không thay GitHub live.
+> Snapshot **2026-10-21 (Asia/Saigon)**: GitHub và VM đã đối chiếu chỉ đọc; public Studio/viewer lab sẵn sàng. Candidate short-link chưa cutover. Các kết quả unit/integration/browser ngày09/10 dưới đây là lịch sử, không rerun ngày21/10. Đọc cùng [AI_HANDOFF](AI_HANDOFF.md), [readiness mới](validation/2026-10-21-lab-public-origins.md), [PLAN](../PLAN.md) và [AGENTS](../AGENTS.md). Markdown không thay GitHub live.
 
-## Tiến độ đã kiểm chứng
+## Public origins lab — đã đạt 2026-10-21
+
+Owner xác nhận Studio/viewer HTTPS, step-5 retests và private preview hoạt động. Agent kiểm độc lập qua SSH/HTTPS: Studio200, viewer published200/no-store/no-cookie, viewer API404; direct content200/HTTP sandbox/frame-ancestors đúng viewer public. Effective origins/content domain/port rỗng đúng cấu hình. Không cần chờ hai hostname nữa.
+
+VM vẫn source/image `417c50d`, web/gateway/DB/storage healthy; DB mới có0001/0002, chưa bảng mã chia sẻ. Hai sites/2versions ở VM là inventory riêng, không so với Desktop lịch sử. PR #15 head `9d363c1` chưa deploy; mọi PR stack OPEN/MERGEABLE/checks SUCCESS, #13/#15 Draft. Chi tiết [readiness](validation/2026-10-21-lab-public-origins.md).
+
+Ưu tiên tiếp: review/cutover #15 sau khi được giao, migration0003/backfill và smoke HTTPS thật, rồi hoàn tất real-session #8 và các gate #10/R2/mobile/pilot. Không deploy/merge hoặc đổi VM từ lần kiểm chỉ đọc này.
+
+## Tiến độ code và nghiệm thu lịch sử 2026-10-09
 
 | Hạng mục | Trạng thái | Bằng chứng |
 | --- | --- | --- |
@@ -47,8 +55,8 @@ Regression #9 giữ cap stream 22 MiB trước parser, file 20 MiB, denied zero 
 
 1. Keys/allowlist/Google Admin và Employee login đã xong theo owner. Tiếp theo smoke Employee owner-only và Admin mutation/actual audit, email ngoài allowlist, policy revoke/disabled và logout với session thật theo [SECURITY_LAB](SECURITY_LAB.md); dùng fixture riêng, không sửa site cũ. Không ghi email/key vào chat logs/Issue/docs. Giữ Clerk mode, không tự fallback demo.
 2. Review chain #5 → #12 → #13 → #15; #13/#15 Draft. Sau dependency merge đổi base/check CI; chưa được giao merge tự động. #8/#10 chưa đóng.
-3. #10: chuyển trusted Studio/viewer lab từ tunnel sang hostname đã chốt khi vhost/DNS/TLS/Clerk redirects đạt; browser direct/iframe/preview trên domain thật. Tiếp read-only DNS/route/reserved inventory/regression/rollback, production wildcard/renewal riêng, R2 IAM/cleanup, preview hostname log redaction toàn pipeline, Safari/iOS/Android/Zalo và owner/security review ADR-0001; staging/pilot trước production. P5/P6 lifecycle/orphan/rate/concurrency còn mở.
-4. Code/test share-code đã xong; trước cutover sau review chạy migration 0003 + [backfill/runbook](SHARE_LINKS.md) bằng candidate, kiểm preservation và aliases404. Gửi link ngắn mới vì viewer URLs dài cũ sẽ404. Owner tiếp tục DNS/nginx/TLS studio-lab/view-lab rồi kiểm Clerk/CSRF/frame-ancestors/domain thật; PUBLIC_SITE_PORT rỗng ở web/gateway. Chỉ đổi viewer code không thu hồi published content.
+3. #10: public lab Studio/viewer đã sẵn sàng ngày21/10; owner xác nhận preview/retests, agent kiểm public routes/headers. Tiếp browser direct/iframe/preview/cookie boundary trên domain thật, DNS/route/reserved inventory/regression/rollback, production wildcard/renewal riêng, R2 IAM/cleanup, preview hostname log redaction toàn pipeline, Safari/iOS/Android/Zalo/crawlers và owner/security review ADR-0001; staging/pilot trước production. P5/P6 lifecycle/orphan/rate/concurrency còn mở.
+4. Code/test share-code đã xong; khi được giao cutover sau review chạy migration0003 + [backfill/runbook](SHARE_LINKS.md) bằng candidate, kiểm preservation/aliases404/Clerk/CSRF/frame-ancestors/domain thật. Giữ PUBLIC_SITE_PORT rỗng và public-origin overlays hiện có. Gửi link ngắn mới vì viewer URLs dài cũ404; đổi viewer code không thu hồi published content.
 
 ## Kiểm chứng lại
 

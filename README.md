@@ -6,7 +6,7 @@ Nền tảng nội bộ để nhân viên tải lên HTML/CSS/JavaScript hoặc 
 
 ## Trạng thái
 
-**P0/P1** đã merge. Local MVP #5 và Studio #12 Ready, chưa merge; **Draft PR #13** bổ sung Clerk/RBAC và hostname sandbox, đã kiểm thử/deploy Docker local. **Draft PR #15** bổ sung link viewer 10 base62 và đổi/thu hồi/tạo lại link, đã kiểm thử local, chưa cutover VM/owner Desktop. Lab đã bật Clerk Development; owner xác nhận Google Admin và Employee đăng nhập thành công. Content lab VM đã kiểm HTTPS wildcard/sandbox; Studio/viewer còn qua SSH tunnel theo nghiệm thu trước cutover. Quyền/mutations/deny/revoke/logout thật, viewer domain, R2 và Safari/Zalo còn gate trước release. Xem [tiến độ gần nhất](docs/PROJECT_STATUS.md).
+**P0/P1** đã merge. Local MVP #5 và Studio #12 Ready, chưa merge; **Draft PR #13** bổ sung Clerk/RBAC và hostname sandbox, đã kiểm thử/deploy Docker local. **Draft PR #15** bổ sung link viewer 10 base62 và đổi/thu hồi/tạo lại link, đã kiểm thử local, chưa cutover VM/owner Desktop. Lab đã bật Clerk Development; owner xác nhận Google Admin và Employee đăng nhập thành công. Ngày 2026-10-21, public Studio/viewer HTTPS đã sẵn sàng, content giữ HTTPS wildcard/sandbox; owner xác nhận preview/retests. Quyền/mutations/deny/revoke/logout thật, cookie/mobile, R2 và release review vẫn còn gate. Xem [tiến độ gần nhất](docs/PROJECT_STATUS.md).
 
 - [PLAN và roadmap P0–P7](PLAN.md)
 - [Kiến trúc và luồng upload/publish](docs/ARCHITECTURE.md)
@@ -46,7 +46,7 @@ YAML workflow và Issue templates được parse bằng `scripts/check_yaml.py` 
 
 Cookie parent-domain `cfvn.cloud` (chung giữa content lab/production) và tính tương thích iframe/opaque-origin trên mobile/Zalo còn là P4 security gates bắt buộc. Xem [PLAN](PLAN.md) và [ADR-0001](docs/adr/0001-public-site-origin-isolation.md).
 
-Lab Studio/viewer dự kiến `studio-lab.ods.vn`, `view-lab.ods.vn`; nghiệm thu VM trước cutover còn dùng loopback qua SSH tunnel. PR #15 đã triển khai mã viewer 10 base62 tách host ID 32 hex. Cần migration 0003 và backfill trước triển khai candidate; viewer URL dài cũ sẽ 404, cần gửi link mới. Đổi mã chỉ thu hồi link viewer; direct URL còn mở khi published. Xem [runbook mã chia sẻ](docs/SHARE_LINKS.md), [kết quả local](docs/validation/2026-10-09-short-viewer-links.md) và [ADR-0004](docs/adr/0004-domains-and-share-codes.md).
+Ngày 2026-10-21, public HTTPS `studio-lab.ods.vn`/`view-lab.ods.vn` đã sẵn sàng; owner xác nhận preview/retests và agent kiểm routes/headers qua SSH/HTTPS. [Readiness VM](docs/validation/2026-10-21-lab-public-origins.md): runtime vẫn `417c50d`, chưa cutover PR #15 có mã viewer 10 base62. Cần migration 0003/backfill trước triển khai candidate; viewer URL dài cũ trả 404, cần gửi link mới. Đổi mã chỉ thu hồi viewer, direct URL còn mở khi published. Xem [runbook](docs/SHARE_LINKS.md), [kết quả local](docs/validation/2026-10-09-short-viewer-links.md), [ADR-0004](docs/adr/0004-domains-and-share-codes.md).
 
 ## Làm việc với GitHub
 

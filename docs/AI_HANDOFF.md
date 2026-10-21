@@ -1,6 +1,14 @@
 # AI Agent handoff — HTML Share Platform
 
-> Bàn giao **2026-10-09 (Asia/Saigon)**, mốc short viewer code. GitHub PR stack/Issues đã đối chiếu; candidate `1c183f5` đã kiểm local, VM/owner chưa cutover. Đọc cùng [PROJECT_STATUS](PROJECT_STATUS.md), [validation #14](validation/2026-10-09-short-viewer-links.md), [SHARE_LINKS](SHARE_LINKS.md) và [SECURITY_LAB](SECURITY_LAB.md). Các mốc runtime cũ bên dưới là lịch sử nghiệm thu.
+> Bàn giao **2026-10-21 (Asia/Saigon)**: public Studio/viewer lab đã sẵn sàng; candidate short-link chưa cutover. GitHub/VM đã kiểm chỉ đọc. Đọc cùng [readiness mới](validation/2026-10-21-lab-public-origins.md), [PROJECT_STATUS](PROJECT_STATUS.md), [validation #14](validation/2026-10-09-short-viewer-links.md), [SHARE_LINKS](SHARE_LINKS.md) và [SECURITY_LAB](SECURITY_LAB.md). Các test/runtime mốc09/10 bên dưới là lịch sử.
+
+## Cập nhật mới nhất — public origins đã sẵn sàng
+
+- Không yêu cầu owner làm lại DNS/TLS studio-lab/view-lab. Owner xác nhận public HTTPS, step-5 retests và private preview; agent HTTPS từ máy hiện tại/VM: Studio/viewer 200, viewer API 404/no-cookie, direct content 200/no-store/HTTP sandbox và frame-ancestors viewer public.
+- VM `/opt/hsp/src` source/image vẫn `417c50d`, project hsp-lab; web/gateway/DB/MinIO healthy. Giữ compose.lab.yaml/compose.edge.yaml untracked. Port3100/4100 loopback, storage không publish. Effective AUTH_MODE=clerk, trusted Studio HTTPS, canonical viewer HTTPS, content lab HTTPS; PUBLIC_SITE_PORT rỗng cả web/gateway, preview origin Studio HTTPS.
+- Read-only DB có 0001/0002, chưa site_share_links; 2 sites/2 versions thuộc VM, không dùng Desktop 10 sites/17 versions làm baseline VM. Short-link #15 chưa deploy/migrate/backfill; không suy public viewer 200 nghĩa là mã 10 ký tự đã chạy.
+- GitHub live main `78cb7ca`, #5/#12 Ready, #13/#15 Draft; tất cả OPEN/MERGEABLE/checks SUCCESS tại head `235cc62`/`4ab546a`/`4ac9689`/`9d363c1`. #8/#9/#10/#11/#14 OPEN. 86 unit/20 integration/Chrome của candidate là mốc 09/10, không rerun local ngày 21/10; CI của head docs mới kiểm riêng sau push.
+- Tiếp review/cutover #15 khi được giao theo SHARE_LINKS, giữ public-origin/Clerk/edge overlays và data; sau đó real-session RBAC/lifecycle/sandbox trên HTTPS thật, rồi R2/edge/mobile/crawler/log/pilot gates. Không deploy/merge/Ready/DNS/policy/data mutations trong lần kiểm chỉ đọc này.
 
 ## Bắt đầu phiên tiếp theo
 
@@ -53,7 +61,7 @@
 
 1. Không yêu cầu keys/emails lại: đã nhận/cấu hình xong; Google Admin login/list và Employee login đã owner xác nhận. Role/email thực chỉ trong private DB/operator input. Giữ AUTH_MODE=clerk trong `.env` owner (shell override local-demo sẽ lùi mode). Tiếp smoke Employee owner-only, Admin mutation/audit, deny/revoke/logout thật bằng fixture; không tự reassign owner cũ. Không in keys/config/token/session/user details. Server probe sau smoke thấy session đã removed, không khẳng định còn active hoặc logout end-to-end đã được kiểm.
 2. Review #5 → #12 → #13 → #15; sau merge dependency đổi base/check CI. Giữ #13/#15 Draft đến gate/review; không tự merge/DNS/production.
-3. #10: chuyển trusted lab Studio/viewer từ tunnel sang domain mới sau vhost/DNS/TLS/Clerk redirect checks; browser direct/iframe/preview, cookie cfvn.cloud sibling/cross-environment. Tiếp DNS/route/reserved inventory read-only, wildcard diff/regression/rollback, production TLS/renewal riêng, R2 private/IAM/cleanup, hostname log redaction toàn pipeline, Safari/iOS/Android/Zalo, representative packages. ADR-0001/0003 Proposed; ADR-0004 chỉ Accepted quyết định domain/link. P5/P6 orphan/rate/concurrency/retention còn mở.
-4. Code/test share code đã xong; cutover sau review/được giao theo SHARE_LINKS: stop web ngắn, migration0003/backfill candidate, kiểm preservation/recreate web/smoke riêng, gửi link ngắn mới. Owner tiếp tục DNS/nginx/TLS hai trusted hostnames; khi sẵn sàng kiểm real-domain Clerk/CSRF/frame-ancestors/PUBLIC_SITE_PORT rỗng trước cutover. Không đổi host ID/storage hoặc hứa thu hồi direct URL bằng rotation mã viewer.
+3. #10: public lab Studio/viewer đã sẵn sàng ngày21/10; không quay lại tunnel-only config. Tiếp browser direct/iframe/preview/cookie cfvn.cloud sibling/cross-environment, DNS/route/reserved inventory/regression/rollback, production TLS/renewal riêng, R2 private/IAM/cleanup, hostname log redaction toàn pipeline, Safari/iOS/Android/Zalo/crawlers, representative packages. ADR-0001/0003 Proposed; ADR-0004 chỉ Accepted quyết định domain/link. P5/P6 orphan/rate/concurrency/retention còn mở.
+4. Code/test share code đã xong; cutover sau review/được giao theo SHARE_LINKS: stop web ngắn, migration0003/backfill candidate, kiểm preservation/recreate web/smoke riêng, gửi link ngắn mới. Giữ public-origin/edge overlays/PUBLIC_SITE_PORT rỗng và Clerk; kiểm real-domain CSRF/frame-ancestors/lifecycle sau cutover. Không đổi host ID/storage hoặc hứa thu hồi direct URL bằng rotation mã viewer.
 
 COMMIT response loss là unknown outcome; không xóa objects chưa đối chiếu DB references. Không nới sandbox để chạy demo. no-store không thu hồi tab đã tải. Cập nhật docs branch/PR được giao; luôn đối chiếu runtime revision khác docs/test commit.
