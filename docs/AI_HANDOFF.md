@@ -9,6 +9,7 @@
 - Read-only DB có 0001/0002, chưa site_share_links; 2 sites/2 versions thuộc VM, không dùng Desktop 10 sites/17 versions làm baseline VM. Short-link #15 chưa deploy/migrate/backfill; không suy public viewer 200 nghĩa là mã 10 ký tự đã chạy.
 - GitHub live main `78cb7ca`, #5/#12 Ready, #13/#15 Draft; tất cả OPEN/MERGEABLE/checks SUCCESS tại head `235cc62`/`4ab546a`/`4ac9689`/`9d363c1`. #8/#9/#10/#11/#14 OPEN. 86 unit/20 integration/Chrome của candidate là mốc 09/10, không rerun local ngày 21/10; CI của head docs mới kiểm riêng sau push.
 - Tiếp review/cutover #15 khi được giao theo SHARE_LINKS, giữ public-origin/Clerk/edge overlays và data; sau đó real-session RBAC/lifecycle/sandbox trên HTTPS thật, rồi R2/edge/mobile/crawler/log/pilot gates. Không deploy/merge/Ready/DNS/policy/data mutations trong lần kiểm chỉ đọc này.
+- Cùng ngày 21/10 owner giao bổ sung runbook ngoài Git mục 8. Đã ghi 8.1 chỉ cài mới, 8.2 cập nhật PR #15 bằng SHA đã review/CI pass, đủ base/security/lab/edge overlays, build image mới, explicit migration 0003/backfill trước web, metadata fingerprints và rollback không bật alias bypass revocation. Mục 11 chỉ teardown infra. Đã backup file owner; 6 Bash blocks syntax PASS, SQL fingerprint READ ONLY ổn định trên VM 2 sites/2 versions; Compose image override/origins giữ đúng. Repo trước docs `4cf3e0c`; chưa code review approval/merge/build VM/migrate/restart. Không hiểu câu hỏi về merge/migration là lệnh triển khai.
 
 ## Bắt đầu phiên tiếp theo
 

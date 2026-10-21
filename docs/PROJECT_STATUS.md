@@ -10,6 +10,8 @@ VM vẫn source/image `417c50d`, web/gateway/DB/storage healthy; DB mới có000
 
 Ưu tiên tiếp: review/cutover #15 sau khi được giao, migration0003/backfill và smoke HTTPS thật, rồi hoàn tất real-session #8 và các gate #10/R2/mobile/pilot. Không deploy/merge hoặc đổi VM từ lần kiểm chỉ đọc này.
 
+Runbook update cùng ngày 21/10: owner yêu cầu giải thích merge/migration và bổ sung mục 8 ứng dụng. Đã tách 8.1 cài mới, 8.2 nâng cấp PR #15; ghi rõ base #13 không phải main, source → image → migration 0003 → backfill → web, metadata checks và rollback trước/sau go-live. Mục 11 là tháo hạ tầng. Đối chiếu Compose effective bằng image placeholder chỉ đọc và kiểm 6 Bash blocks/READ ONLY SQL trên VM PASS; không build/deploy/migrate/backfill/merge. Repo trước cập nhật docs `4cf3e0c`, code candidate không đổi. Chi tiết [SHARE_LINKS](SHARE_LINKS.md).
+
 ## Tiến độ code và nghiệm thu lịch sử 2026-10-09
 
 | Hạng mục | Trạng thái | Bằng chứng |

@@ -28,6 +28,18 @@ Viewer tại `view*/<code>`; nếu chưa có VIEWER_PUBLIC_ORIGIN thì canonical
 
 ## Backfill và deploy được giao sau review
 
+### Merge, image và database là các bước riêng
+
+PR #15 hiện có base `codex/8-10-auth-origin-gates` (#13), không phải main. Merge #15 trực tiếp lúc này chỉ nhập vào nhánh #13. Đưa toàn stack vào main theo thứ tự review/merge #5 → #12 → #13 → #15, đổi base/check CI ở từng bước. Lab có thể nghiệm thu commit PR đã review trước khi merge main; không tự merge hoặc deploy từ việc cập nhật runbook.
+
+`git fetch/pull` cập nhật source, không đổi container đang chạy. `docker build` tạo image mới; phải chọn đúng SECURITY_IMAGE trong Compose. Service `migrate` chạy `node scripts/migrate.mjs`: kiểm checksum/lịch sử 0001/0002 rồi áp [0003](../db/migrations/0003_site_share_links.sql) nếu chưa có. Migration tạo bảng/index, không cấp mã cho site cũ. [Backfill](../scripts/backfill-share-links.mjs) là lệnh Node riêng; dependency migrate của `compose up` không tự chạy backfill. Do đó cutover phải tách migrate/backfill trước khi bật web candidate.
+
+Runbook operator ngoài Git `RUNBOOK_LAB_VM_TLS_ACME_DNS.vi.md` đã bổ sung mục 8.2 ngày 2026-10-21: SHA candidate phải được review/CI pass, đủ bốn Compose files (base/security/lab/edge), build image có revision label, stop riêng web, fingerprint metadata trước/sau, explicit migrate/backfill, kiểm history, recreate riêng web và rollback theo thời điểm go-live. Mục 8.1 chỉ dành cài mới, không ghi đè env/DB/allowlist hiện hữu; mục 11 tháo hạ tầng, không phải rollback app.
+
+Đã kiểm chỉ đọc VM: SECURITY_IMAGE override điều khiển đúng web/migrate/gateway qua cả bốn overlays; public HTTPS/Clerk và port rỗng giữ nguyên. Sáu Bash blocks mới syntax PASS; SQL metadata fingerprint READ ONLY chạy hai lần ổn định trên VM 2 sites/2 versions. Đây là kiểm runbook, không migrate/backfill/build/restart VM hoặc code review approval.
+
+### Quy trình cutover
+
 Migration 0003 chỉ tạo bảng/index, không sinh mã bằng SQL random. Operator phải chạy backfill bằng candidate image trước mở viewer mới cho các site cũ. Không xóa lịch sử mã để cấp lại: backfill chỉ site không có **bất kỳ** history, kể cả revoked.
 
 1. Chốt candidate commit/image đã kiểm; giữ rollback images và Compose/env/volumes đúng môi trường. Không build checkout owner cũ.
