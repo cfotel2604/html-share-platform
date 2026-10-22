@@ -36,3 +36,7 @@ Main merge6bdd298 [application](https://github.com/cfotel2604/html-share-platfor
 ## Owner xác nhận detailed acceptance và retarget review
 
 Owner giao đổi base/review #13 rồi xử lý #15, đồng thời xác nhận đầy đủ cases Employee owner-only, Admin mutation/audit actor, ngoài allowlist deny, revoke/disable/logout phiên cũ deny và rotate/revoke/reissue/unpublish đều đạt. Ghi là owner-confirmed real-session evidence. #13 base main/sync ad4b7e2, CI79unit/15groups PASS; #15 sync updated13, chỉ docs conflicts và runtime/SQL/permissions source equality giữ nguyên. [Review mới](../reviews/2026-10-22-auth-and-share-retarget.md) ghi phạm vi/gates/CI; chưa merge hoặc deploy trong mốc retarget này.
+
+## Chốt sau merge theo owner giao
+
+Owner đã cho phép Ready/merge #13 → #15 và chốt handoff. #13 MERGED main6d30d22 từ head8f204c3/3checks PASS; #15 retarget main rồi MERGED main0c17a09 từ headb21ea12/3checks PASS. Main trees bằng tested heads, runtime source/SQL/permissions không đổi qua sync; fixdc7560e là ancestor main. #8/#14/#16 CLOSED theo acceptance và code main, #9/#11 đã CLOSED; #10 giữ OPEN cho release gates. [Report cuối](../reviews/2026-10-22-stack-merged.md) và current handoff thay các snapshot chưa merge ở trên. Lab/env/overlays/volumes giữ nguyên; không deploy/restart/migrate/backfill trong mốc merge.

@@ -14,7 +14,7 @@ Hostname public `<site-id>.space-ods.cfvn.cloud` phục vụ root assets, chỉ 
 
 Preview riêng dùng hostname `<site-id>--<grant>.space-ods.cfvn.cloud`: site ID 32 hex + `--` + grant base32 26 ký tự = 60, dưới giới hạn DNS label 63. Token entropy 128 bit; DB chỉ lưu SHA-256, scope site + immutable version + actor, TTL 3 phút. Mỗi asset request kiểm expiry, actor/policy active và ownership/Admin. Không cookie, query token, redirect grant hoặc truyền session quản trị vào HTML. Root assets/modules hoạt động mà không rewrite HTML. Hostname grant phải được redaction khỏi access/DNS/log pipeline ở staging; không bật logging raw Host/URL. Đây là bearer capability, không link public lâu dài.
 
-Published HTML chỉ cho iframe từ viewer; preview grant chỉ cho iframe từ Studio. Viewer chỉ trusted metadata và iframe, không Clerk provider/session xử lý. PR #15 resolve `view.ods.vn/<share-code>` và `/view/<share-code>` redirect về viewer khi cấu hình host riêng. Loopback lab có thể giữ trusted shell trên web bằng mã ngắn; alias host ID 32 hex bị tắt. Runtime VM tại nghiệm thu trước cutover vẫn dùng link dài.
+Published HTML chỉ cho iframe từ viewer; preview grant chỉ cho iframe từ Studio. Viewer chỉ trusted metadata và iframe, không Clerk provider/session xử lý. PR #15 resolve `view.ods.vn/<share-code>` và `/view/<share-code>` redirect về viewer khi cấu hình host riêng. Loopback lab có thể giữ trusted shell trên web bằng mã ngắn; alias host ID 32 hex bị tắt. Web lab VM đã cutover viewer10base62 ngày22/10; #13/#15 đã merge main, #8 CLOSED cho lab/P2. Security/release gates #10 và trạng thái Proposed vẫn giữ.
 
 ## Consequences and limits
 

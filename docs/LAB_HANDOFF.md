@@ -59,8 +59,8 @@ Lưu tag không đổi containers. Khi cần cập nhật riêng web đã đư�
 ## Nghiệm thu và việc còn lại
 
 - Đã kiểm trực tiếp: bốn services healthy, migrations/history/manifest, canonical short viewer 200, sandbox/no-store/no-cookie, viewer API 404, legacy alias 404, origins/loopback/storage ports, public 443 rules.
-- Theo owner: Admin/Employee login, preview/retests trước đó; sau mở443 khách ngoài tải iframe, dùng thử lab OK. Chưa có checklist chi tiết cho từng case RBAC/mobile.
-- Trước chốt review #13/#15: reviewer đối chiếu real-session ownership/Admin audit/deny/revoke/logout và link lifecycle theo [MERGE_PLAN](MERGE_PLAN.md); ghi rõ case nào do owner xác nhận thay vì suy từ số rows.
-- Trước pilot/production: private R2/IAM/cleanup, production Clerk/OAuth, real-domain cookie/sibling/mobile/Zalo, edge limits/cache/unpublish, toàn pipeline log redaction, DNS/vhost inventory, TLS renewal/rollback, ADR-0001/0003 và release review. Lab vận hành tốt không tự đóng #8/#10.
+- Theo owner: Admin/Employee login/preview/retests, khách ngoài tải iframe sau mở443; detailed Employee ownership/Admin audit/ngoài allowlist/revoke/disable/logout và rotate/revoke/reissue/unpublish đều PASS. Đây là owner-confirmed real-session evidence; full cookie/mobile matrix còn riêng.
+- #13 đã MERGED main6d30d22; #15 retarget main rồi MERGED main0c17a09, cả3checks đúng tested heads PASS. #8/#14/#16 CLOSED theo acceptance và code main; #9/#11 đã CLOSED. [Merge record](MERGE_PLAN.md), [review/CI](reviews/2026-10-22-stack-merged.md). Merge source không đổi baseline runtime trên hoặc yêu cầu operator lặp8.2.
+- Trước pilot/production: #10 vẫn OPEN cho private R2/IAM/cleanup, production Clerk/OAuth, real-domain cookie/sibling/mobile/Zalo, edge limits/cache/unpublish, toàn pipeline log redaction, DNS/vhost inventory, TLS renewal/rollback, ADR-0001/0003 Proposed và release review.
 
 Operator runbook ngoài Git: `C:\Users\admin\Documents\Codex\html-share-platform-docs\RUNBOOK_LAB_VM_TLS_ACME_DNS.vi.md`, mục8 nâng cấp và bàn giao ứng dụng; mục11 tháo hạ tầng không phải rollback app. Không đưa `.env`, share codes, preview grants, cookies, payload hoặc thông tin khách vào Git/Issue/log.

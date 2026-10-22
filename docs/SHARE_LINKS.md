@@ -1,6 +1,6 @@
 # Mã viewer ngắn — Issue #14
 
-Implementation [Draft PR #15](https://github.com/cfotel2604/html-share-platform/pull/15), [Issue #14](https://github.com/cfotel2604/html-share-platform/issues/14), branch `codex/14-short-viewer-links`, dựa trên PR #13 vì dependency chưa merge. [ADR-0004](adr/0004-domains-and-share-codes.md) là quyết định owner. [Kiểm chứng local](validation/2026-10-09-short-viewer-links.md) đã pass; **web/DB lab VM đã cutover** theo [handoff22/10](LAB_HANDOFF.md), owner dùng thử OK. Desktop chưa xác minh cutover; các bước dưới dùng cho upgrade/cutover mới, không yêu cầu lặp lại trên VM đã chạy.
+Implementation [PR #15](https://github.com/cfotel2604/html-share-platform/pull/15) đã retarget main sau #13 và MERGED theo owner giao ngày22/10; [Issue #14](https://github.com/cfotel2604/html-share-platform/issues/14) CLOSED. [Merge/CI record](reviews/2026-10-22-stack-merged.md). [ADR-0004](adr/0004-domains-and-share-codes.md) là quyết định owner. [Kiểm chứng local](validation/2026-10-09-short-viewer-links.md) đã pass; **web/DB lab VM đã cutover** theo [handoff22/10](LAB_HANDOFF.md), owner dùng thử OK. Desktop chưa xác minh cutover; các bước dưới dùng cho upgrade/cutover mới, không yêu cầu lặp lại trên VM đã chạy.
 
 ## Thiết kế
 
