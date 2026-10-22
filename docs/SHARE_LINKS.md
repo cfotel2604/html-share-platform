@@ -34,7 +34,7 @@ Viewer tại `view*/<code>`; nếu chưa có VIEWER_PUBLIC_ORIGIN thì canonical
 
 ### Merge, image và database là các bước riêng
 
-PR #15 hiện có base `codex/8-10-auth-origin-gates` (#13), không phải main. Merge #15 trực tiếp lúc này chỉ nhập vào nhánh #13. Đưa toàn stack vào main theo thứ tự review/merge #5 → #12 → #13 → #15, đổi base/check CI ở từng bước. Lab có thể nghiệm thu commit PR đã review trước khi merge main; không tự merge hoặc deploy từ việc cập nhật runbook.
+PR #13 đã merge main6d30d22; sau đó #15 retarget main, final-head CI PASS và merge main0c17a09 theo owner giao ngày22/10. [Merge record](MERGE_PLAN.md) ghi exact heads/checks. Lab đã cutover trước đó bằng commitdc7560e; không chạy lại build/migration/backfill chỉ vì merge source. Các bước nâng cấp bên dưới chỉ áp dụng candidate mới đã review và được giao triển khai.
 
 `git fetch/pull` cập nhật source, không đổi container đang chạy. `docker build` tạo image mới; phải chọn đúng SECURITY_IMAGE trong Compose. Service `migrate` chạy `node scripts/migrate.mjs`: kiểm checksum/lịch sử 0001/0002 rồi áp [0003](../db/migrations/0003_site_share_links.sql) nếu chưa có. Migration tạo bảng/index, không cấp mã cho site cũ. [Backfill](../scripts/backfill-share-links.mjs) là lệnh Node riêng; dependency migrate của `compose up` không tự chạy backfill. Do đó cutover phải tách migrate/backfill trước khi bật web candidate.
 

@@ -21,7 +21,7 @@ Main0c17a09 sau merge cũng đã SUCCESS cả3jobs: [application](https://github
 
 Owner xác nhận Employee owner-only; Admin mutation/audit đúng actor; email ngoài allowlist deny; revoke/disable/logout chặn phiên cũ; rotate/revoke/reissue/unpublish chặn link cũ. #8 scope lab/P2 đã đạt/code main nên CLOSED; production Clerk/OAuth giữ #10. #14 short-link và #16 EACCES đều acceptance PASS, lab cutover0003/backfill đã xong và code main nên CLOSED. #9/#11 đã CLOSED trước đó. #10 OPEN cho release gates, ADR0001/0003 vẫn Proposed.
 
-PROJECT_STATUS/AI_HANDOFF/MERGE_PLAN/LAB_HANDOFF/README/PLAN/WORKFLOW/SHARE_LINKS và operator runbook được chốt trạng thái hiện tại; hồ sơ lịch sử vẫn giữ. Docs-only handoff đi feature PR từ main sau #15, không sửa main trực tiếp; docs/local-link/YAML/diff và runtime equality checks là kiểm phù hợp, CI current head theo Checks. Không rerun browser hoặc thu credentials thật chỉ vì docs.
+PROJECT_STATUS/AI_HANDOFF/MERGE_PLAN/LAB_HANDOFF/README/PLAN/WORKFLOW/SHARE_LINKS/SECURITY_LAB/ARCHITECTURE, status notes trong ADR0001/0003 và operator runbook được chốt trạng thái hiện tại; hồ sơ lịch sử vẫn giữ. Docs-only handoff đi feature PR từ main sau #15, không sửa main trực tiếp; docs/local-link/YAML/diff và runtime equality checks là kiểm phù hợp, CI current head theo Checks. Không rerun browser hoặc thu credentials thật chỉ vì docs.
 
 Lab giữ source/webdc7560e, gatewaysecurity-417c50d, schema0003/env/volumes/operator overlays. Không SSH mutation, rebuild/restart, migration/backfill, DNS/UFW/secret change trong mốc merge. Image VM khác docs/main HEAD có chủ đích. [Lab baseline](../LAB_HANDOFF.md) và [owner/agent evidence](../validation/2026-10-22-lab-acceptance.md) ghi phạm vi lần kiểm22/10.
 
