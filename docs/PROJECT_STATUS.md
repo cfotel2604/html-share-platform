@@ -1,41 +1,34 @@
 # Project status — HTML Share Platform
 
-> Snapshot bàn giao **2026-10-09 (Asia/Saigon)**. Code/CI/Docker/browser probes của mốc này chạy ngày 2026-10-08; GitHub, health và preservation đã đối chiếu lại khi bàn giao. GitHub là nguồn live; đọc cùng [AI_HANDOFF](AI_HANDOFF.md), [PLAN](../PLAN.md) và [AGENTS](../AGENTS.md).
+> Snapshot **2026-10-22 (Asia/Saigon)**. GitHub/main đã kiểm trực tiếp; recovery UI đang chuẩn bị trên feature branch. [Review và ancestry](reviews/2026-10-22-pr5-and-studio-merge.md), [AI_HANDOFF](AI_HANDOFF.md). Main chưa chứa các implementation #13/#15 dù lab đã chạy image mới hơn.
 
-## Tiến độ đã kiểm chứng
+## Trạng thái đã xác minh
 
-| Hạng mục | Trạng thái | Bằng chứng |
-| --- | --- | --- |
-| P0/P1/handoff | PR #2/#4/#7 đã merge; origin/main `78cb7ca` | Git log và GitHub |
-| Local MVP | PR #5 **Ready for review**, base main, head codex/local-mvp; chưa merge | [PR #5](https://github.com/cfotel2604/html-share-platform/pull/5) |
-| Upload #9 | Hai finding đã sửa tại `a74be7f` + `9147161`; 50 tests, lint/typecheck/build và Docker integration pass | [Validation](validation/2026-10-09-upload-hardening.md), [application](https://github.com/cfotel2604/html-share-platform/actions/runs/37794864775), [docs](https://github.com/cfotel2604/html-share-platform/actions/runs/37794864792) |
-| Studio UI | PR #12 **Ready for review**, base codex/local-mvp, đã merge backend fix; code tích hợp `011d0ee`, 55 tests, CI pass | [PR #12](https://github.com/cfotel2604/html-share-platform/pull/12), [application](https://github.com/cfotel2604/html-share-platform/actions/runs/37794864433), [docs](https://github.com/cfotel2604/html-share-platform/actions/runs/37794863701) |
-| Docker owner | Web healthy tại http://127.0.0.1:3100, image html-share-studio:upload-011d0ee; Studio và upload fix cùng chạy | [Artifact/rollback](validation/2026-10-09-upload-hardening.md) |
-| Preservation | 8 site trước deploy giữ metadata, DB/MinIO/gateway giữ container IDs/mounts; 1 fixture mới để unpublished | Baseline/verify và browser smoke |
-| Tracking | #1/#3/#6 CLOSED; #8/#9/#10/#11 OPEN | #9/#11 chờ review/merge; #8/#10 chưa hoàn tất |
+| Hạng mục | Trạng thái |
+| --- | --- |
+| P0/P1 | #2/#4/#7 merged |
+| MVP/upload #5 | Owner đã merge vào main: `1ed0eb0d35961118de6e22f17be13b4bae95cc19`, head235cc62; review sau merge không phát hiện thêm blocker trong local MVP scope |
+| CI main | Application/docs SUCCESS đúng1ed0eb0; 50 tests PASS, lint/typecheck/build PASS |
+| Studio #12 | MERGED vào codex/local-mvp: `2df738b1b262c89a2652fc01a07f093b7037a418` sau khi #5 đã đóng; UI còn ngoài main |
+| Recovery UI #11 | Branch codex/11-studio-main-recovery từ main1ed0eb0, merge2df738b bằng3296738; tree runtime đúng UI4ab546a, không đổi backend/API/scripts/db/base Compose/env |
+| Auth/origin #13 | Draft, base codex/11-studio-ui, head4ac9689; chưa retarget/main merge |
+| Short viewer #15 | Draft, base codex/8-10-auth-origin-gates; lab handoff trên branch đó, chưa main merge |
+| Issues | #9 CLOSED sau merge #5; #8/#10/#11/#14/#16 OPEN |
 
-Không sửa main, không merge PR hoặc deploy production. Owner đã giao thay UI, sửa #9 và cập nhật Docker Desktop local; hai lần deploy chỉ thay web, không migration/schema change. Checkout owner b3f8119 và .env giữ nguyên; các lần vận hành phải giữ Compose web override.
+## Review và hướng xử lý
 
-## Kết quả và giới hạn
+#5 đã được owner merge trước lúc agent bắt đầu kiểm; không thực hiện lại merge. Code counter body trước parser, ownership trước ingest/storage và fresh row lock, reserve prefix, atomic upload pointer/audit, cleanup/COMMIT unknown và ZIP rejection đã đối chiếu. [CI main application](https://github.com/cfotel2604/html-share-platform/actions/runs/39775149932) có50 tests/0fail; [docs](https://github.com/cfotel2604/html-share-platform/actions/runs/39775149938) PASS. DB/browser integration trong [validation09/10](validation/2026-10-09-upload-hardening.md) là bằng chứng lịch sử, không rerun22/10.
 
-Body cap tính byte thực trước multipart parser, trả 413 và hủy stream; ownership trước ingest/storage và dưới row lock, denied site trả 404/zero writes. SQL/storage failure trước COMMIT giữ active cũ và cleanup new keys. ZIP hợp lệ cùng 21 hostile variants pass. COMMIT response không xác định trả 503, giữ objects để tránh xóa active; cleanup persistent failure/crash cần operator reconciliation, chưa có durable orphan reaper P5/P6.
+Không revert #12. Recovery PR base main đưa đúng22files UI từ nhánh đã merge vào main, giữ ancestry cho #13. Các docs recovery/status/handoff được bổ sung riêng; CI head mới phải kiểm sau push. Giữ Draft đến khi owner giao review/merge recovery; yêu cầu merge #5 không được hiểu là tự merge #13/#15 hoặc deploy.
 
-Docker integration thật chạy trên project/DB/MinIO riêng: chunked early rejection, ownership/race, rollback sau real writes, ZIP/cache/unpublish đều pass. Chrome sau deploy owner: HTML/ZIP update giữ URL, sandbox preview, cookie/storage bị chặn, copy/filter/theme, 1280/390/320 không overflow, publish/unpublish và logout pass; dữ liệu test tổng hợp. Không stress/DoS owner lab. [Review cũ](reviews/2026-10-08-pr5.md) là snapshot trước fix; kết quả mới ở [validation #9](validation/2026-10-09-upload-hardening.md).
+## Lab hiện tại — khác main
 
-## Quyết định owner
+Theo handoff #15 và SSH chỉ đọc ngày22/10: VM `/opt/hsp/src` web/source dc7560e, gateway security-417c50d, DB0001/0002/0003; owner nghiệm thu lab và iframe từ ngoài sau mở443. SECURITY_IMAGE nay đã lưu đúng `html-share-studio:share-dc7560ea1c34`; Compose config không có shell override PASS, web running. Không đổi containers/env/data/DNS trong review này. Không build/deploy main trung gian local-demo/path gateway lên lab đang chạy Clerk/hostname/short links.
 
-- Studio tập trung: ODS blue, neutral/graphite, Geist/Mono, sáng/tối. UI/presentation → workflow → typed HTTP adapter → backend theo ADR-0002 trong PR #12; Next backend hiện cùng web container, gateway riêng.
-- Dashboard studio.ods.vn và Next API; Google/Clerk Development cho lab, server email allowlist/RBAC khi triển khai P2.
-- Viewer view.ods.vn/site-id chỉ trusted shell; HTML từ site-id.matbao.one và sandbox không allow-same-origin. ADR-0001 vẫn Proposed; chưa đổi DNS/TLS.
-- Production R2 private; MinIO legacy chỉ local. Docker/VPS giai đoạn đầu. ZIP 20 MiB nén / 100 MiB giải nén / 500 files / depth 12; local hardening thêm cap 1000 entries.
-- Retention configurable; backup/restore ngoài MVP theo lựa chọn owner.
+Handoff chi tiết lab và accepted domains nằm trong [PR #15](https://github.com/cfotel2604/html-share-platform/pull/15); branch recovery chỉ mang code local MVP + Studio. Các tài liệu domain/auth cũ trên main phản ánh phase trước, không thay quyết định domain mới của owner; #13 sẽ mang ADR/domain/auth implementation vào main sau review.
 
-## Việc tiếp theo
+## Tiếp theo
 
-1. Review PR #5 và #12; #9/#11 giữ mở đến merge. Sau #5 merge, đổi base #12 về main và xác minh CI/mergeability; chưa được giao merge tự động.
-2. [#8](https://github.com/cfotel2604/html-share-platform/issues/8): Google/Clerk, allowlist server, Employee/Admin, ownership/RBAC tests. Demo password chỉ local.
-3. [#10](https://github.com/cfotel2604/html-share-platform/issues/10): R2 IAM/cleanup permissions, hostname/TLS, reserved DNS inventory, direct/iframe cookie isolation và Safari/Zalo trước public. Lifecycle/retention/orphan reconciliation, rate/concurrency, staging/pilot còn P5–P7.
-
-## Kiểm chứng lại
-
-Dùng git status/worktree/remote, fetch origin --prune, log origin/main, gh pr view 5/12 với state/isDraft/headRefOid/mergeable/statusCheckRollup và gh issue list. Kiểm tra image tag/revision/health đang chạy; không suy diễn checkout main đã có các thay đổi trên PR. Cập nhật status/handoff trong branch được giao khi có mốc mới.
+1. Review/CI recovery UI và xin quyền merge PR bổ sung; không có dữ liệu/code bị mất, không cần thao tác VM hoặc undo #12.
+2. Sau recovery vào main, retarget #13 về main khi được giao, giải quyết docs conflicts nếu có, kiểm diff/CI/security gates. #15 theo sau #13; không tự retarget/Ready/merge trong phiên #5.
+3. #8/#10 và production gates vẫn còn: real-session RBAC/audit/deny/revoke/logout, R2 private/IAM/cleanup, hostname/cookie/mobile/Zalo, edge/log/DNS/vhost/renewal/rollback và staging/pilot. Main hiện chỉ local-only; không coi CI xanh là public release approval.
