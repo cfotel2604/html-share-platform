@@ -1,6 +1,6 @@
 # Project status — HTML Share Platform
 
-> Snapshot **2026-10-22 (Asia/Saigon)**: lab đã chạy web short-link, owner xác nhận iframe từ mạng ngoài và dùng thử OK; SSH xác minh runtime/DB/headers. Main6bdd298 đã có #5 và UI #12 qua recovery #17; #13/#15 còn Draft. [Lab handoff](LAB_HANDOFF.md), [merge plan](MERGE_PLAN.md), [bằng chứng](validation/2026-10-22-lab-acceptance.md), [AI_HANDOFF](AI_HANDOFF.md). Markdown không thay kiểm GitHub/VM hiện tại.
+> Snapshot **2026-10-22 (Asia/Saigon)**: lab đã chạy web short-link, owner xác nhận iframe từ mạng ngoài và dùng thử OK; SSH xác minh runtime/DB/headers. Main6bdd298 đã có #5 và UI #12 qua recovery #17; #13 đã retarget main/sync dependency, #15 đã sync #13; đang review/CI, chưa merge. [Lab handoff](LAB_HANDOFF.md), [merge plan](MERGE_PLAN.md), [bằng chứng](validation/2026-10-22-lab-acceptance.md), [AI_HANDOFF](AI_HANDOFF.md). Markdown không thay kiểm GitHub/VM hiện tại.
 
 ## Trạng thái đã kiểm
 
@@ -9,8 +9,8 @@
 | P0/P1 | #2/#4/#7 merged; origin/main nay6bdd298 sau recovery #17 |
 | Local MVP/upload #9 | Owner đã merge #5 vào main1ed0eb0; review sau merge không phát hiện thêm blocker local MVP, exact-main CI50tests PASS; #9 CLOSED |
 | Studio/UI #11 | #12 MERGED vào base cũ; [recovery #17](https://github.com/cfotel2604/html-share-platform/pull/17) nay MERGED main6bdd298, UI4ab546a đã vào main; 55tests/CI PASS |
-| Auth/origin #8/#10 | #13 Draft, head4ac9689, base codex/11-studio-ui; CI SUCCESS; gates review/release còn mở |
-| Short-link/permissions #14/#16 | #15 Draft, base codex/8-10-auth-origin-gates; CI SUCCESS tại fdf24eb trước cập nhật merge này; head sau push cần kiểm riêng |
+| Auth/origin #8/#10 | #13 đã retarget base main6bdd298, sync ad4b7e2; đang review/CI head mới, runtime giữ nguyên; release gates còn riêng |
+| Short-link/permissions #14/#16 | #15 Draft, base #13 đã sync main; conflict chỉ status/handoff, runtime giữ nguyên e834f13; CI head mới kiểm sau push |
 | VM source/web | dc7560ea1c34cbe060779fbe69bb2f574e170431; web html-share-studio:share-dc7560ea1c34 healthy |
 | Gateway/DB/storage VM | gateway security-417c50d giữ nguyên; PostgreSQL/MinIO healthy, storage không publish host ports |
 | Database VM | 0001/0002/0003; 3 sites/7 versions, 3 active/3 revoked links; thiếu history/manifest đều0 |
@@ -22,7 +22,7 @@
 
 Agent chỉ đọc kiểm VM: bốn services healthy; web 3100/gateway 4100 loopback, DB/storage không publish; AUTH_MODE=clerk, canonical origins đúng, public port rỗng. Studio 200, canonical viewer 200 có sandbox iframe, direct HTML200/HTTP sandbox/frame-ancestors đúng, viewer API 404 và alias 32 hex404. Viewer/content no-store, không Set-Cookie. Không log mã/preview grant/HTML/cookies.
 
-Theo owner: Google Admin và Employee login, private preview/retests trước đó; ngày 22/10 xác nhận mở443 rồi khách ngoài xem iframe và dùng thử lab OK. Agent chưa có independent probe4G hoặc checklist từng case RBAC/mobile; không suy xác nhận tổng quát thành toàn bộ gate security/release PASS. [Bằng chứng và phạm vi](validation/2026-10-22-lab-acceptance.md).
+Theo owner: Google Admin và Employee login, private preview/retests trước đó; ngày 22/10 xác nhận mở443 rồi khách ngoài xem iframe và dùng thử lab OK. Owner đã xác nhận chi tiết ngày22/10: Employee owner-only, Admin mutation/audit actor, ngoài allowlist deny, policy revoke/disable/logout phiên cũ deny, rotate/revoke/reissue/unpublish đều đạt. Agent chưa có independent probe4G hoặc full cookie/mobile matrix; không suy owner-confirmed thành test browser do agent chạy hay production approval. [Bằng chứng và phạm vi](validation/2026-10-22-lab-acceptance.md).
 
 **Cấu hình lưu bền đã xong:** owner bổ sung SECURITY_IMAGE, SSH xác nhận đúng tag `html-share-studio:share-dc7560ea1c34`; Compose config không shell override PASS, web running. Không cần chạy lại migration/backfill/restart. Public443 áp dụng mọi nginx vhost trên IP: inventory/restrict các site khác còn cần review.
 
@@ -38,7 +38,7 @@ Code đã có10 base62 exact-case/CSPRNG/UNIQUE, atomic rotate/revoke/reissue v�
 
 Theo [MERGE_PLAN](MERGE_PLAN.md), #5 đã merged; #12 merged base cũ đã được khắc phục bằng #17 MERGED main6bdd298 sau owner chấp thuận, giữ ancestry/UI nguyên vẹn. Chuỗi còn lại #13 → #15, retarget/check diff/CI khi được giao. [Review #5/recovery](https://github.com/cfotel2604/html-share-platform/pull/17) có exact-main CI50tests PASS và equality checks; main trung gian vẫn local/demo, không deploy public.
 
-#13/#15 giữ Draft đến review/gates scope đạt; owner dùng thử lab không tự là GitHub review approval. Cần chốt bằng chứng session thật Employee owner-only/Admin audit/ngoài allowlist/revoke/logout và link lifecycle. Merge source không tự deploy VM; chưa được giao merge/production.
+Owner giao retarget/review #13 rồi xử lý #15 và xác nhận toàn bộ real-session/link lifecycle cases đều đạt. #13 base main, #15 giữ base #13 đến dependency merge; review code/schema/runtime equality và CI head mới. Chưa merge #13/#15 hoặc deploy; ADR/release gates còn riêng. [Review retarget](reviews/2026-10-22-auth-and-share-retarget.md).
 
 ## Gate trước pilot/production
 

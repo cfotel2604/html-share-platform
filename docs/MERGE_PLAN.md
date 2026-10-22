@@ -11,8 +11,8 @@ Main hiện `6bdd298ab89dfe9a9061fb64203d3b3215fe4809` sau owner giao merge reco
 | [#5](https://github.com/cfotel2604/html-share-platform/pull/5) | MERGED vào main1ed0eb0, #9 CLOSED | Đã review sau merge, không merge lại |
 | [#12](https://github.com/cfotel2604/html-share-platform/pull/12) | MERGED vào codex/local-mvp2df738b, tree đúng UI4ab546a | Đã vào main qua #17 |
 | [#17](https://github.com/cfotel2604/html-share-platform/pull/17) | MERGED main6bdd298, tested headcc5a85c | Owner giao Ready/merge; 55tests/application/docs SUCCESS; main tree/equality/backend checks PASS |
-| [#13](https://github.com/cfotel2604/html-share-platform/pull/13) | Draft, base codex/11-studio-ui, head4ac9689 | Sau #17 vào main mới retarget main/check diff/conflicts/CI khi được giao |
-| [#15](https://github.com/cfotel2604/html-share-platform/pull/15) | Draft, base codex/8-10-auth-origin-gates | Sau #13 merge mới retarget/check; CI fdf24eb SUCCESS trước cập nhật docs này |
+| [#13](https://github.com/cfotel2604/html-share-platform/pull/13) | Base main, sync ad4b7e2/report8f204c3 | Đã retarget, chỉ docs conflicts; review/CI mới trước Ready/merge |
+| [#15](https://github.com/cfotel2604/html-share-platform/pull/15) | Base #13 đã sync main | Đã sync dependency, chỉ docs conflicts; CI final head rồi Ready; retarget main sau dependency merge |
 
 [PR recovery và review #5](https://github.com/cfotel2604/html-share-platform/pull/17) giữ ancestry và code22files UI nguyên vẹn từ #12. Repo cho phép merge commit; tiếp dùng merge commit cho recovery/stack. Không squash/rebase hoặc force-push dependencies tùy tiện, không xóa branch gốc giữa chuỗi. Re-query head/base ngay trước merge, không dùng snapshot làm approval.
 
@@ -36,13 +36,13 @@ Thay15 bằng PR đang review. Retarget/Ready/merge là mutation, không nằm t
 
 ## Review lab cần chốt trước Ready #13/#15
 
-Owner xác nhận dùng thử tổng quát OK, bên ngoài tải iframe; agent kiểm read-only routes/headers/DB. Không suy số active/revoked rows thành toàn bộ test dưới đã PASS.
+Owner đã xác nhận chi tiết ngày22/10: Employee owner-only, Admin mutation/audit đúng actor, ngoài allowlist deny, revoke/disable/logout phiên cũ deny, rotate/revoke/reissue/unpublish đều đạt. Đây là owner-confirmed real-session evidence; agent review code và CI đúng heads mới. Không suy số rows hoặc .test thành full browser/mobile matrix. [Review retarget](reviews/2026-10-22-auth-and-share-retarget.md).
 
 | Phạm vi | Bằng chứng đã có | Cần reviewer chốt |
 | --- | --- | --- |
-| Login và RBAC #8 | Owner Admin/Employee login; unit/DB integration ownership/deny/revoke | Session thật: Employee chỉ thao tác site mình, Admin mutation + actor audit, ngoài allowlist bị từ chối, policy revoke/disable và logout; dùng fixture/test identity, không khóa tài khoản thật tùy tiện |
+| Login và RBAC #8 | Owner Admin/Employee login; unit/DB integration ownership/deny/revoke | Owner xác nhận tất cả các case này đều đạt; không tự revoke tài khoản thật. Production Clerk/OAuth/provider quota vẫn release riêng |
 | Origin/private preview #10 | Local Chrome direct/iframe boundary; public headers/sandbox và owner preview/retests | Phạm vi browser thật/domain thật và cookie boundary đã test; liệt kê phần mobile/sibling/production còn gate, giữ ADR-0001/0003 Proposed đến review tương ứng |
-| Share lifecycle #14 | 20 integration groups; local Chrome lifecycle; lab canonical200/alias 404, 3 revoked rows | Owner/reviewer ghi case update giữ URL, rotate/revoke/reissue mã cũ404, revoked không tự hồi khi publish/update, unpublish chặn viewer/direct, preview vẫn chạy |
+| Share lifecycle #14 | 20 integration groups; local Chrome lifecycle; lab canonical200/alias 404, 3 revoked rows | Owner xác nhận rotate/revoke/reissue/unpublish đạt; local Chrome/integration bao gồm update giữ URL/revoked không tự hồi/preview. Giữ giới hạn direct-content và tab đã tải |
 | Permissions #16 | Restrictive checkout/non-root image CI, fixed image UID1000, SQL0003 đã chạy lab | Review Dockerfile/CI/fix và kết quả retry; giữ SQL checksums, không dùng image b1e lỗi |
 | Vận hành | Runtime healthy, public 443 do owner mở, origins đúng | SECURITY_IMAGE đã lưu/Compose config PASS; rà các nginx vhosts vì443 mở chung IP, cập nhật operator handoff |
 

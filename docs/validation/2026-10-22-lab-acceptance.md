@@ -32,3 +32,7 @@ SSH chỉ đọc xác nhận SECURITY_IMAGE đã lưu đúng share-dc7560ea1c34,
 Owner chấp thuận Ready/merge #17. Agent kiểm đúng base main1ed0eb0/headcc5a85c, 2checks SUCCESS/55tests PASS, rồi merge commit (không delete branch) tạo main `6bdd298ab89dfe9a9061fb64203d3b3215fe4809`. Git xác nhận UI4ab546a là ancestor main, main tree bằng tested headcc5a85c, backend/API/scripts/db/compose.yaml/.env.example so main trước đó không đổi. #13/#15 còn Draft/base cũ; không retarget/merge/deploy. Handoff/MERGE_PLAN nay ghi #13 → #15 là chuỗi còn lại.
 
 Main merge6bdd298 [application](https://github.com/cfotel2604/html-share-platform/actions/runs/39777248694) và [docs](https://github.com/cfotel2604/html-share-platform/actions/runs/39777248681) SUCCESS. Đối chiếu #11: acceptance checklist đã đạt, UI nay thực sự vào main qua #17 nên Issue11 đã CLOSED (không gửi comment). #9/#11 CLOSED; #8/#10/#14/#16 vẫn OPEN.
+
+## Owner xác nhận detailed acceptance và retarget review
+
+Owner giao đổi base/review #13 rồi xử lý #15, đồng thời xác nhận đầy đủ cases Employee owner-only, Admin mutation/audit actor, ngoài allowlist deny, revoke/disable/logout phiên cũ deny và rotate/revoke/reissue/unpublish đều đạt. Ghi là owner-confirmed real-session evidence. #13 base main/sync ad4b7e2, CI79unit/15groups PASS; #15 sync updated13, chỉ docs conflicts và runtime/SQL/permissions source equality giữ nguyên. [Review mới](../reviews/2026-10-22-auth-and-share-retarget.md) ghi phạm vi/gates/CI; chưa merge hoặc deploy trong mốc retarget này.
