@@ -3,6 +3,7 @@ import { test } from "node:test";
 import { tsLoader } from "./helpers/load-ts.mjs";
 
 const id = "a".repeat(32);
+const actor = { id: "owner", role: "employee", mode: "clerk" };
 function fixture({ authorized = true, failAt, rollbackFails = false, cleanupFailures = 0 } = {}) {
   const calls = [], removed = [];
   let cleanupAttempts = 0, released;
@@ -15,8 +16,8 @@ function fixture({ authorized = true, failAt, rollbackFails = false, cleanupFail
         : sql.includes("INSERT INTO audit_events") ? "audit" : sql;
       calls.push(step);
       if (step === "ownership-lock") {
-        assert.match(sql, /owner_id = \$2 AND status <> 'deleted' FOR UPDATE/);
-        assert.deepEqual(values, [id, "owner"]);
+        assert.match(sql, /owner_id = \$2 OR \$3 = 'admin'/);
+        assert.deepEqual(values, [id, "owner", "employee"]);
       }
       if (step === failAt || (step === "ROLLBACK" && rollbackFails)) throw new Error("fixture operation failed");
       return { rowCount: authorized ? 1 : 0 };
@@ -25,11 +26,12 @@ function fixture({ authorized = true, failAt, rollbackFails = false, cleanupFail
   };
   let writes = 0;
   const source = tsLoader({
+    "./auth-policy": {lockActor: async (_client,current) => current},
     "./db": { db: () => ({
       connect: async () => client,
       query: async (sql, values) => {
-        calls.push("preflight"); assert.match(sql, /owner_id = \$2 AND status <> 'deleted'/);
-        assert.deepEqual(values, [id, "owner"]); return { rowCount: authorized ? 1 : 0 };
+        calls.push("preflight"); assert.match(sql, /owner_id = \$2 OR \$3 = 'admin'/);
+        assert.deepEqual(values, [id, "owner", "employee"]); return { rowCount: authorized ? 1 : 0 };
       },
     }) },
     "./upload": {
@@ -54,26 +56,26 @@ function fixture({ authorized = true, failAt, rollbackFails = false, cleanupFail
 for (const reason of ["unknown", "foreign-owner", "deleted"]) {
   test(`${reason} update cannot ingest or touch storage`, async () => {
     const f = fixture({ authorized: false });
-    await assert.rejects(f.assertSiteOwner("owner", id), error => error.status === 404);
-    await assert.rejects(f.uploadVersion("owner", new File(["probe"], "probe.html"), "Fixture", id), error => error.status === 404);
+    await assert.rejects(f.assertSiteOwner(actor, id), error => error.status === 404);
+    await assert.rejects(f.uploadVersion(actor, new File(["probe"], "probe.html"), "Fixture", id), error => error.status === 404);
     assert.deepEqual(f.calls, ["preflight", "BEGIN", "ownership-lock", "ROLLBACK", "release"]);
   });
 }
 test("locks ownership and reserves a unique version before every storage write", async () => {
   const f = fixture();
-  assert.deepEqual(await f.uploadVersion("owner", new File(["probe"], "probe.html"), "Fixture", id), { id, fileCount: 2 });
+  assert.deepEqual(await f.uploadVersion(actor, new File(["probe"], "probe.html"), "Fixture", id), { id, fileCount: 2 });
   assert.deepEqual(f.calls, ["BEGIN", "ownership-lock", "ingest", "reserve", "bucket", "write", "write", "activate", "audit", "COMMIT", "release"]);
   assert.equal(f.released(), false);
 });
 test("a reserved-prefix collision never writes over existing objects", async () => {
   const f = fixture({ failAt: "reserve" });
-  await assert.rejects(f.uploadVersion("owner", new File(["probe"], "probe.html"), "Fixture", id));
+  await assert.rejects(f.uploadVersion(actor, new File(["probe"], "probe.html"), "Fixture", id));
   assert.ok(!f.calls.includes("bucket")); assert.equal(f.removed.length, 0);
 });
 for (const failAt of [2, "audit"]) {
   test(`failure ${failAt} rolls back and deletes only attempted new keys, including failed PUT`, async () => {
     const f = fixture({ failAt });
-    await assert.rejects(f.uploadVersion("owner", new File(["probe"], "probe.html"), "Fixture", id), /fixture operation failed/);
+    await assert.rejects(f.uploadVersion(actor, new File(["probe"], "probe.html"), "Fixture", id), /fixture operation failed/);
     assert.ok(f.calls.indexOf("ROLLBACK") < f.calls.indexOf("cleanup"));
     assert.equal(f.removed[0].length, 2);
     for (const key of f.removed[0]) {
@@ -84,13 +86,13 @@ for (const failAt of [2, "audit"]) {
 }
 test("cleanup retries idempotent deletes and preserves the original failure", async () => {
   const f = fixture({ failAt: "audit", cleanupFailures: 2 });
-  await assert.rejects(f.uploadVersion("owner", new File(["probe"], "probe.html"), "Fixture", id), /fixture operation failed/);
+  await assert.rejects(f.uploadVersion(actor, new File(["probe"], "probe.html"), "Fixture", id), /fixture operation failed/);
   assert.equal(f.removed.length, 3); assert.deepEqual(f.removed[0], f.removed[2]);
 });
 test("persistent cleanup failure emits a bounded recovery event with no uploaded data", async t => {
   const warn = t.mock.method(console, "warn", () => {});
   const f = fixture({ failAt: "audit", cleanupFailures: 3 });
-  await assert.rejects(f.uploadVersion("owner", new File(["private payload"], "private.html"), "Private name", id), /fixture operation failed/);
+  await assert.rejects(f.uploadVersion(actor, new File(["private payload"], "private.html"), "Private name", id), /fixture operation failed/);
   assert.equal(f.removed.length, 3);
   const [event, metadata] = warn.mock.calls[0].arguments;
   assert.equal(event, "upload.cleanup_failed");
@@ -99,13 +101,13 @@ test("persistent cleanup failure emits a bounded recovery event with no uploaded
 test("uncertain COMMIT never deletes a possibly active version", async t => {
   const warn = t.mock.method(console, "warn", () => {});
   const f = fixture({ failAt: "COMMIT" });
-  await assert.rejects(f.uploadVersion("owner", new File(["probe"], "probe.html"), "Fixture", id),
+  await assert.rejects(f.uploadVersion(actor, new File(["probe"], "probe.html"), "Fixture", id),
     error => error.status === 503 && error.message.includes("làm mới danh sách"));
   assert.equal(f.removed.length, 0); assert.equal(f.released(), true);
   assert.equal(warn.mock.calls[0].arguments[0], "upload.commit_outcome_unknown");
 });
 test("rollback failure discards the connection and does not mask the upload error", async () => {
   const f = fixture({ failAt: "audit", rollbackFails: true });
-  await assert.rejects(f.uploadVersion("owner", new File(["probe"], "probe.html"), "Fixture", id), /fixture operation failed/);
+  await assert.rejects(f.uploadVersion(actor, new File(["probe"], "probe.html"), "Fixture", id), /fixture operation failed/);
   assert.equal(f.released(), true); assert.equal(f.removed.length, 1);
 });

@@ -25,7 +25,7 @@ function SiteRow({
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
   const published = site.status === "published";
-  const preview = `/view/${site.id}`;
+  const preview = site.share_url ?? `/view/${site.id}`;
   async function copy() {
     setCopyError(false);
     setCopied(false);
@@ -67,6 +67,11 @@ function SiteRow({
           <span title={site.id}>{site.id.slice(0, 8)}</span>
         </p>
         <div className="studio-site-actions">
+          {!published && (
+            <a className="studio-button" href={`/preview/${site.id}`} target="_blank" rel="noopener noreferrer">
+              Xem riêng <ArrowUpRight size={14} aria-hidden="true" />
+            </a>
+          )}
           {published && (
             <>
               <a

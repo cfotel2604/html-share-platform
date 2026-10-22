@@ -5,11 +5,13 @@ import { tsLoader } from "./helpers/load-ts.mjs";
 const url = "http://studio.test/api/sites/" + "a".repeat(32);
 function fixture({ signedIn = true, origin = true, allowed = true } = {}) {
   const calls = [];
+  let AuthError;
   const stubs = {
-    "@/lib/demo-auth": { sameOrigin: () => origin, ownerId: async () => { calls.push("auth"); return signedIn ? "owner" : null; } },
+    "@/lib/auth": { sameOrigin: () => origin, requireActor: async () => { calls.push("auth"); if(!signedIn) throw new AuthError(401);return {id:"owner",role:"employee",mode:"clerk"}; } },
     "@/lib/db": { db: () => { throw new Error("unexpected DB access"); } },
   };
   const load = tsLoader(stubs);
+  ({AuthError} = load(new URL("../src/lib/auth-policy.ts",import.meta.url)));
   const { UploadError } = load(new URL("../src/lib/upload-error.ts", import.meta.url));
   stubs["@/lib/site-ops"] = {
     assertSiteOwner: async () => { calls.push("ownership"); if (!allowed) throw new UploadError("not found", 404); },

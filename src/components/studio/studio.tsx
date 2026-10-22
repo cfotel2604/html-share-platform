@@ -10,6 +10,7 @@ import { StudioHeader } from "./studio-header";
 import { LoginPanel } from "./login-panel";
 import { UploadPanel } from "./upload-panel";
 import { SiteList } from "./site-list";
+import Link from "next/link";
 export function Studio() {
   const studio = useStudio();
   const signedIn = studio.session === "signed-in";
@@ -56,7 +57,7 @@ export function Studio() {
             Đang mở workspace…
           </div>
         ) : studio.session === "signed-out" ? (
-          <LoginPanel busy={Boolean(studio.busy)} onLogin={studio.login} />
+          <LoginPanel busy={Boolean(studio.busy)} onLogin={studio.login} provider={studio.provider} />
         ) : studio.session === "unavailable" || studio.session === "error" ? (
           <section className="studio-connection-panel">
             <h2>
@@ -74,6 +75,7 @@ export function Studio() {
             >
               Thử lại
             </button>
+            {studio.provider === "clerk" && <Link className="studio-button" href="/sign-out">Đăng xuất tài khoản hiện tại</Link>}
           </section>
         ) : (
           <div className="studio-workspace">

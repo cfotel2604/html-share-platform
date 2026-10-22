@@ -3,16 +3,19 @@ import { db } from "./db";
 import { ensureBucket, removeFiles, storeFile } from "./storage";
 import { fingerprint, parseSite } from "./upload";
 import { UploadError } from "./upload-error";
+import { lockActor, type Actor } from "./auth-policy";
+import { createHash } from "node:crypto";
+import { shareUrl } from "./public-url";
 
-export async function assertSiteOwner(owner: string, id: string) {
+export async function assertSiteOwner(actor: Actor, id: string) {
   const result = await db().query(
-    "SELECT id FROM sites WHERE id = $1 AND owner_id = $2 AND status <> 'deleted'",
-    [id, owner],
+    "SELECT id FROM sites WHERE id = $1 AND (owner_id = $2 OR $3 = 'admin') AND status <> 'deleted'",
+    [id, actor.id, actor.role],
   );
   if (!result.rowCount) throw new UploadError("Không tìm thấy website được phép cập nhật", 404);
 }
 
-export async function uploadVersion(owner: string, file: File, name: string, existingId?: string) {
+export async function uploadVersion(actor: Actor, file: File, name: string, existingId?: string) {
   if (!name.trim() || name.length > 100) throw new UploadError("Tên website phải có 1–100 ký tự", 400);
   const id = existingId ?? randomBytes(16).toString("hex");
   const version = randomUUID();
@@ -23,10 +26,12 @@ export async function uploadVersion(owner: string, file: File, name: string, exi
   let discardConnection = false;
   try {
     await client.query("BEGIN");
+    const authorized = await lockActor(client, actor);
+    const owner = authorized.id;
     if (existingId) {
       const current = await client.query(
-        "SELECT id FROM sites WHERE id = $1 AND owner_id = $2 AND status <> 'deleted' FOR UPDATE",
-        [id, owner],
+        "SELECT id FROM sites WHERE id = $1 AND (owner_id = $2 OR $3 = 'admin') AND status <> 'deleted' FOR UPDATE",
+        [id, owner, authorized.role],
       );
       if (!current.rowCount) throw new UploadError("Không tìm thấy website được phép cập nhật", 404);
     } else {
@@ -43,9 +48,12 @@ export async function uploadVersion(owner: string, file: File, name: string, exi
     // Reserve the immutable prefix before writing; collisions cannot overwrite old versions.
     await client.query(
       `INSERT INTO site_versions
-       (id, site_id, storage_prefix, uploaded_by, manifest_hash, published_at)
-       VALUES ($1, $2, $3, $4, $5, now())`,
-      [version, id, prefix, owner, fingerprint(assets)],
+       (id, site_id, storage_prefix, uploaded_by, manifest_hash, asset_manifest, published_at)
+       VALUES ($1, $2, $3, $4, $5, $6::jsonb, now())`,
+      [version, id, prefix, owner, fingerprint(assets), JSON.stringify(assets.map(asset => ({
+        path: asset.path, type: asset.type, size: asset.body.length,
+        sha256: createHash("sha256").update(asset.body).digest("hex"),
+      })))],
     );
     await ensureBucket();
     for (const asset of assets) {
@@ -85,4 +93,32 @@ export async function uploadVersion(owner: string, file: File, name: string, exi
   } finally {
     client.release(discardConnection);
   }
+}
+
+export async function listSites(actor: Actor) {
+  return (await db().query(
+    `SELECT id,display_name,status,updated_at,active_version_id FROM sites
+     WHERE (owner_id=$1 OR $2='admin') AND status<>'deleted' ORDER BY updated_at DESC LIMIT 200`,
+    [actor.id, actor.role],
+  )).rows.map(site => ({ ...site, share_url: shareUrl(site.id) }));
+}
+
+export async function setPublished(actor: Actor, id: string, published: boolean) {
+  const client = await db().connect();
+  try {
+    await client.query("BEGIN");
+    const current = await lockActor(client, actor);
+    const status = published ? "published" : "unpublished";
+    const result = await client.query(
+      `UPDATE sites SET status=$3,updated_at=now() WHERE id=$1 AND (owner_id=$2 OR $4='admin')
+       AND active_version_id IS NOT NULL AND status IN ('published','unpublished') RETURNING id`,
+      [id, current.id, status, current.role],
+    );
+    if (!result.rowCount) throw new UploadError("Không tìm thấy website", 404);
+    await client.query(`INSERT INTO audit_events(actor_id,action,target_type,target_id) VALUES($1,$2,'site',$3)`,
+      [current.id, published ? "site.publish" : "site.unpublish", id]);
+    await client.query("COMMIT");
+    return { id, status };
+  } catch (error) { await client.query("ROLLBACK"); throw error; }
+  finally { client.release(); }
 }

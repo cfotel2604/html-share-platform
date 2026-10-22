@@ -4,19 +4,24 @@ import { once } from "node:events";
 import pg from "pg";
 import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { zipBytes, hostileZips } from "../helpers/zip.mjs";
+import {virtualFetch as fetch} from "../helpers/http.mjs";
 
 assert.equal(process.env.UPLOAD_TEST_GUARD, "isolated-upload-test", "Run only with the isolated Compose overlay");
 assert.equal(process.env.PGDATABASE, "upload_test", "Refuse the owner lab database");
 const web = "http://web:3000", gateway = "http://gateway:4000";
+const origin="http://127.0.0.1:3700",host="127.0.0.1:3700";
+async function readGateway(path) {return fetch(gateway+path,{headers:{Host:"127.0.0.1:4700"}});}
 const pool = new pg.Pool();
 const s3 = new S3Client({ region: "us-east-1", endpoint: process.env.STORAGE_ENDPOINT, forcePathStyle: true,
   credentials: { accessKeyId: process.env.STORAGE_ACCESS_KEY, secretAccessKey: process.env.STORAGE_SECRET_KEY } });
 const passed = [];
-const login = await fetch(web + "/api/auth", { method: "POST", headers: { Origin: web, "Content-Type": "application/json" },
+const login = await fetch(web + "/api/auth", { method: "POST", headers: { Origin: origin,Host:host, "Content-Type": "application/json" },
   body: JSON.stringify({ password: process.env.LOCAL_DEMO_PASSWORD }) });
 assert.equal(login.status, 200);
 const cookie = login.headers.get("set-cookie").split(";")[0];
-const headers = { Cookie: cookie, Origin: web };
+const headers = { Cookie: cookie, Origin: origin,Host:host };
+assert.equal((await fetch(web+"/api/auth",{headers})).status,200); // Provision the identity on a fresh database.
+assert.equal((await pool.query("UPDATE users SET role='employee' WHERE external_identity='local-demo:owner' RETURNING id")).rowCount,1);
 async function listKeys() {
   const keys = []; let token;
   do {
@@ -47,7 +52,7 @@ function rawUpload(path, customHeaders = {}) {
   return { request, response };
 }
 try {
-  assert.equal((await fetch(web + "/api/sites")).status, 401);
+  assert.equal((await fetch(web + "/api/sites",{headers:{Host:host}})).status, 401);
   const created = await send(html()); assert.equal(created.status, 201);
   const { id } = await created.json();
   const initial = await snapshot(id), initialKeys = await listKeys();
@@ -106,7 +111,7 @@ try {
   const failed = await send(new File([zipBytes([{ name: "index.html" }, { name: "style.css" }])], "fixture.zip"), id);
   assert.equal(failed.status, 500); assert.ok(!(await failed.text()).includes("fixture audit failure"));
   assert.deepEqual(await snapshot(id), initial); assert.deepEqual(await listKeys(), initialKeys);
-  assert.match(await (await fetch(gateway + "/s/" + id + "/")).text(), /integration v1/);
+  assert.match(await (await readGateway("/s/" + id + "/")).text(), /integration v1/);
   await pool.query("DROP TRIGGER upload_test_fail_audit ON audit_events");
   passed.push("post-storage DB failure rolls back and cleans new objects; old active version remains readable");
 
@@ -140,13 +145,13 @@ try {
   passed.push("21 hostile ZIP variants rejected with unchanged active version/storage");
   const zip = await send(new File([zipBytes([{ name: "index.html", body: '<link rel="stylesheet" href="style.css"><p>ZIP fixture</p>' }, { name: "style.css", body: "body{color:navy}" }])], "valid.zip"), id);
   assert.equal(zip.status, 200);
-  const served = await fetch(gateway + "/s/" + id + "/");
+  const served = await readGateway("/s/" + id + "/");
   assert.equal(served.status, 200); assert.match(served.headers.get("content-security-policy"), /sandbox allow-scripts/);
   assert.equal(served.headers.get("cache-control"), "no-store");
-  assert.equal((await fetch(gateway + "/s/" + id + "/style.css")).status, 200);
+  assert.equal((await readGateway("/s/" + id + "/style.css")).status, 200);
   const disabled = await fetch(web + "/api/sites/" + id, { method: "PATCH", headers: { ...headers, "Content-Type": "application/json" }, body: JSON.stringify({ published: false }) });
   assert.equal(disabled.status, 200);
-  assert.equal((await fetch(gateway + "/s/" + id + "/style.css")).status, 404);
+  assert.equal((await readGateway("/s/" + id + "/style.css")).status, 404);
   passed.push("valid ZIP update, sandbox/no-store, assets and unpublish 404");
   console.log(JSON.stringify({ result: "PASS", passed }, null, 2));
 } finally {

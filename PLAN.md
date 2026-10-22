@@ -2,7 +2,7 @@
 
 **Ngày lập:** 2026-10-08
 
-**Trạng thái:** Proposed — đã ghi nhận lựa chọn của owner, còn kiểm chứng bảo mật P4 và review qua Draft PR
+**Trạng thái:** Proposed cho release/security gates; domain và thiết kế mã chia sẻ đã Accepted ngày 2026-10-09 theo [ADR-0004](docs/adr/0004-domains-and-share-codes.md).
 
 **Mô hình truy cập:** A — nhân viên có tài khoản được upload/quản lý; người có link xem công khai, không cần đăng nhập.
 
@@ -24,8 +24,8 @@ Mọi đường dẫn public được coi là **công khai với bất kỳ ai c
 
 - Đăng nhập nhân viên và phân quyền Employee/Admin; khóa API upload và quản trị.
 - Upload file `.html` hoặc ZIP chứa `index.html` + tài nguyên tĩnh; kiểm tra cấu trúc, định dạng, giới hạn kích thước và giải nén an toàn.
-- Tạo URL chia sẻ **có thương hiệu** `https://view.ods.vn/<site-id>`; nội dung HTML thực thi trong iframe cách ly, tải từ `https://<site-id>.matbao.one/` và hỗ trợ đường dẫn tài nguyên tương đối.
-- Preview thực thi trên origin `matbao.one`, không inject HTML upload vào DOM/SSR của `ods.vn`. Link public mặc định ai có link đều mở được.
+- Tạo URL chia sẻ **có thương hiệu** `https://view.ods.vn/<share-code>`; nội dung HTML thực thi trong iframe cách ly, tải từ `https://<site-id>.space-ods.cfvn.cloud/` và hỗ trợ đường dẫn tài nguyên tương đối.
+- Preview thực thi trên content hostname dưới `space-ods.cfvn.cloud`, không inject HTML upload vào DOM/SSR của `ods.vn`. Link public mặc định ai có link đều mở được.
 - Danh sách site cá nhân; tạo bản cập nhật giữ nguyên URL; publish/unpublish và xóa mềm.
 - Lưu metadata, version và audit log (người tạo/sửa/xóa, thời điểm, hành động).
 - Logging vận hành, health checks, xử lý lỗi có thông báo rõ ràng.
@@ -42,11 +42,13 @@ Chạy backend tùy ý của website upload (PHP, Node, Python), xử lý form s
 - **Database:** PostgreSQL, migrations có version.
 - **Object storage:** Cloudflare R2 private cho production; MinIO legacy chỉ cho local P1, không deploy lên staging/production.
 - **Public static gateway:** dịch vụ chuyên phục vụ nội dung tĩnh theo site ID + version đang active, không chạy bất kỳ mã server nào từ gói upload.
-- **Branded viewer:** `view.ods.vn/<site-id>` là trang shell HTML tin cậy, không mang session/admin API; nhúng iframe sandbox từ `<site-id>.matbao.one` và cung cấp metadata Open Graph an toàn cho Zalo.
-- **Proxy/TLS:** Cloudflare Edge TLS; kết nối Cloudflare → VPS dùng Origin CA + Full (strict), proxy ở VPS bằng Caddy/Nginx.
+- **Branded viewer:** `view.ods.vn/<share-code>` là trang shell HTML tin cậy, không mang session/admin API; nhúng iframe sandbox từ `<site-id>.space-ods.cfvn.cloud` và cung cấp metadata Open Graph an toàn cho Zalo.
+- **Proxy/TLS:** lab đã kiểm nginx + Let's Encrypt DNS-01 qua ACME-DNS; đề xuất tái sử dụng với certificate/gia hạn riêng cho production. Không bắt buộc Cloudflare proxy/Origin CA; nếu thêm CDN phải review TLS tới origin/cache riêng.
 - **Dev:** Docker Compose trên máy hiện tại; **Prod ban đầu:** VPS + Docker Compose; cấu hình backup/restore ngoài phạm vi MVP theo quyết định owner.
 
-Origin tách biệt: trang quản trị `studio.ods.vn`, link khách `view.ods.vn/<site-id>` (**chỉ shell được kiểm soát**) và origin thực thi HTML `https://<site-id>.matbao.one/`. Không bao giờ chạy raw HTML trong `studio.ods.vn/view/*`, `view.ods.vn/*` hoặc proxy raw HTML dưới URL path chung. Hostname riêng ngăn chia sẻ localStorage/service worker theo origin nhưng **không tự chặn cookie `Domain=matbao.one` giữa các site**; iframe sandbox bỏ `allow-same-origin` là chế độ mặc định cho viewer và phải kiểm chứng với trình duyệt trước P4. Chế độ mở site trực tiếp/cho phép storage chưa được phê duyệt khi chưa có biện pháp cô lập cookie (ví dụ PSL đủ điều kiện).
+Origin tách biệt: trang quản trị `studio.ods.vn`, link khách `view.ods.vn/<share-code>` (**chỉ shell được kiểm soát**) và origin thực thi HTML `https://<site-id>.space-ods.cfvn.cloud/`. Không bao giờ chạy raw HTML trong `studio.ods.vn/view/*`, `view.ods.vn/*` hoặc proxy raw HTML dưới URL path chung. Hostname riêng ngăn chia sẻ localStorage/service worker theo origin nhưng **không tự chặn cookie `Domain=cfvn.cloud` giữa các site**; iframe sandbox bỏ `allow-same-origin` là chế độ mặc định cho viewer và phải kiểm chứng với trình duyệt trước P4. Chế độ mở site trực tiếp/cho phép storage chưa được phê duyệt khi chưa có biện pháp cô lập cookie (ví dụ PSL đủ điều kiện).
+
+Mã viewer ngắn là thiết kế đã chốt, chưa triển khai: cần mapping server/UNIQUE/CSPRNG, migration additive và xử lý alias cũ khi rotation. Đổi mã không thu hồi direct URL khi site còn published; unpublish/delete chặn request mới, không thu hồi tab đã tải.
 
 Xem [kiến trúc và luồng dữ liệu](docs/ARCHITECTURE.md), [ADR-0001](docs/adr/0001-public-site-origin-isolation.md) và [quy trình GitHub](docs/WORKFLOW.md).
 
@@ -67,17 +69,17 @@ Xem [kiến trúc và luồng dữ liệu](docs/ARCHITECTURE.md), [ADR-0001](doc
 
 Mỗi issue có một phạm vi rõ, nhánh riêng, Draft PR để ghi tiến độ và kết quả test. Chỉ merge khi gate của phase đạt. Chạy staging và pilot trước production. Không tự merge/deploy từ tài liệu này.
 
-## 5. Quyết định owner (2026-10-08) và các gate còn mở
+## 5. Quyết định owner (2026-10-08; domain cập nhật 2026-10-09) và các gate còn mở
 
-1. **Domain / chia sẻ:** chọn `studio.ods.vn` cho dashboard, `view.ods.vn/<site-id>` cho link gửi khách và `<site-id>.matbao.one` cho origin chạy HTML; owner đã có `matbao.one` trên Cloudflare, không cần mua domain mới. DNS wildcard/cert phải thử trước P4. `studio.ods.vn/view/<id>` chỉ có thể redirect sang viewer, không bao giờ render HTML upload trên origin quản trị.
+1. **Domain / chia sẻ:** chọn `studio.ods.vn` cho dashboard, `view.ods.vn/<share-code>` cho link gửi khách và `<site-id>.space-ods.cfvn.cloud` cho origin chạy HTML; Lab tương ứng `studio-lab.ods.vn`, `view-lab.ods.vn/<share-code>`, `<site-id>.lab-space-ods.cfvn.cloud`. Quyết định mới thay `matbao.one`; mã viewer 10 base62 độc lập host ID 128 bit, code hiện còn dùng ID dài. TLS content lab đã kiểm; Studio/viewer vẫn qua tunnel. Xem ADR-0004 và [nghiệm thu lab](docs/validation/2026-10-09-lab-domain-tls.md). `studio.ods.vn/view/<id>` chỉ có thể redirect sang viewer, không bao giờ render HTML upload trên origin quản trị.
 2. **Đăng nhập:** Google qua Clerk Development cho lab; owner quản lý allowlist email, roles Employee/Admin trên server. Chuyển sang Clerk production instance và Google OAuth credentials riêng trước production.
-3. **Hạ tầng:** máy tính hiện tại cho lab; VPS/Docker Compose lúc triển khai. Cloudflare R2 private là provider production; MinIO legacy chỉ local P1.
+3. **Hạ tầng:** Docker Desktop và VM lab dùng Docker Compose; VPS/Docker Compose lúc triển khai. Cloudflare R2 private vẫn là provider production; VM hiện có MinIO legacy network nội bộ theo runbook, không coi đây là gate R2 đạt hay ngoại lệ cho staging/production.
 4. **Upload:** giới hạn ban đầu tối đa 20 MiB ZIP nén, 100 MiB giải nén, 500 file, đường dẫn sâu 12; yêu cầu check và chặn trước publish.
 5. **Retention / soft-delete:** có cấu hình, khởi đầu đề xuất giữ tối đa 10 version cũ/site (luôn giữ active), soft-delete 30 ngày, dọn staging sau 24 giờ. **Không triển khai backup/restore trong MVP** theo quyết định owner; dữ liệu có thể mất vĩnh viễn khi hỏng/xóa.
 6. **CSP/external content:** ưu tiên demo HTML tương tác, cho phép HTTPS CDN phù hợp; mặc định chặn plugin, top navigation và chức năng nhạy cảm, external API cần allowlist. Cấu hình cụ thể cần kiểm chứng Chrome/Safari/Zalo.
 
-**Gate P4 chưa đạt:** kiểm chứng iframe sandbox (mặc định `allow-scripts` nhưng không `allow-same-origin`, không form/popups/top-navigation), CSP sandbox trên **mọi** HTML kể cả direct navigation, chặn active content types khác (SVG/XHTML...), cookie parent-domain/cookie tossing giữa public hosts, storage/service worker, module scripts/CORS, relative/root assets và hiệu quả unpublish. Viewer chỉ có trusted metadata; CSP của viewer giới hạn `frame-src` ở `https://*.matbao.one`; gateway cho phép `frame-ancestors https://view.ods.vn`, không phát/cấp auth cookies. Test bằng browser thực trước khi mở production. Nếu demo cần storage/Web APIs bị sandbox chặn, phải đưa ra thiết kế bảo mật riêng được review trước khi nới sandbox hoặc cung cấp full-page mode.
+**Gate P4 chưa đạt:** kiểm chứng iframe sandbox (mặc định `allow-scripts` nhưng không `allow-same-origin`, không form/popups/top-navigation), CSP sandbox trên **mọi** HTML kể cả direct navigation, chặn active content types khác (SVG/XHTML...), cookie parent-domain/cookie tossing giữa public hosts, storage/service worker, module scripts/CORS, relative/root assets và hiệu quả unpublish. Viewer chỉ có trusted metadata; CSP của viewer giới hạn `frame-src` ở `https://*.space-ods.cfvn.cloud`; gateway cho phép `frame-ancestors https://view.ods.vn`, không phát/cấp auth cookies. Test bằng browser thực trước khi mở production. Nếu demo cần storage/Web APIs bị sandbox chặn, phải đưa ra thiết kế bảo mật riêng được review trước khi nới sandbox hoặc cung cấp full-page mode.
 
 ## 6. Tiêu chí hoàn thành MVP
 
-Employee tạo site từ HTML/ZIP và nhận link `https://view.ods.vn/<site-id>`; guest mở trên điện thoại không cần tài khoản; HTML chạy trong iframe từ origin publish độc lập; JS/CSS/assets hoạt động theo mức sandbox đã công bố; Employee update giữ nguyên link và có thể unpublish; Admin giám sát/audit; kiểm thử upload, chia sẻ preview, cô lập origin/cookie và rollback pass. Không có backup/restore trong MVP.
+Employee tạo site từ HTML/ZIP và nhận link `https://view.ods.vn/<share-code>`; guest mở trên điện thoại không cần tài khoản; HTML chạy trong iframe từ origin publish độc lập; JS/CSS/assets hoạt động theo mức sandbox đã công bố; Employee update giữ nguyên link và có thể unpublish; Admin giám sát/audit; kiểm thử upload, chia sẻ preview, cô lập origin/cookie và rollback pass. Không có backup/restore trong MVP.

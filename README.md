@@ -6,7 +6,7 @@ Nền tảng nội bộ để nhân viên tải lên HTML/CSS/JavaScript hoặc 
 
 ## Trạng thái
 
-**P0 — Planning:** tài liệu và quyết định owner đã merge qua PR #2. **P1 — Foundation** đã merge qua PR #4; local MVP PR #5 và Studio PR #12 đã Ready for review, chưa merge. Upload hardening #9 đã kiểm chứng và deploy local cùng Studio. Chưa triển khai domain production. Xem [tiến độ gần nhất](docs/PROJECT_STATUS.md) trước công việc mới.
+**P0/P1** đã merge. Local MVP #5 và Studio #12 Ready, chưa merge; **Draft PR #13** bổ sung Clerk/RBAC và hostname sandbox, đã kiểm thử/deploy Docker local. Lab đã bật Clerk Development; owner xác nhận Google Admin và Employee đăng nhập thành công. Content lab VM đã kiểm HTTPS wildcard/sandbox; Studio/viewer còn qua SSH tunnel. Quyền/mutations/deny/revoke/logout thật, viewer domain, R2 và Safari/Zalo còn gate trước release. Xem [tiến độ gần nhất](docs/PROJECT_STATUS.md).
 
 - [PLAN và roadmap P0–P7](PLAN.md)
 - [Kiến trúc và luồng upload/publish](docs/ARCHITECTURE.md)
@@ -16,10 +16,14 @@ Nền tảng nội bộ để nhân viên tải lên HTML/CSS/JavaScript hoặc 
 - [Tiến độ dự án và các hạng mục còn mở](docs/PROJECT_STATUS.md)
 - [Bàn giao công việc giữa các phiên AI Agent](docs/AI_HANDOFF.md)
 - [Upload hardening, kiểm chứng Docker và rollback](docs/validation/2026-10-09-upload-hardening.md)
+- [Cấu hình Clerk/allowlist và Docker security lab](docs/SECURITY_LAB.md)
+- [Bằng chứng auth/origin và rollback image hiện tại](docs/validation/2026-10-09-auth-origin-gates.md)
+- [ADR-0004 — domain production/lab và mã chia sẻ đã chốt](docs/adr/0004-domains-and-share-codes.md)
+- [Nghiệm thu VM lab và đối chiếu runbook TLS](docs/validation/2026-10-09-lab-domain-tls.md)
 
 ## Nguyên tắc bảo mật
 
-Dashboard dùng `studio.ods.vn`; viewer tin cậy dùng `view.ods.vn/<site-id>` và iframe HTML từ `<site-id>.matbao.one`. Tách origin không tự ngăn cookie `Domain=matbao.one` giữa các site; đây là gate bảo mật phải kiểm chứng trước P4. Đường dẫn công khai dành cho người có link; chỉ upload nội dung được phép chia sẻ.
+Dashboard dùng `studio.ods.vn`; viewer tin cậy dùng `view.ods.vn/<share-code>` và iframe HTML từ `<site-id>.space-ods.cfvn.cloud`. Tách origin không tự ngăn cookie `Domain=cfvn.cloud` giữa các site; đây là gate bảo mật phải kiểm chứng trước P4. Đường dẫn công khai dành cho người có link; chỉ upload nội dung được phép chia sẻ.
 
 ## Kiểm tra tài liệu
 
@@ -33,14 +37,16 @@ GitHub Actions chạy kiểm tra trên pull request và push vào `main`. P1 b�
 
 YAML workflow và Issue templates được parse bằng `scripts/check_yaml.py` (yêu cầu `PyYAML==6.0.2`), cùng với kiểm tra tài liệu Markdown. Check YAML sẽ fail nếu cú pháp sai hoặc top-level không phải mapping.
 
-## Quyết định triển khai MVP (owner, 2026-10-08)
+## Quyết định triển khai MVP (owner, 2026-10-08; domain cập nhật 2026-10-09)
 
 - Dashboard và Next.js API: `studio.ods.vn` (`/api/*` cùng container), đăng nhập Google qua Clerk Development khi lab và email allowlist server-side.
-- Link gửi khách: `https://view.ods.vn/<site-id>` chỉ hiển thị viewer shell tin cậy, nhúng HTML từ `https://<site-id>.matbao.one/` trong iframe sandbox. HTTP response HTML upload cũng phải bật CSP sandbox ở chế độ mở trực tiếp.
-- Một DNS wildcard `*.matbao.one` có thể trỏ mọi site hợp lệ về gateway; tạo site bằng ID trong database, không tự tạo DNS record cho từng site. Named records hiện có của `matbao.one` ưu tiên hơn wildcard nhưng phải kiểm kê trước P4; chưa đổi DNS production.
-- Object storage private Cloudflare R2; VPS/Docker Compose khi triển khai, lab trên PC. Quota ZIP 20 MiB, giải nén 100 MiB, tối đa 500 file, depth 12. Retention configurable; không làm backup/restore trong MVP theo yêu cầu owner.
+- Link gửi khách: `https://view.ods.vn/<share-code>` chỉ hiển thị viewer shell tin cậy, nhúng HTML từ `https://<site-id>.space-ods.cfvn.cloud/` trong iframe sandbox. HTTP response HTML upload cũng phải bật CSP sandbox ở chế độ mở trực tiếp.
+- Một DNS wildcard `*.space-ods.cfvn.cloud` có thể trỏ mọi site hợp lệ về gateway; tạo site bằng ID trong database, không tự tạo DNS record cho từng site. Lab dùng wildcard riêng `*.lab-space-ods.cfvn.cloud`, đã có TLS Let's Encrypt DNS-01 + nginx. Kiểm kê record/route hiện hữu trước thay đổi; chưa đổi DNS production.
+- Object storage private Cloudflare R2; VPS/Docker Compose khi triển khai, lab trên PC và VM. Quota ZIP 20 MiB, giải nén 100 MiB, tối đa 500 file, depth 12. Retention configurable; không làm backup/restore trong MVP theo yêu cầu owner.
 
-Cookie parent-domain `matbao.one` và tính tương thích iframe/opaque-origin trên mobile/Zalo còn là P4 security gates bắt buộc. Xem [PLAN](PLAN.md) và [ADR-0001](docs/adr/0001-public-site-origin-isolation.md).
+Cookie parent-domain `cfvn.cloud` (chung giữa content lab/production) và tính tương thích iframe/opaque-origin trên mobile/Zalo còn là P4 security gates bắt buộc. Xem [PLAN](PLAN.md) và [ADR-0001](docs/adr/0001-public-site-origin-isolation.md).
+
+Lab Studio/viewer dự kiến `studio-lab.ods.vn`, `view-lab.ods.vn`; hiện còn dùng loopback qua SSH tunnel. Mã viewer 10 base62 tách host ID 32 hex là **quyết định thiết kế**, chưa có trong code. Đổi mã chỉ thu hồi link viewer; direct URL còn mở khi published. Cấu hình và gate chuyển domain tại [ADR-0004](docs/adr/0004-domains-and-share-codes.md).
 
 ## Làm việc với GitHub
 
@@ -102,7 +108,7 @@ Stack và DB schema hiện là nền móng phát triển theo [Issue P1 #3](http
 
 ## Local MVP — thử upload và chia sẻ HTML (nhánh `codex/local-mvp`)
 
-MVP này mở rộng P1 để thử toàn bộ chu trình tại **máy cá nhân**: đăng nhập demo, upload `.html` hoặc ZIP chứa `index.html`, tự xuất bản, xem preview, cập nhật phiên bản, tắt/bật chia sẻ. Đăng nhập hiện dùng một mật khẩu demo trong `.env`; **chưa tích hợp Clerk/Google hay allowlist email**. Không mở các cổng này ra Internet.
+Phần này mô tả PR #5 trước auth/origin #13: demo password, gateway `/s/<id>`. **Owner lab hiện chạy #13 với Clerk Google**, cần Compose security overlay và image đã kiểm ở SECURITY_LAB; không dùng lệnh build checkout cũ bên dưới để cập nhật lab hiện hữu. #13 dùng mỗi hostname `*.uploads.localhost:4100`, hỗ trợ root assets và “Xem riêng” khi unpublished, viewer link giữ nguyên. Không mở các cổng này ra Internet.
 
 ```powershell
 Copy-Item .env.example .env
@@ -121,7 +127,7 @@ docker compose -p html-share-local-mvp logs --tail=60 web gateway
 docker compose -p html-share-local-mvp down # giữ volume thử nghiệm
 ```
 
-Chỉ thử nội bộ: wildcard DNS / kiểm kê ảnh hưởng tới `matbao.one`, Cloudflare R2 thật, `studio.ods.vn` / `view.ods.vn`, Clerk/Google, email allowlist, quota theo tài khoản và lưu trữ phiên bản nâng cao được xử lý ở các giai đoạn sau. Mặc dù CSP và sandbox hạn chế nội dung tải lên, đây chưa phải cấu hình phục vụ công khai.
+Chỉ thử nội bộ: content VM lab có wildcard TLS thật; DNS inventory/cookie boundary/domain viewer, Cloudflare R2 thật, Clerk production/OAuth, quota theo tài khoản và lưu trữ phiên bản nâng cao vẫn cần gate tương ứng. Mặc dù CSP và sandbox hạn chế nội dung tải lên, đây chưa phải cấu hình phục vụ công khai.
 
 ## Studio UI và thay giao diện về sau
 
@@ -129,7 +135,7 @@ Studio tập trung dùng ODS blue, hỗ trợ sáng/tối, kéo/chọn HTML/ZIP,
 
 ### Cập nhật riêng web trên Docker lab hiện có
 
-Thực hiện tại checkout UI đã kiểm thử; dùng đúng đường dẫn Compose/.env của lab đang chạy. Không in `docker compose config` đầy đủ vì output chứa credentials; dùng `config --quiet`.
+Các lệnh UI-only này dành cho mốc **trước #13**. Owner lab đã chuyển security image cho **cả web/gateway** và migration 0002; cập nhật hiện tại phải theo [SECURITY_LAB](docs/SECURITY_LAB.md) và [validation/rollback #13](docs/validation/2026-10-09-auth-origin-gates.md). Không in `docker compose config` đầy đủ vì chứa credentials; dùng `config --quiet`.
 
 ```powershell
 $labRoot = (Resolve-Path ../html-share-platform-local-mvp).Path

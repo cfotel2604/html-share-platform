@@ -1,17 +1,20 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { studioApi, StudioApiError } from "./api";
-import type { SiteSummary, StudioApi } from "./types";
+import type { AuthStatus, SiteSummary, StudioApi } from "./types";
 type Session =
   "checking" | "unavailable" | "signed-out" | "signed-in" | "error";
 
 export function useStudio(client: StudioApi = studioApi) {
+  const router = useRouter();
   const [session, setSession] = useState<Session>("checking");
   const [sites, setSites] = useState<SiteSummary[]>([]);
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [retry, setRetry] = useState(0);
+  const [authStatus, setAuthStatus] = useState<AuthStatus | null>(null);
   useEffect(() => {
     let active = true;
     (async () => {
@@ -20,17 +23,19 @@ export function useStudio(client: StudioApi = studioApi) {
         const items = auth.signedIn ? await client.listSites() : [];
         if (!active) return;
         setSites(items);
+        setAuthStatus(auth);
+        if(auth.denied) {setSession("error");setError("Tài khoản Google chưa được cấp quyền hoặc đã bị khóa.");return;}
         setSession(
-          !auth.demoAvailable
+          !(auth.available ?? auth.demoAvailable)
             ? "unavailable"
             : auth.signedIn
               ? "signed-in"
               : "signed-out",
         );
-      } catch {
+      } catch (cause) {
         if (active) {
           setSession("error");
-          setError("Không kết nối được với Studio. Vui lòng thử lại.");
+          setError(cause instanceof StudioApiError ? cause.message : "Không kết nối được với Studio. Vui lòng thử lại.");
         }
       }
     })();
@@ -52,7 +57,7 @@ export function useStudio(client: StudioApi = studioApi) {
       if (refresh) setSites(await client.listSites());
       return true;
     } catch (cause) {
-      if (cause instanceof StudioApiError && cause.status === 401) {
+      if (cause instanceof StudioApiError && [401,403].includes(cause.status)) {
         setSession("signed-out");
         setSites([]);
       }
@@ -68,6 +73,7 @@ export function useStudio(client: StudioApi = studioApi) {
   }
   return {
     session,
+    provider: authStatus?.provider ?? "local-demo",
     sites,
     busy,
     error,
@@ -88,6 +94,7 @@ export function useStudio(client: StudioApi = studioApi) {
         "logout",
         async () => {
           await client.logout();
+          if (authStatus?.provider === "clerk") router.push("/sign-out");
           setSites([]);
           setSession("signed-out");
           return "";
