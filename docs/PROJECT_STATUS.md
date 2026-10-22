@@ -1,22 +1,22 @@
 # Project status — HTML Share Platform
 
-> Snapshot **2026-10-22 (Asia/Saigon)**: lab đã chạy web short-link, owner xác nhận iframe từ mạng ngoài và dùng thử OK; SSH xác minh runtime/DB/headers. Main vẫn78cb7ca, chưa merge. [Lab handoff](LAB_HANDOFF.md), [merge plan](MERGE_PLAN.md), [bằng chứng](validation/2026-10-22-lab-acceptance.md), [AI_HANDOFF](AI_HANDOFF.md). Markdown không thay kiểm GitHub/VM hiện tại.
+> Snapshot **2026-10-22 (Asia/Saigon)**: lab đã chạy web short-link, owner xác nhận iframe từ mạng ngoài và dùng thử OK; SSH xác minh runtime/DB/headers. Main đã nhận #5 tại1ed0eb0; #12 merge vào base cũ, UI chờ recovery #17. [Lab handoff](LAB_HANDOFF.md), [merge plan](MERGE_PLAN.md), [bằng chứng](validation/2026-10-22-lab-acceptance.md), [AI_HANDOFF](AI_HANDOFF.md). Markdown không thay kiểm GitHub/VM hiện tại.
 
 ## Trạng thái đã kiểm
 
 | Hạng mục | Trạng thái hiện tại |
 | --- | --- |
-| P0/P1 | #2/#4/#7 merged, origin/main 78cb7ca |
-| Local MVP/upload #9 | #5 Ready, head235cc62, base main; CI SUCCESS, chưa merge |
-| Studio/UI #11 | #12 Ready, head4ab546a, base codex/local-mvp; CI SUCCESS, chưa merge |
+| P0/P1 | #2/#4/#7 merged; origin/main nay1ed0eb0 sau #5 |
+| Local MVP/upload #9 | Owner đã merge #5 vào main1ed0eb0; review sau merge không phát hiện thêm blocker local MVP, exact-main CI50tests PASS; #9 CLOSED |
+| Studio/UI #11 | #12 MERGED vào codex/local-mvp2df738b sau #5; UI chưa main. [Recovery #17](https://github.com/cfotel2604/html-share-platform/pull/17) Draft/base main, giữ tree UI4ab546a |
 | Auth/origin #8/#10 | #13 Draft, head4ac9689, base codex/11-studio-ui; CI SUCCESS; gates review/release còn mở |
-| Short-link/permissions #14/#16 | #15 Draft, base codex/8-10-auth-origin-gates; CI SUCCESS tại c2da87f trước docs mốc này; head sau push cần kiểm riêng |
+| Short-link/permissions #14/#16 | #15 Draft, base codex/8-10-auth-origin-gates; CI SUCCESS tại fdf24eb trước cập nhật merge này; head sau push cần kiểm riêng |
 | VM source/web | dc7560ea1c34cbe060779fbe69bb2f574e170431; web html-share-studio:share-dc7560ea1c34 healthy |
 | Gateway/DB/storage VM | gateway security-417c50d giữ nguyên; PostgreSQL/MinIO healthy, storage không publish host ports |
 | Database VM | 0001/0002/0003; 3 sites/7 versions, 3 active/3 revoked links; thiếu history/manifest đều0 |
 | Public lab | Studio/viewer HTTPS qua Cloudflare; content direct VM/nginx; owner đã mở443/tcp any IPv4/IPv6 và xác nhận khách ngoài tải iframe |
 | Docker Desktop | Theo mốc09/10: security-613f2b7, Clerk Development; chưa recheck ngày 22/10, không coi là runtime VM |
-| GitHub Issues | #8/#9/#10/#11/#14/#16 OPEN; chưa tự đóng hoặc chuyển Ready |
+| GitHub Issues | #9 CLOSED sau #5; #8/#10/#11/#14/#16 OPEN; #17 Draft chờ quyền merge cụ thể |
 
 ## Nghiệm thu và giới hạn bằng chứng
 
@@ -24,7 +24,7 @@ Agent chỉ đọc kiểm VM: bốn services healthy; web 3100/gateway 4100 loop
 
 Theo owner: Google Admin và Employee login, private preview/retests trước đó; ngày 22/10 xác nhận mở443 rồi khách ngoài xem iframe và dùng thử lab OK. Agent chưa có independent probe4G hoặc checklist từng case RBAC/mobile; không suy xác nhận tổng quát thành toàn bộ gate security/release PASS. [Bằng chứng và phạm vi](validation/2026-10-22-lab-acceptance.md).
 
-**Việc vận hành còn lại:** `.env` VM chưa lưu SECURITY_IMAGE, Compose ở phiên shell mới thiếu biến sẽ fail dù web đang chạy bình thường. Operator lưu `SECURITY_IMAGE=html-share-studio:share-dc7560ea1c34` và kiểm config--quiet theo LAB_HANDOFF. Không phải chạy lại migration/backfill/restart để lưu tag. Public443 áp dụng mọi nginx vhost trên IP: inventory/restrict các site khác còn cần review.
+**Cấu hình lưu bền đã xong:** owner bổ sung SECURITY_IMAGE, SSH xác nhận đúng tag `html-share-studio:share-dc7560ea1c34`; Compose config không shell override PASS, web running. Không cần chạy lại migration/backfill/restart. Public443 áp dụng mọi nginx vhost trên IP: inventory/restrict các site khác còn cần review.
 
 ## Mốc cutover đã hoàn tất
 
@@ -36,7 +36,7 @@ Code đã có10 base62 exact-case/CSPRNG/UNIQUE, atomic rotate/revoke/reissue v�
 
 ## Review/merge tiếp theo
 
-Chuẩn bị theo [MERGE_PLAN](MERGE_PLAN.md): #5 → #12 → #13 → #15, đổi base về main sau mỗi dependency merge và kiểm diff/CI/head mới. Repo cho phép merge commit; đề xuất giữ ancestry cho stack. Không merge thẳng #15 vào base hiện tại rồi cho rằng đã vào main. Main trung gian #5/#12 chỉ local/demo, không deploy public.
+Theo [MERGE_PLAN](MERGE_PLAN.md), #5 đã merged; #12 merged nhầm base cũ nên chuẩn bị recovery #17 base main, giữ ancestry và code UI nguyên vẹn, không revert. Chuỗi còn lại #17 → #13 → #15, retarget/check diff/CI sau dependency merge. [Review #5/recovery](https://github.com/cfotel2604/html-share-platform/pull/17) có exact-main CI50tests PASS và equality checks; main trung gian vẫn local/demo, không deploy public.
 
 #13/#15 giữ Draft đến review/gates scope đạt; owner dùng thử lab không tự là GitHub review approval. Cần chốt bằng chứng session thật Employee owner-only/Admin audit/ngoài allowlist/revoke/logout và link lifecycle. Merge source không tự deploy VM; chưa được giao merge/production.
 

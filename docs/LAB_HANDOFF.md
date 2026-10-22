@@ -28,9 +28,9 @@ Web image ID `sha256:7967815b1c25611fc4237f929bc3cf21c21243f242524073f1509e3a365
 
 Studio/viewer đi qua Cloudflare; content DNS trỏ VM → nginx HTTPS → `127.0.0.1:4100`. Web bind `127.0.0.1:3100`. Owner xác nhận sau khi mở443, khách ngoài đã tải iframe và dùng thử lab OK. SSH xác minh firewall và các HTTP headers; agent không có probe độc lập từ mạng 4G. Mở443 ảnh hưởng mọi nginx vhost trên IP đó: cần review các site hiện hữu trước mở rộng phạm vi/pilot. Không chuyển raw HTML sang Studio/viewer để giải quyết mạng.
 
-## Cấu hình lưu bền — một việc operator còn cần làm
+## Cấu hình lưu bền — đã xác minh sau owner cập nhật
 
-Ngày 22/10, `.env` VM **chưa có SECURITY_IMAGE**; kiểm Compose từ process không có shell override thất bại vì thiếu biến. Container đang chạy không bị ảnh hưởng. Dùng editor bổ sung đúng dòng sau vào `/opt/hsp/src/.env`, giữ các secrets/giá trị khác:
+Owner đã bổ sung SECURITY_IMAGE ngày22/10. SSH xác nhận đúng tag bên dưới, Compose config từ process không có shell override PASS và web vẫn running. Finding thiếu biến trước đó đã xử lý; không cần nhập lại, restart hoặc chạy migration/backfill. Giá trị lưu trong `/opt/hsp/src/.env`:
 
 ```dotenv
 SECURITY_IMAGE=html-share-studio:share-dc7560ea1c34

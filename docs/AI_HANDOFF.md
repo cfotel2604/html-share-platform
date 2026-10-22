@@ -6,7 +6,7 @@
 
 Đọc AGENTS/README/PLAN/ARCHITECTURE/WORKFLOW/ADRs và ba handoff docs trên từ branch được giao. Kiểm git status/worktrees/remotes, fetch origin --prune, log origin/main, gh pr view5/12/13/15 và issues. Main checkout có thể cũ; giữ owner worktrees/untracked/env/volumes, không reset/clean. Không update main trực tiếp.
 
-Task worktree `C:\Users\admin\Documents\Codex\html-share-platform-pr5-sync`, branch `codex/14-short-viewer-links`, PR15 base `codex/8-10-auth-origin-gates`. Main78cb7ca; #5/#12 Ready, #13/#15 Draft, tất cả OPEN/MERGEABLE/checks SUCCESS trước handoff. Heads235cc62/4ab546a/4ac9689/c2da87f; docs head mới phải kiểm sau push. Issues8/9/10/11/14/16 OPEN. Chưa merge/retarget/Ready hoặc production. Repo cho phép merge commit, không auto-delete branches.
+Task worktree `C:\Users\admin\Documents\Codex\html-share-platform-pr5-sync`, branch `codex/14-short-viewer-links`, PR15 base #13. Owner đã merge #5 main1ed0eb0 rồi #12 vào codex/local-mvp2df738b; UI chưa main. [Recovery #17](https://github.com/cfotel2604/html-share-platform/pull/17) Draft/base main, branch codex/11-studio-main-recovery; managed worktree `C:\Users\admin\.codex\worktrees\studio-main-recovery\html-share-platform`, merge3296738 giữ tree UI4ab546a, backend/schema không đổi. #5 review sau merge không phát hiện thêm blocker local MVP, CI exact-main50tests/lint/typecheck/build/docs PASS. #9 CLOSED; #11/#8/#10/#14/#16 OPEN. #13/#15 vẫn Draft, chưa retarget/merge. PR15 CI tại fdf24eb SUCCESS; head docs mới cần check sau push. Không revert #12, không tự merge #17 khi chưa được giao; chưa production.
 
 ## Runtime VM đã kiểm ngày 22/10
 
@@ -18,9 +18,9 @@ Origins: Studio `https://studio-lab.ods.vn`, viewer `https://view-lab.ods.vn/<10
 
 Agent kiểm HTTPS từ VM: Studio 200, viewer short 200 có iframe sandbox allow-scripts, content 200/HTTP sandbox/frame-ancestors đúng, viewer API 404/host-ID alias 404; viewer/content no-store/no Set-Cookie. Owner xác nhận khách ngoài đã tải iframe và lab OK, không có independent probe4G hoặc full mobile matrix từ agent.
 
-## Một việc operator còn phải làm
+## Cấu hình lưu bền đã kiểm lại
 
-`.env` VM chưa có SECURITY_IMAGE, compose config từ process không có shell override FAIL vì thiếu biến; web đang chạy không bị ảnh hưởng. Handoff có dòng `SECURITY_IMAGE=html-share-studio:share-dc7560ea1c34` và lệnh env -u SECURITY_IMAGE ... config --quiet để operator lưu/kiểm bền. Không đổi keys/emails/allowlist, không copy env example đè private env, không tự đổi pin sang docs HEAD.
+Owner đã lưu SECURITY_IMAGE; SSH xác nhận tag `html-share-studio:share-dc7560ea1c34`, Compose config từ process không shell override PASS, web running. Không yêu cầu operator lặp lại hoặc restart/migrate/backfill. Giữ keys/emails/allowlist, private env và pin runtime, không tự đổi sang docs HEAD.
 
 Giữ bốn overlays theo thứ tự base/security/lab/edge; hai file sau operator-owned/untracked. [Public env sample](../deploy/lab-public.env.example) là fragment không credentials; [overlay example](../deploy/compose.lab-public.example.yaml) chỉ minh họa invariant, không áp tự động. Security overlay lấy public port từ GATEWAY_PORT; env PUBLIC_SITE_PORT= chưa đủ, overlay cuối phải set chuỗi rỗng web/gateway. SECURITY_IMAGE chọn cả web/migrate/gateway: up toàn stack có thể đổi gateway, nên routine web update dùng --no-deps --no-build web sau khi được giao.
 
@@ -41,8 +41,8 @@ EACCES #16 fix dc7560e: Dockerfile a+rX scripts/db sau COPY, giữ USER node/roo
 
 ## Việc tiếp theo
 
-1. Operator lưu image pin theo LAB_HANDOFF. Reviewer chốt các case session thật ownership/Admin audit/deny/revoke/logout và lifecycle theo MERGE_PLAN; không yêu cầu gửi keys/emails lại hoặc tự khóa người dùng thật.
-2. Chuẩn bị/review stack #5 → #12 → #13 → #15. Sau mỗi dependency merge retarget main, check diff/CI/new head, tránh squash ancestry trừ khi re-stack đúng. Chưa tự merge hoặc Ready từ việc owner nghiệm thu lab tổng quát.
+1. Image pin đã lưu và config PASS. Reviewer chốt các case session thật ownership/Admin audit/deny/revoke/logout và lifecycle theo MERGE_PLAN; không yêu cầu gửi keys/emails lại hoặc tự khóa người dùng thật.
+2. #5 đã merged; #12 merged base cũ. Recovery #17 đưa UI nguyên vẹn vào main; sau merge #17 mới retarget/review #13 rồi #15 khi được giao. Kiểm head/base/CI, tránh squash ancestry trừ khi re-stack đúng; chưa tự merge #17/#13/#15.
 3. #8/#10 còn release gates: R2 private/IAM/cleanup, production Clerk/OAuth, cookie cfvn.cloud sibling/cross-environment/browser/mobile/Zalo/crawler, edge limits/cache/unpublish, full log redaction, DNS/vhost inventory và TLS renewal/rollback. ADR-0001/0003 Proposed,0002/0004 Accepted cho quyết định riêng. Staging/pilot/release review trước production; legacy MinIO không đáp ứng gateR2.
 
 ## Môi trường và hồ sơ cũ

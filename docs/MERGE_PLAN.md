@@ -1,27 +1,27 @@
 # Chuẩn bị merge stack sau nghiệm thu lab — 2026-10-22
 
-Đây là kế hoạch review/merge để owner thực hiện hoặc giao tiếp; chưa merge, đổi base, chuyển Ready hoặc triển khai production. [Lab handoff](LAB_HANDOFF.md) ghi runtime `dc7560e`; head tài liệu/PR có thể mới hơn image đang chạy. [Workflow](WORKFLOW.md) vẫn áp dụng.
+Kế hoạch cập nhật sau owner merge #5 và #12. [Lab handoff](LAB_HANDOFF.md) ghi runtime dc7560e đã chạy; merge source không tự đổi containers. [Workflow](WORKFLOW.md) vẫn áp dụng; chưa production.
 
 ## GitHub đã kiểm trực tiếp
 
-Main `78cb7ca`. Cả bốn PR OPEN, MERGEABLE, CI hiện tại SUCCESS; chưa có review approval ghi nhận. #13/#15 vẫn Draft. Re-query đúng head ngay trước mỗi merge, không dùng snapshot này làm approval.
+Main `1ed0eb0d35961118de6e22f17be13b4bae95cc19`: #5 đã merged ngày22/10 19:02:23 Asia/Saigon. #12 merged một phút sau vào base cũ `codex/local-mvp`, commit2df738b; UI không vào main. Không mất code, không revert #12. Agent review lại #5, exact-main application/docs SUCCESS (50 tests/0fail/lint/typecheck/build).
 
-| Thứ tự | PR | Base hiện tại | Head kiểm ngày 22/10 | Trạng thái |
-| --- | --- | --- | --- | --- |
-| 1 | [#5 — local MVP/upload](https://github.com/cfotel2604/html-share-platform/pull/5) | main | `235cc62597a15b437e4db11cfc1fced4890483b1` | Ready, 2 checks SUCCESS |
-| 2 | [#12 — Studio](https://github.com/cfotel2604/html-share-platform/pull/12) | codex/local-mvp | `4ab546adba17cea8c0d298e786a652a0b2277bc3` | Ready, 2 checks SUCCESS |
-| 3 | [#13 — auth/origin](https://github.com/cfotel2604/html-share-platform/pull/13) | codex/11-studio-ui | `4ac96894b3ac75d0a80c7190d8c70d1c00602a61` | Draft, 3 checks SUCCESS |
-| 4 | [#15 — short viewer/permissions](https://github.com/cfotel2604/html-share-platform/pull/15) | codex/8-10-auth-origin-gates | `c2da87f7ae64650ef3a4e60bbfd5c3d6cd83fee6` trước cập nhật handoff | Draft, 3 checks SUCCESS; head docs mới cần kiểm sau push |
+| PR | Trạng thái/base hiện tại | Bước tiếp |
+| --- | --- | --- |
+| [#5](https://github.com/cfotel2604/html-share-platform/pull/5) | MERGED vào main1ed0eb0, #9 CLOSED | Đã review sau merge, không merge lại |
+| [#12](https://github.com/cfotel2604/html-share-platform/pull/12) | MERGED vào codex/local-mvp2df738b, tree đúng UI4ab546a | Recovery #17 đưa UI vào main |
+| [#17](https://github.com/cfotel2604/html-share-platform/pull/17) | Draft, base main; branch codex/11-studio-main-recovery | Recovery3296738 merge local-mvp vào nhánh từ main, backend/schema/env không đổi; review/CI và quyền merge cụ thể |
+| [#13](https://github.com/cfotel2604/html-share-platform/pull/13) | Draft, base codex/11-studio-ui, head4ac9689 | Sau #17 vào main mới retarget main/check diff/conflicts/CI khi được giao |
+| [#15](https://github.com/cfotel2604/html-share-platform/pull/15) | Draft, base codex/8-10-auth-origin-gates | Sau #13 merge mới retarget/check; CI fdf24eb SUCCESS trước cập nhật docs này |
 
-Repo cho phép merge commit, squash và rebase; đề xuất **merge commit** cho stack này để giữ ancestry. Nếu squash/rebase dependency, không chỉ đổi base vì có thể xuất hiện lại commits/conflicts; cần re-stack/review trong worktree riêng, giữ owner files và rerun checks. Không xóa dependency branches giữa chuỗi.
+[PR recovery và review #5](https://github.com/cfotel2604/html-share-platform/pull/17) giữ ancestry và code22files UI nguyên vẹn từ #12. Repo cho phép merge commit; tiếp dùng merge commit cho recovery/stack. Không squash/rebase hoặc force-push dependencies tùy tiện, không xóa branch gốc giữa chuỗi. Re-query head/base ngay trước merge, không dùng snapshot làm approval.
 
-## Trình tự sau khi owner chấp thuận merge
+## Trình tự còn lại
 
-1. Reviewer xem diff #5 với main và kết quả #9; merge #5 vào main khi scope đạt. Đây là local-only/demo build, không deploy intermediate main đó ra public.
-2. Fetch origin, đổi base #12 về main, kiểm diff chỉ còn UI/API boundary dự kiến, mergeability và CI trên head/base mới; review rồi merge #12.
-3. Đổi base #13 về main, review auth/gateway/migration0002 và checklist dưới. Chỉ chuyển Ready khi scope/gates review đạt; nếu thiếu evidence thì giữ Draft, bổ sung trước merge.
-4. Sau #13 merge, đổi base #15 về main, review short-link/migration0003/EACCES fix và handoff. Kiểm lại diff/CI; chuyển Ready và merge sau review.
-5. Sau mỗi bước ghi merge commit/PR/base mới vào PROJECT_STATUS/AI_HANDOFF trên branch được giao. Sau toàn stack, xác minh main có runtime fix `dc7560e`, schema0001–0003 không đổi bytes, links/docs nhất quán. Merge source không tự đổi VM; không cần redeploy chỉ để đổi tên branch.
+1. Reviewer/owner chốt recovery #17 và CI head mới; chỉ Ready/merge khi được giao. Yêu cầu ban đầu là review/merge #5 đã được owner merge trước lúc kiểm, không tự coi là quyền merge PR bổ sung.
+2. Sau #17 vào main, retarget #13 main khi được giao; review auth/gateway/migration0002 và checklist dưới, giải quyết docs conflicts giữ trạng thái mới. Chỉ chuyển Ready khi scope/gates đạt.
+3. Sau #13 vào main, retarget #15 main, kiểm diff/CI/share lifecycle/0003/permissions/handoff. Không tự merge #13/#15 từ thao tác recovery UI.
+4. Ghi commit/PR/base/checks mới trong PROJECT_STATUS/AI_HANDOFF đúng branch. Main trung gian chỉ local/demo/path gateway, không build/deploy lên lab đang chạy Clerk/hostname/short links. Không chạy lại migration chỉ vì merge source.
 
 Lệnh kiểm chỉ đọc dùng ở từng bước:
 
@@ -44,13 +44,13 @@ Owner xác nhận dùng thử tổng quát OK, bên ngoài tải iframe; agent k
 | Origin/private preview #10 | Local Chrome direct/iframe boundary; public headers/sandbox và owner preview/retests | Phạm vi browser thật/domain thật và cookie boundary đã test; liệt kê phần mobile/sibling/production còn gate, giữ ADR-0001/0003 Proposed đến review tương ứng |
 | Share lifecycle #14 | 20 integration groups; local Chrome lifecycle; lab canonical200/alias 404, 3 revoked rows | Owner/reviewer ghi case update giữ URL, rotate/revoke/reissue mã cũ404, revoked không tự hồi khi publish/update, unpublish chặn viewer/direct, preview vẫn chạy |
 | Permissions #16 | Restrictive checkout/non-root image CI, fixed image UID1000, SQL0003 đã chạy lab | Review Dockerfile/CI/fix và kết quả retry; giữ SQL checksums, không dùng image b1e lỗi |
-| Vận hành | Runtime healthy, public 443 do owner mở, origins đúng | Lưu SECURITY_IMAGE private env; rà các nginx vhosts vì443 mở chung IP, cập nhật operator handoff |
+| Vận hành | Runtime healthy, public 443 do owner mở, origins đúng | SECURITY_IMAGE đã lưu/Compose config PASS; rà các nginx vhosts vì443 mở chung IP, cập nhật operator handoff |
 
 Review code/merge vào main không tự phê duyệt pilot/production. Không hạ gate hoặc đánh dấu ADR Accepted để hoàn tất checklist. Nếu reviewer cần thay code, dùng branch/PR đúng scope và test tương ứng.
 
 ## Issue và release tiếp theo
 
-- #9 có `Closes` trong #5: chỉ đóng khi merge đúng target/default branch và scope đạt; xác minh trạng thái thực tế sau merge.
-- #11 liên quan #12; #14/#16 liên quan #15: chỉ đóng sau review/merge và acceptance tương ứng, không tự đóng từ lab smoke. PR dùng `Refs` không đảm bảo tự đóng Issue.
+- #9 đã CLOSED sau merge #5 vào main; đã xác minh trạng thái trực tiếp.
+- #11 còn OPEN dù #12 merged base cũ; cần recovery #17 vào main và acceptance. #14/#16 theo #15, chỉ đóng sau review/merge/acceptance tương ứng; Refs không đảm bảo auto-close.
 - #8/#10 tiếp tục mở cho phần evidence/gates chưa hoàn tất; nếu tách phần release thành Issues mới phải ghi mapping và acceptance rõ, không bỏ checklist cũ.
 - Trước pilot/production: private R2 (VM MinIO legacy không đạt), production Clerk/OAuth, cookie/mobile/Zalo, edge limits/log redaction, vhost/DNS inventory và renewal/rollback, security/owner review. Chưa được giao thay DNS hoặc triển khai production.

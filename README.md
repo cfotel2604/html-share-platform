@@ -6,7 +6,7 @@ Nền tảng nội bộ để nhân viên tải lên HTML/CSS/JavaScript hoặc 
 
 ## Trạng thái
 
-**P0/P1** đã merge. Local MVP #5 và Studio #12 Ready; auth/origin #13 và short-link #15 còn Draft, chưa merge. Ngày **2026-10-22**, lab VM đã chạy web `share-dc7560ea1c34`, migration0003/backfill hoàn tất; owner mở443 và xác nhận iframe từ bên ngoài/dùng thử OK. SSH kiểm runtime/DB/headers; real-session security cases và production gates còn review riêng. [Tiến độ](docs/PROJECT_STATUS.md), [lab handoff và env mẫu](docs/LAB_HANDOFF.md), [thứ tự review/merge](docs/MERGE_PLAN.md).
+**P0/P1** đã merge. Owner đã merge MVP #5 vào main1ed0eb0; #12 merge vào base cũ codex/local-mvp nên UI đang chờ [recovery #17](https://github.com/cfotel2604/html-share-platform/pull/17). Auth/origin #13 và short-link #15 còn Draft, chưa merge. Ngày **2026-10-22**, lab VM đã chạy web `share-dc7560ea1c34`, migration0003/backfill hoàn tất; owner mở443 và xác nhận iframe từ bên ngoài/dùng thử OK. SSH kiểm runtime/DB/headers; real-session security cases và production gates còn review riêng. [Tiến độ](docs/PROJECT_STATUS.md), [lab handoff và env mẫu](docs/LAB_HANDOFF.md), [thứ tự review/merge](docs/MERGE_PLAN.md).
 
 - [PLAN và roadmap P0–P7](PLAN.md)
 - [Kiến trúc và luồng upload/publish](docs/ARCHITECTURE.md)
@@ -47,7 +47,7 @@ YAML workflow và Issue templates được parse bằng `scripts/check_yaml.py` 
 
 Cookie parent-domain `cfvn.cloud` (chung giữa content lab/production) và tính tương thích iframe/opaque-origin trên mobile/Zalo còn là P4 security gates bắt buộc. Xem [PLAN](PLAN.md) và [ADR-0001](docs/adr/0001-public-site-origin-isolation.md).
 
-Lab hiện dùng `studio-lab.ods.vn`/`view-lab.ods.vn` HTTPS qua Cloudflare; content wildcard trỏ thẳng VM/nginx, UFW443 đã mở cho khách Internet theo owner. Web #15 resolve mã10base62, alias32hex trả404; gateway giữ security-417c50d có chủ đích. [Lab handoff](docs/LAB_HANDOFF.md) ghi image pin cần lưu trong env private, bốn Compose overlays và rollback. Mã viewer đổi không thu hồi direct URL còn published. Private R2/Clerk production/cookie/mobile/security release vẫn cần gate tương ứng; chưa deploy production.
+Lab hiện dùng `studio-lab.ods.vn`/`view-lab.ods.vn` HTTPS qua Cloudflare; content wildcard trỏ thẳng VM/nginx, UFW443 đã mở cho khách Internet theo owner. Web #15 resolve mã10base62, alias32hex trả404; gateway giữ security-417c50d có chủ đích. [Lab handoff](docs/LAB_HANDOFF.md) ghi image pin đã lưu/kiểm PASS trong env private, bốn Compose overlays và rollback. Mã viewer đổi không thu hồi direct URL còn published. Private R2/Clerk production/cookie/mobile/security release vẫn cần gate tương ứng; chưa deploy production.
 
 ## Làm việc với GitHub
 
