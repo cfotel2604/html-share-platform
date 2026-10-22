@@ -54,11 +54,22 @@ services:
     environment:
       <<: *db_client_env
       NODE_ENV: production
+      LOCAL_DEMO_MODE: ${LOCAL_DEMO_MODE:-0}
+      LOCAL_DEMO_PASSWORD: ${LOCAL_DEMO_PASSWORD:?Set LOCAL_DEMO_PASSWORD for local lab}
+      LOCAL_DEMO_SESSION_SECRET: ${LOCAL_DEMO_SESSION_SECRET:?Set LOCAL_DEMO_SESSION_SECRET for local lab}
+      STORAGE_ENDPOINT: http://minio:9000
+      STORAGE_REGION: us-east-1
+      STORAGE_BUCKET: html-share-local
+      STORAGE_ACCESS_KEY: ${MINIO_ROOT_USER:?Set MINIO_ROOT_USER}
+      STORAGE_SECRET_KEY: ${MINIO_ROOT_PASSWORD:?Set MINIO_ROOT_PASSWORD}
+      GATEWAY_PUBLIC_ORIGIN: http://127.0.0.1:${GATEWAY_PORT:-4100}
     ports:
       - "127.0.0.1:${APP_PORT:-3000}:3000"
     depends_on:
       migrate:
         condition: service_completed_successfully
+      minio:
+        condition: service_healthy
     healthcheck:
       test:
         - CMD
@@ -69,6 +80,31 @@ services:
       timeout: 5s
       retries: 10
       start_period: 10s
+    restart: unless-stopped
+
+  gateway:
+    build: .
+    command: ["node", "scripts/gateway.mjs"]
+    environment:
+      <<: *db_client_env
+      STORAGE_ENDPOINT: http://minio:9000
+      STORAGE_REGION: us-east-1
+      STORAGE_BUCKET: html-share-local
+      STORAGE_ACCESS_KEY: ${MINIO_ROOT_USER:?Set MINIO_ROOT_USER}
+      STORAGE_SECRET_KEY: ${MINIO_ROOT_PASSWORD:?Set MINIO_ROOT_PASSWORD}
+      GATEWAY_VIEWER_ORIGIN: http://127.0.0.1:${APP_PORT:-3000}
+    ports:
+      - "127.0.0.1:${GATEWAY_PORT:-4100}:4000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4000/health/live').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     restart: unless-stopped
 
 volumes:

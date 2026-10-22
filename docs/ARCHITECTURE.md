@@ -43,6 +43,10 @@ Site ID xuất hiện trong hostname public; dùng giá trị random đủ entro
 5. Nếu upload thất bại: không đổi phiên bản active; dọn staging bằng cleanup job.
 6. Preview trên origin publish của phiên bản staging (grant ngắn hạn để không public trước publish), nhúng trong trusted viewer shell. Không inject nội dung vào dashboard DOM.
 
+### Local upload hardening (#9)
+
+Local MVP áp byte cap 22 MiB cho toàn multipart body trước parser (file quota 20 MiB), không tin Content-Length. PUT preflight owner trước body ingest và kiểm tra lại dưới row lock trước ZIP/storage. Reserve immutable version/prefix, ghi toàn bộ assets, rồi active pointer/audit trong cùng transaction. Lỗi trước COMMIT rollback và cleanup exact new keys, retry tối đa 3 lần; COMMIT response không xác định giữ objects và trả 503 để client refresh. Cleanup failure/process crash cần operator reconciliation; durable orphan lifecycle còn P5/P6. Chi tiết và bằng chứng trong [validation #9](validation/2026-10-09-upload-hardening.md); không thay origin policy hoặc auth production.
+
 ## Serving
 
 - Resolve Host với allowlist domain publish và cú pháp ID nghiêm ngặt; không proxy tùy ý theo host.

@@ -1,0 +1,88 @@
+import { randomBytes, randomUUID } from "node:crypto";
+import { db } from "./db";
+import { ensureBucket, removeFiles, storeFile } from "./storage";
+import { fingerprint, parseSite } from "./upload";
+import { UploadError } from "./upload-error";
+
+export async function assertSiteOwner(owner: string, id: string) {
+  const result = await db().query(
+    "SELECT id FROM sites WHERE id = $1 AND owner_id = $2 AND status <> 'deleted'",
+    [id, owner],
+  );
+  if (!result.rowCount) throw new UploadError("Không tìm thấy website được phép cập nhật", 404);
+}
+
+export async function uploadVersion(owner: string, file: File, name: string, existingId?: string) {
+  if (!name.trim() || name.length > 100) throw new UploadError("Tên website phải có 1–100 ký tự", 400);
+  const id = existingId ?? randomBytes(16).toString("hex");
+  const version = randomUUID();
+  const prefix = `${id}/${version}`;
+  const client = await db().connect();
+  const attempted: string[] = [];
+  let commitAttempted = false;
+  let discardConnection = false;
+  try {
+    await client.query("BEGIN");
+    if (existingId) {
+      const current = await client.query(
+        "SELECT id FROM sites WHERE id = $1 AND owner_id = $2 AND status <> 'deleted' FOR UPDATE",
+        [id, owner],
+      );
+      if (!current.rowCount) throw new UploadError("Không tìm thấy website được phép cập nhật", 404);
+    } else {
+      await client.query(
+        "INSERT INTO sites (id, owner_id, display_name, status) VALUES ($1, $2, $3, 'draft')",
+        [id, owner, name.trim()],
+      );
+    }
+    // Existing-site ownership is locked before ZIP ingest and every storage side effect.
+    let assets;
+    try { assets = await parseSite(file); } catch (error) {
+      throw new UploadError(error instanceof Error ? error.message : "File không hợp lệ", 400);
+    }
+    // Reserve the immutable prefix before writing; collisions cannot overwrite old versions.
+    await client.query(
+      `INSERT INTO site_versions
+       (id, site_id, storage_prefix, uploaded_by, manifest_hash, published_at)
+       VALUES ($1, $2, $3, $4, $5, now())`,
+      [version, id, prefix, owner, fingerprint(assets)],
+    );
+    await ensureBucket();
+    for (const asset of assets) {
+      const key = `${prefix}/${asset.path}`;
+      // Include the failing PUT: a lost response does not prove the object was not stored.
+      attempted.push(key);
+      await storeFile(key, asset.body, asset.type);
+    }
+    await client.query(
+      `UPDATE sites SET active_version_id = $2, display_name = $3, status = 'published',
+       updated_at = now() WHERE id = $1`,
+      [id, version, name.trim()],
+    );
+    await client.query(
+      `INSERT INTO audit_events (actor_id, action, target_type, target_id)
+       VALUES ($1, $2, 'site', $3)`,
+      [owner, existingId ? "site.update" : "site.create", id],
+    );
+    commitAttempted = true;
+    await client.query("COMMIT");
+    return { id, fileCount: assets.length };
+  } catch (error) {
+    try { await client.query("ROLLBACK"); } catch { discardConnection = true; }
+    if (attempted.length && !commitAttempted) {
+      let cleaned = false;
+      for (let attempt = 0; attempt < 3 && !cleaned; attempt++) {
+        try { await removeFiles(attempted); cleaned = true; } catch { /* retry idempotent deletes */ }
+      }
+      if (!cleaned) console.warn("upload.cleanup_failed", { version, objectCount: attempted.length });
+    } else if (commitAttempted) {
+      // COMMIT response loss is ambiguous. Deleting here could remove an active version.
+      discardConnection = true;
+      console.warn("upload.commit_outcome_unknown", { version });
+      throw new UploadError("Chưa xác nhận được kết quả xuất bản. Hãy làm mới danh sách trước khi thử lại.", 503);
+    }
+    throw error;
+  } finally {
+    client.release(discardConnection);
+  }
+}

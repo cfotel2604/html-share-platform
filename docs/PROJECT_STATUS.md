@@ -1,42 +1,41 @@
 # Project status — HTML Share Platform
 
-> Snapshot kiểm tra ngày **2026-10-08 (Asia/Ho_Chi_Minh)**. GitHub là nguồn xác minh trạng thái PR/Issue; file này có thể cũ sau mỗi lần merge hoặc push. Đọc cùng [AI_HANDOFF](AI_HANDOFF.md), [PLAN](../PLAN.md) và [AGENTS](../AGENTS.md).
+> Snapshot bàn giao **2026-10-09 (Asia/Saigon)**. Code/CI/Docker/browser probes của mốc này chạy ngày 2026-10-08; GitHub, health và preservation đã đối chiếu lại khi bàn giao. GitHub là nguồn live; đọc cùng [AI_HANDOFF](AI_HANDOFF.md), [PLAN](../PLAN.md) và [AGENTS](../AGENTS.md).
 
 ## Tiến độ đã kiểm chứng
 
-| Hạng mục | Trạng thái tại snapshot | Bằng chứng |
+| Hạng mục | Trạng thái | Bằng chứng |
 | --- | --- | --- |
-| P0 — Planning | PR #2 đã merge vào `main` | [PR #2](https://github.com/cfotel2604/html-share-platform/pull/2) |
-| P1 — Foundation | PR #4 đã merge vào `main` | [PR #4](https://github.com/cfotel2604/html-share-platform/pull/4) |
-| `main` từ remote | HEAD `40eb104` | `git log -1 origin/main` tại lúc kiểm tra |
-| Local HTML Share MVP | PR #5 **Draft**, base `main`, head `codex/local-mvp`, chưa merge | [PR #5](https://github.com/cfotel2604/html-share-platform/pull/5) |
-| PR #5 conflict / CI | `MERGEABLE` / `CLEAN`; `application` và `validate-docs` đều `SUCCESS` | PR #5, commit `1506241` |
-| Issue | #1 (P0) và #3 (P1) vẫn **OPEN** dù PR tương ứng đã merge | [Issue #1](https://github.com/cfotel2604/html-share-platform/issues/1), [Issue #3](https://github.com/cfotel2604/html-share-platform/issues/3) |
+| P0/P1/handoff | PR #2/#4/#7 đã merge; origin/main `78cb7ca` | Git log và GitHub |
+| Local MVP | PR #5 **Ready for review**, base main, head codex/local-mvp; chưa merge | [PR #5](https://github.com/cfotel2604/html-share-platform/pull/5) |
+| Upload #9 | Hai finding đã sửa tại `a74be7f` + `9147161`; 50 tests, lint/typecheck/build và Docker integration pass | [Validation](validation/2026-10-09-upload-hardening.md), [application](https://github.com/cfotel2604/html-share-platform/actions/runs/37794864775), [docs](https://github.com/cfotel2604/html-share-platform/actions/runs/37794864792) |
+| Studio UI | PR #12 **Ready for review**, base codex/local-mvp, đã merge backend fix; code tích hợp `011d0ee`, 55 tests, CI pass | [PR #12](https://github.com/cfotel2604/html-share-platform/pull/12), [application](https://github.com/cfotel2604/html-share-platform/actions/runs/37794864433), [docs](https://github.com/cfotel2604/html-share-platform/actions/runs/37794863701) |
+| Docker owner | Web healthy tại http://127.0.0.1:3100, image html-share-studio:upload-011d0ee; Studio và upload fix cùng chạy | [Artifact/rollback](validation/2026-10-09-upload-hardening.md) |
+| Preservation | 8 site trước deploy giữ metadata, DB/MinIO/gateway giữ container IDs/mounts; 1 fixture mới để unpublished | Baseline/verify và browser smoke |
+| Tracking | #1/#3/#6 CLOSED; #8/#9/#10/#11 OPEN | #9/#11 chờ review/merge; #8/#10 chưa hoàn tất |
 
-Việc chuẩn hóa tài liệu trạng thái/handoff được theo dõi tại [Issue #6](https://github.com/cfotel2604/html-share-platform/issues/6), [Draft PR #7](https://github.com/cfotel2604/html-share-platform/pull/7) trên branch `codex/ai-handoff`; chưa có trong `main` khi snapshot này được lập.
+Không sửa main, không merge PR hoặc deploy production. Owner đã giao thay UI, sửa #9 và cập nhật Docker Desktop local; hai lần deploy chỉ thay web, không migration/schema change. Checkout owner b3f8119 và .env giữ nguyên; các lần vận hành phải giữ Compose web override.
 
-Theo báo cáo test của phiên trước và xác nhận của owner: Local MVP đã thử Studio, upload file HTML và preview thành công. Đây là **kết quả lịch sử**, không phải kiểm thử runtime mới trong lần cập nhật tài liệu này. PR #5 còn Draft nên chưa coi MVP đã được duyệt merge hoặc sẵn sàng cho Internet.
+## Kết quả và giới hạn
 
-## Quyết định owner đã ghi nhận
+Body cap tính byte thực trước multipart parser, trả 413 và hủy stream; ownership trước ingest/storage và dưới row lock, denied site trả 404/zero writes. SQL/storage failure trước COMMIT giữ active cũ và cleanup new keys. ZIP hợp lệ cùng 21 hostile variants pass. COMMIT response không xác định trả 503, giữ objects để tránh xóa active; cleanup persistent failure/crash cần operator reconciliation, chưa có durable orphan reaper P5/P6.
 
-- Dashboard/API nội bộ cùng Next.js: `studio.ods.vn`, API `/api/*` chung container; đăng nhập Google qua Clerk Development giai đoạn lab, allowlist email kiểm tra server-side.
-- Link gửi khách: `https://view.ods.vn/<site-id>` là viewer shell tin cậy, nhúng nội dung upload từ `https://<site-id>.matbao.one/` qua sandbox iframe.
-- Một wildcard DNS `*.matbao.one` có thể sử dụng về sau; chưa thay đổi DNS. Kiểm kê hostname/record/route cũ và chứng minh an toàn cookie parent-domain trước khi bật public gateway.
-- Storage production: **Cloudflare R2 private**. Image MinIO legacy chỉ được phép dùng local lab; chưa tích hợp R2 thật.
-- Hạ tầng giai đoạn đầu: Docker/VPS, thử nghiệm trên máy cá nhân. ZIP tối đa 20 MiB nén, 100 MiB giải nén, 500 file, depth 12.
-- Retention có thể cấu hình; **không làm backup/restore trong MVP** theo quyết định owner, đồng nghĩa chấp nhận rủi ro mất dữ liệu.
+Docker integration thật chạy trên project/DB/MinIO riêng: chunked early rejection, ownership/race, rollback sau real writes, ZIP/cache/unpublish đều pass. Chrome sau deploy owner: HTML/ZIP update giữ URL, sandbox preview, cookie/storage bị chặn, copy/filter/theme, 1280/390/320 không overflow, publish/unpublish và logout pass; dữ liệu test tổng hợp. Không stress/DoS owner lab. [Review cũ](reviews/2026-10-08-pr5.md) là snapshot trước fix; kết quả mới ở [validation #9](validation/2026-10-09-upload-hardening.md).
 
-Chi tiết và điều kiện bảo mật bắt buộc: [kiến trúc](ARCHITECTURE.md), [ADR-0001](adr/0001-public-site-origin-isolation.md). ADR về origin isolation hiện là **Proposed** và cần kiểm chứng trước khi triển khai công khai.
+## Quyết định owner
 
-## Chưa hoàn thành / cần review
+- Studio tập trung: ODS blue, neutral/graphite, Geist/Mono, sáng/tối. UI/presentation → workflow → typed HTTP adapter → backend theo ADR-0002 trong PR #12; Next backend hiện cùng web container, gateway riêng.
+- Dashboard studio.ods.vn và Next API; Google/Clerk Development cho lab, server email allowlist/RBAC khi triển khai P2.
+- Viewer view.ods.vn/site-id chỉ trusted shell; HTML từ site-id.matbao.one và sandbox không allow-same-origin. ADR-0001 vẫn Proposed; chưa đổi DNS/TLS.
+- Production R2 private; MinIO legacy chỉ local. Docker/VPS giai đoạn đầu. ZIP 20 MiB nén / 100 MiB giải nén / 500 files / depth 12; local hardening thêm cap 1000 entries.
+- Retention configurable; backup/restore ngoài MVP theo lựa chọn owner.
 
-1. **PR #5:** review tính năng Local MVP và bảo mật (demo password, upload validation, guest/API boundary, CSP iframe/direct navigation). Giữ Draft cho đến khi đủ tiêu chí; không tự merge hoặc deploy production.
-2. **P2 — Authentication/RBAC:** Google/Clerk, email allowlist phía server, phân quyền và kiểm thử API quản trị. Local MVP hiện dùng mật khẩu demo, không phải cơ chế production.
-3. **P3/P4 và các phase tiếp theo theo [PLAN](../PLAN.md):** tích hợp Cloudflare R2 thật, gateway/domain/TLS, cookie-domain isolation, wildcard ảnh hưởng các site cũ, browser/Zalo compatibility, quota/retention và các gate trước public.
-4. **Issue hygiene:** xác nhận với owner khi nào đóng Issue #1/#3; việc merge PR không tự đóng các Issue đang OPEN.
+## Việc tiếp theo
 
-## Cách kiểm chứng lại trong phiên tiếp theo
+1. Review PR #5 và #12; #9/#11 giữ mở đến merge. Sau #5 merge, đổi base #12 về main và xác minh CI/mergeability; chưa được giao merge tự động.
+2. [#8](https://github.com/cfotel2604/html-share-platform/issues/8): Google/Clerk, allowlist server, Employee/Admin, ownership/RBAC tests. Demo password chỉ local.
+3. [#10](https://github.com/cfotel2604/html-share-platform/issues/10): R2 IAM/cleanup permissions, hostname/TLS, reserved DNS inventory, direct/iframe cookie isolation và Safari/Zalo trước public. Lifecycle/retention/orphan reconciliation, rate/concurrency, staging/pilot còn P5–P7.
 
-Từ đúng repository/worktree, dùng `git status --short --branch`, `git worktree list`, `git fetch origin --prune`, `git log -1 origin/main`, `gh pr list --state open`, `gh pr view 5 --json state,isDraft,baseRefName,headRefName,mergeable,mergeStateStatus,statusCheckRollup` và `gh issue list --state open`. Nếu không có quyền GitHub/network, ghi rõ **chưa xác minh** thay vì khẳng định snapshot còn hiệu lực.
+## Kiểm chứng lại
 
-Khi PR/Issue đổi trạng thái hoặc quyết định được chốt, cập nhật ngày kiểm chứng và dẫn chứng trong file này trên branch công việc, đồng thời cập nhật [AI_HANDOFF](AI_HANDOFF.md).
+Dùng git status/worktree/remote, fetch origin --prune, log origin/main, gh pr view 5/12 với state/isDraft/headRefOid/mergeable/statusCheckRollup và gh issue list. Kiểm tra image tag/revision/health đang chạy; không suy diễn checkout main đã có các thay đổi trên PR. Cập nhật status/handoff trong branch được giao khi có mốc mới.
