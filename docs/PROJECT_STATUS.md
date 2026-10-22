@@ -1,6 +1,6 @@
 # Project status — HTML Share Platform
 
-> Snapshot **2026-10-22 (Asia/Saigon)**: lab đã chạy web short-link, owner xác nhận iframe từ mạng ngoài và dùng thử OK; SSH xác minh runtime/DB/headers. Main6bdd298 đã có #5 và UI #12 qua recovery #17; #13 đã retarget main/sync dependency, #15 đã sync #13; đang review/CI, chưa merge. [Lab handoff](LAB_HANDOFF.md), [merge plan](MERGE_PLAN.md), [bằng chứng](validation/2026-10-22-lab-acceptance.md), [AI_HANDOFF](AI_HANDOFF.md). Markdown không thay kiểm GitHub/VM hiện tại.
+> Snapshot **2026-10-22 (Asia/Saigon)**: lab đã chạy web short-link, owner xác nhận iframe từ mạng ngoài và dùng thử OK; SSH xác minh runtime/DB/headers. Owner giao Ready/merge #13 → #15 và chốt handoff. #13 đã MERGED main6d30d22 lúc19:47:35, đúng tested head8f204c3; #15 đã retarget main và sync merge commit đó, đang kiểm CI trước merge. [Lab handoff](LAB_HANDOFF.md), [merge plan](MERGE_PLAN.md), [bằng chứng](validation/2026-10-22-lab-acceptance.md), [AI_HANDOFF](AI_HANDOFF.md). Markdown không thay kiểm GitHub/VM hiện tại.
 
 ## Trạng thái đã kiểm
 
@@ -9,14 +9,14 @@
 | P0/P1 | #2/#4/#7 merged; origin/main nay6bdd298 sau recovery #17 |
 | Local MVP/upload #9 | Owner đã merge #5 vào main1ed0eb0; review sau merge không phát hiện thêm blocker local MVP, exact-main CI50tests PASS; #9 CLOSED |
 | Studio/UI #11 | #12 MERGED vào base cũ; [recovery #17](https://github.com/cfotel2604/html-share-platform/pull/17) nay MERGED main6bdd298, UI4ab546a đã vào main; 55tests/CI PASS |
-| Auth/origin #8/#10 | #13 đã retarget base main6bdd298, sync ad4b7e2; đang review/CI head mới, runtime giữ nguyên; release gates còn riêng |
-| Short-link/permissions #14/#16 | #15 Draft, base #13 đã sync main; conflict chỉ status/handoff, runtime giữ nguyên e834f13; CI head mới kiểm sau push |
+| Auth/origin #8/#10 | #13 MERGED main6d30d22 theo owner giao; head8f204c3 cả3checks PASS, 79unit/15groups; #10 release gates còn riêng |
+| Short-link/permissions #14/#16 | #15 retarget main sau #13, sync không conflict/runtime change; review PASS và CI đúng final head trước Ready/merge |
 | VM source/web | dc7560ea1c34cbe060779fbe69bb2f574e170431; web html-share-studio:share-dc7560ea1c34 healthy |
 | Gateway/DB/storage VM | gateway security-417c50d giữ nguyên; PostgreSQL/MinIO healthy, storage không publish host ports |
 | Database VM | 0001/0002/0003; 3 sites/7 versions, 3 active/3 revoked links; thiếu history/manifest đều0 |
 | Public lab | Studio/viewer HTTPS qua Cloudflare; content direct VM/nginx; owner đã mở443/tcp any IPv4/IPv6 và xác nhận khách ngoài tải iframe |
 | Docker Desktop | Theo mốc09/10: security-613f2b7, Clerk Development; chưa recheck ngày 22/10, không coi là runtime VM |
-| GitHub Issues | #9 CLOSED sau #5; #9/#11 CLOSED; #8/#10/#14/#16 OPEN; #17 MERGED main6bdd298 theo owner giao; #13/#15 vẫn Draft |
+| GitHub Issues | #9/#11 CLOSED; #8/#10/#14/#16 OPEN ở thời điểm sync; #13 MERGED, #15 chờ CI/merge; chỉ đóng Issue có acceptance và merge đạt |
 
 ## Nghiệm thu và giới hạn bằng chứng
 
@@ -38,7 +38,7 @@ Code đã có10 base62 exact-case/CSPRNG/UNIQUE, atomic rotate/revoke/reissue v�
 
 Theo [MERGE_PLAN](MERGE_PLAN.md), #5 đã merged; #12 merged base cũ đã được khắc phục bằng #17 MERGED main6bdd298 sau owner chấp thuận, giữ ancestry/UI nguyên vẹn. Chuỗi còn lại #13 → #15, retarget/check diff/CI khi được giao. [Review #5/recovery](https://github.com/cfotel2604/html-share-platform/pull/17) có exact-main CI50tests PASS và equality checks; main trung gian vẫn local/demo, không deploy public.
 
-Owner giao retarget/review #13 rồi xử lý #15 và xác nhận toàn bộ real-session/link lifecycle cases đều đạt. #13 base main, #15 giữ base #13 đến dependency merge; review code/schema/runtime equality và CI head mới. Chưa merge #13/#15 hoặc deploy; ADR/release gates còn riêng. [Review retarget](reviews/2026-10-22-auth-and-share-retarget.md).
+Owner xác nhận toàn bộ real-session/link lifecycle cases đều đạt và giao chuyển Ready/merge #13 → #15, kiểm CI sau retarget và chốt handoff. #13 đã merge commit6d30d22, main tree bằng tested head8f204c3. #15 đã retarget main và sync dependency merge, không conflict/runtime/schema change; kiểm final-head CI rồi merge theo quyền đã nhận. Không deploy/chạy migration/backfill; ADR/release gates còn riêng. [Review retarget](reviews/2026-10-22-auth-and-share-retarget.md).
 
 ## Gate trước pilot/production
 

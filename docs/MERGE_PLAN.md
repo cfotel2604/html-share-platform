@@ -1,6 +1,6 @@
 # Chuẩn bị merge stack sau nghiệm thu lab — 2026-10-22
 
-Kế hoạch cập nhật sau owner merge #5 và #12. [Lab handoff](LAB_HANDOFF.md) ghi runtime dc7560e đã chạy; merge source không tự đổi containers. [Workflow](WORKFLOW.md) vẫn áp dụng; chưa production.
+Owner đã giao Ready/merge #13 → #15 và chốt handoff. #13 MERGED main6d30d22 lúc19:47:35 Asia/Saigon, exact head8f204c3/3checks PASS; #15 đã retarget main và sync dependency merge, chờ final-head CI trước merge. Các bước chuẩn bị bên dưới là lịch sử; quyền merge chuỗi đã có, không hỏi lại. [Lab handoff](LAB_HANDOFF.md) ghi runtime dc7560e đã chạy; merge source không tự đổi containers. [Workflow](WORKFLOW.md) vẫn áp dụng; chưa production.
 
 ## GitHub đã kiểm trực tiếp
 
@@ -11,8 +11,8 @@ Main hiện `6bdd298ab89dfe9a9061fb64203d3b3215fe4809` sau owner giao merge reco
 | [#5](https://github.com/cfotel2604/html-share-platform/pull/5) | MERGED vào main1ed0eb0, #9 CLOSED | Đã review sau merge, không merge lại |
 | [#12](https://github.com/cfotel2604/html-share-platform/pull/12) | MERGED vào codex/local-mvp2df738b, tree đúng UI4ab546a | Đã vào main qua #17 |
 | [#17](https://github.com/cfotel2604/html-share-platform/pull/17) | MERGED main6bdd298, tested headcc5a85c | Owner giao Ready/merge; 55tests/application/docs SUCCESS; main tree/equality/backend checks PASS |
-| [#13](https://github.com/cfotel2604/html-share-platform/pull/13) | Base main, sync ad4b7e2/report8f204c3 | Đã retarget, chỉ docs conflicts; review/CI mới trước Ready/merge |
-| [#15](https://github.com/cfotel2604/html-share-platform/pull/15) | Base #13 đã sync main | Đã sync dependency, chỉ docs conflicts; CI final head rồi Ready; retarget main sau dependency merge |
+| [#13](https://github.com/cfotel2604/html-share-platform/pull/13) | MERGED main6d30d22, tested head8f204c3 | 79unit/15groups và3checks PASS, main tree equality PASS |
+| [#15](https://github.com/cfotel2604/html-share-platform/pull/15) | Base main sau #13 merge | Sync không conflict/runtime change; CI final head rồi Ready/merge theo owner giao |
 
 [PR recovery và review #5](https://github.com/cfotel2604/html-share-platform/pull/17) giữ ancestry và code22files UI nguyên vẹn từ #12. Repo cho phép merge commit; tiếp dùng merge commit cho recovery/stack. Không squash/rebase hoặc force-push dependencies tùy tiện, không xóa branch gốc giữa chuỗi. Re-query head/base ngay trước merge, không dùng snapshot làm approval.
 
