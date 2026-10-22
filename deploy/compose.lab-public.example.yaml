@@ -1,0 +1,14 @@
+# Example final overlay for HTTPS on the lab VM; not automatically loaded.
+# Existing compose.lab.yaml / compose.edge.yaml remain operator-owned.
+# Review their settings before adopting this example; never overwrite them.
+services:
+  db:
+    ports: !reset []
+  minio:
+    ports: !reset []
+  web:
+    environment:
+      PUBLIC_SITE_PORT: ""
+  gateway:
+    environment:
+      PUBLIC_SITE_PORT: ""

@@ -27,8 +27,12 @@ UI mới có thể dùng lại adapter/hook hoặc tự hiện thực client the
 | POST `/api/sites`      | Multipart `file`, `name`         | `{ id, fileCount }`           |
 | PUT `/api/sites/:id`   | Multipart `file`, `name`         | `{ id, fileCount }`           |
 | PATCH `/api/sites/:id` | JSON `{ published: boolean }`    | `{ id, status }`              |
+| POST `/api/sites/:id/share` | Body rỗng, session + same-origin | `{ id, share_code, share_url }` |
+| DELETE `/api/sites/:id/share` | Session + same-origin | `{ id, share_code: null, share_url: null }` |
 
 Errors dùng HTTP status phù hợp và JSON `{ error: string }`. Demo auth là contract local hiện tại, không trở thành thiết kế production. P2 #8 sẽ thay auth với migration contract rõ ràng. Types chỉ mô tả API; backend vẫn chịu trách nhiệm validation và quyền.
+
+PR #13 đã thêm Clerk auth và POST `/api/sites/:id/preview` → `{ url, expiresAt }`. PR #15 thêm share lifecycle; `SiteSummary` có `share_code: string | null` và `share_url: string | null` canonical do server sinh. UI không tự dùng host ID làm link thay thế. Revoke/rotate không sửa trạng thái published; backend giữ mapping, ownership/audit và transaction. Xem [SHARE_LINKS](../SHARE_LINKS.md).
 
 ## Consequences và validation
 

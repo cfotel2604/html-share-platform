@@ -60,6 +60,8 @@ export function createStudioApi(
     },
     createSite: (file, name) => upload("/sites", "POST", file, name),
     preview: (id) => request(`/sites/${encodeURIComponent(id)}/preview`, { method: "POST" }),
+    rotateShare: (id) => request(`/sites/${encodeURIComponent(id)}/share`, { method: "POST" }),
+    revokeShare: async (id) => { await request(`/sites/${encodeURIComponent(id)}/share`, { method: "DELETE" }); },
     updateSite: (id, file, name) =>
       upload(`/sites/${encodeURIComponent(id)}`, "PUT", file, name),
     setPublished: async (id, published) => {

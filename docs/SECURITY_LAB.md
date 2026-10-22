@@ -2,6 +2,8 @@
 
 Implementation #8/#10 ở [PR #13](https://github.com/cfotel2604/html-share-platform/pull/13). Dùng branch `codex/8-10-auth-origin-gates`; base Studio vì #5/#12 chưa merge. [Validation](validation/2026-10-09-auth-origin-gates.md) phân biệt bằng chứng local và gate ngoài môi trường.
 
+**VM hiện tại ngày22/10:** dùng [LAB_HANDOFF](LAB_HANDOFF.md) và [env/overlay samples](../deploy/lab-public.env.example) làm điểm vào vận hành. Web #15 đã chạy, DB0003/backfill xong, owner xác nhận khách ngoài tải iframe sau mở443. Các lệnh bootstrap/local Desktop và snapshot21/10 bên dưới không phải yêu cầu reconfigure/redeploy VM hiện hữu. Review/merge theo [MERGE_PLAN](MERGE_PLAN.md); private R2/production/security gates vẫn riêng.
+
 ## Google/Clerk Development
 
 Trong Clerk Development instance, bật Google; tắt các phương thức login khác để phù hợp mô hình đã chọn. Server còn kiểm tra primary email verified và Google external account khớp email. Lưu keys trong `.env` của **checkout owner** `html-share-platform-local-mvp`, không checkout main/Issue/chat:
@@ -81,9 +83,9 @@ Browser probe dùng `compose.origin-browser-test.yaml` trên project test, certi
 
 [ADR-0004](adr/0004-domains-and-share-codes.md) chốt production Studio/viewer/content và lab `studio-lab.ods.vn`, `view-lab.ods.vn`, `*.lab-space-ods.cfvn.cloud`. [Nghiệm thu VM](validation/2026-10-09-lab-domain-tls.md) ghi runtime riêng `security-417c50d`/project `hsp-lab`, certificate thật, loopback app ports và timer gia hạn. Docker Desktop vẫn image `security-613f2b7`; không đồng nhất hai stack.
 
-**VM hiện tại:** AUTH_MODE=clerk, auth/iframe origins loopback qua SSH tunnel, VIEWER_PUBLIC_ORIGIN rỗng; content dùng HTTPS lab domain và PUBLIC_SITE_PORT rỗng. Không đổi sang hostname Studio/viewer mới chỉ bằng sửa env: cần trusted vhosts/DNS/TLS, Clerk redirects và browser/CSRF/frame-ancestors proof trước. Có thể kiểm qua `ssh lab-b` theo SSH config owner, không ghi key/VM credentials vào Git.
+**Cập nhật VM 2026-10-21:** public Studio/viewer HTTPS đã sẵn sàng; owner xác nhận step-5 retests/private preview. Agent kiểm nguồn/runtime417c50d healthy, effective trusted Studio HTTPS/canonical viewer HTTPS, gateway preview/viewer origins và content domain đúng lab; PUBLIC_SITE_PORT rỗng cả web/gateway. Studio/viewer published200, viewer API404, direct HTTP sandbox/frame-ancestors đúng viewer. [Readiness mới](validation/2026-10-21-lab-public-origins.md) thay snapshot tunnel-only cũ; giữ compose.lab.yaml/compose.edge.yaml untracked. Short-link candidate chưa deploy, DB mới0001/0002. Có thể kiểm qua `ssh lab-b`, không ghi key/VM credentials vào Git.
 
-**Đích cấu hình sau khi các gate hostname trusted đạt** (chưa áp dụng vào VM):
+**Cấu hình public origins lab đã áp dụng** (STUDIO_PUBLIC_ORIGIN cũng dùng để suy gateway preview origin; trusted origins có thể còn loopback cho vận hành):
 
 ```dotenv
 AUTH_MODE=clerk
@@ -115,7 +117,7 @@ services:
 
 Security overlay suy GATEWAY_VIEWER_ORIGIN từ VIEWER_PUBLIC_ORIGIN và GATEWAY_PREVIEW_ORIGIN từ STUDIO_PUBLIC_ORIGIN. Kiểm cấu hình bằng `docker compose ... config --quiet` rồi chỉ lọc các field public được phép; không dump toàn config/env chứa secrets. Production dùng cấu hình tương ứng trong ADR-0004 và wildcard certificate/gia hạn riêng.
 
-Viewer hiện nhận site ID 32 hex; thiết kế share code 10 base62 chưa có trong runtime. Không hứa revoke nội dung bằng đổi mã: viewer alias cũ phải được xử lý, direct URL còn public cho đến unpublish/delete.
+PR #15/Issue #14 đã triển khai viewer 10 base62, mapping và rotate/revoke/reissue; [kiểm chứng local](validation/2026-10-09-short-viewer-links.md) pass. VM/owner Desktop chưa cutover candidate; runtime tại nghiệm thu trước đó vẫn dùng site ID 32 hex. Triển khai sau review cần migration 0003 + [backfill/runbook](SHARE_LINKS.md); candidate trả 404 cho alias host ID, owner cần gửi link ngắn mới. Không rollback binary cũ bật lại alias sau revocation. Đổi mã không chặn direct URL; unpublish/delete mới chặn request nội dung mới.
 
 ## Gate trước public (#10 vẫn mở)
 

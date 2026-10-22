@@ -26,6 +26,7 @@ try {
   await setPublished(actor,privateSite.id,false);
   Object.assign(process.env,{GATEWAY_MODE:"hostname",PUBLIC_SITE_DOMAIN:"matbao.test",PUBLIC_SITE_SCHEME:"https",PUBLIC_SITE_PORT:"4443"});
   const preview=await createPreview(actor,privateSite.id);
-  writeFileSync("/app/browser-artifacts/fixture.json",JSON.stringify({published:published.id,privateSite:privateSite.id,previewUrl:preview.url}));
+  const publishedCode=(await pool.query("SELECT code FROM site_share_links WHERE site_id=$1 AND revoked_at IS NULL",[published.id])).rows[0].code;
+  writeFileSync("/app/browser-artifacts/fixture.json",JSON.stringify({published:published.id,publishedCode,privateSite:privateSite.id,previewUrl:preview.url}));
   console.log("Synthetic browser fixtures prepared; preview capability kept in ignored local artifact.");
 } finally {await pool.end();}

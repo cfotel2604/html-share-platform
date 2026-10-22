@@ -1,69 +1,55 @@
 # Project status — HTML Share Platform
 
-> Snapshot **2026-10-22 (Asia/Saigon)**: owner giao retarget/review #13, sau đó xử lý #15. #13 đã đổi base main6bdd298, đang sync/kiểm CI; chỉ conflict docs status/handoff, runtime không conflict. Chưa merge #13/#15 hoặc deploy. [AI_HANDOFF](AI_HANDOFF.md), [review #5/recovery](reviews/2026-10-22-pr5-and-studio-merge.md), [validation #13](validation/2026-10-09-auth-origin-gates.md).
+> Snapshot **2026-10-22 (Asia/Saigon)**: lab đã chạy web short-link, owner xác nhận iframe từ mạng ngoài và dùng thử OK; SSH xác minh runtime/DB/headers. Owner giao Ready/merge #13 → #15 và chốt handoff. #13 đã MERGED main6d30d22 lúc19:47:35, đúng tested head8f204c3; #15 đã retarget main và sync merge commit đó, đang kiểm CI trước merge. [Lab handoff](LAB_HANDOFF.md), [merge plan](MERGE_PLAN.md), [bằng chứng](validation/2026-10-22-lab-acceptance.md), [AI_HANDOFF](AI_HANDOFF.md). Markdown không thay kiểm GitHub/VM hiện tại.
 
-## Mốc hiện tại
+## Trạng thái đã kiểm
 
-- Main `6bdd298ab89dfe9a9061fb64203d3b3215fe4809` đã có #5 và UI #12 qua recovery #17. #9/#11 CLOSED; #8/#10/#14/#16 OPEN.
-- #13 Draft, branch codex/8-10-auth-origin-gates, **base main**. Merge main chỉ đụng docs/status/handoff; giữ Clerk/RBAC/hostname/preview implementation từ4ac9689 và ghi lại source equality/schema checksums. CI đúng head mới phải kiểm sau push.
-- #15 Draft vẫn base #13 để diff short-link riêng; đồng bộ dependency sau #13 sync. Không retarget #15 main trước khi dependency vào main rồi hiểu nhầm diff auth thành scope share-link.
-- **Owner xác nhận từng case đều đạt ngày22/10:** Employee không sửa site người khác; Admin mutation/audit đúng actor; email ngoài allowlist bị chặn; revoke/disable và logout chặn phiên cũ; rotate/revoke/reissue và unpublish chặn link cũ. Đây là owner-confirmed real-session evidence, không giả làm browser test do agent chạy.
-- Lab đã chạy web/source dc7560e với short links và DB0001/0002/0003; gateway security-417c50d. Public Studio/viewer HTTPS, owner mở443 và xác nhận iframe ngoài office. SECURITY_IMAGE đã lưu private env, SSH/Compose config không shell override PASS. Không migrate/backfill/restart hoặc đổi env/allowlist/data trong retarget/review.
-- Test lịch sử #13:79unit/15integration groups/Chrome local; chạy CI mới cho source đã sync main. ADR-0001/0003 vẫn Proposed cho security/release; R2/cookie sibling/mobile/Zalo/log/edge/DNS/renewal/production OAuth/pilot vẫn là gates riêng.
+| Hạng mục | Trạng thái hiện tại |
+| --- | --- |
+| P0/P1 | #2/#4/#7 merged; origin/main nay6bdd298 sau recovery #17 |
+| Local MVP/upload #9 | Owner đã merge #5 vào main1ed0eb0; review sau merge không phát hiện thêm blocker local MVP, exact-main CI50tests PASS; #9 CLOSED |
+| Studio/UI #11 | #12 MERGED vào base cũ; [recovery #17](https://github.com/cfotel2604/html-share-platform/pull/17) nay MERGED main6bdd298, UI4ab546a đã vào main; 55tests/CI PASS |
+| Auth/origin #8/#10 | #13 MERGED main6d30d22 theo owner giao; head8f204c3 cả3checks PASS, 79unit/15groups; #10 release gates còn riêng |
+| Short-link/permissions #14/#16 | #15 retarget main sau #13, sync không conflict/runtime change; review PASS và CI đúng final head trước Ready/merge |
+| VM source/web | dc7560ea1c34cbe060779fbe69bb2f574e170431; web html-share-studio:share-dc7560ea1c34 healthy |
+| Gateway/DB/storage VM | gateway security-417c50d giữ nguyên; PostgreSQL/MinIO healthy, storage không publish host ports |
+| Database VM | 0001/0002/0003; 3 sites/7 versions, 3 active/3 revoked links; thiếu history/manifest đều0 |
+| Public lab | Studio/viewer HTTPS qua Cloudflare; content direct VM/nginx; owner đã mở443/tcp any IPv4/IPv6 và xác nhận khách ngoài tải iframe |
+| Docker Desktop | Theo mốc09/10: security-613f2b7, Clerk Development; chưa recheck ngày 22/10, không coi là runtime VM |
+| GitHub Issues | #9/#11 CLOSED; #8/#10/#14/#16 OPEN ở thời điểm sync; #13 MERGED, #15 chờ CI/merge; chỉ đóng Issue có acceptance và merge đạt |
 
-## Bằng chứng và ranh giới review
+## Nghiệm thu và giới hạn bằng chứng
 
-Auth đọc verified Google identity + session active online + allowlist/status/role DB; exact Origin/Host, Employee owner-only/Admin audit và fresh actor locks trước storage. API upload không đi qua Next proxy buffering; HTTP/iframe sandbox, hostname/PSL/manifest/digest/private preview giữ nguyên. Không phát hiện blocker mới trong phần code đã đọc; kết luận cuối và CI ghi trong review report sau kiểm tra.
+Agent chỉ đọc kiểm VM: bốn services healthy; web 3100/gateway 4100 loopback, DB/storage không publish; AUTH_MODE=clerk, canonical origins đúng, public port rỗng. Studio 200, canonical viewer 200 có sandbox iframe, direct HTML200/HTTP sandbox/frame-ancestors đúng, viewer API 404 và alias 32 hex404. Viewer/content no-store, không Set-Cookie. Không log mã/preview grant/HTML/cookies.
 
-Nhánh #13 chưa chứa share-code implementation/0003/EACCES fix của #15, mặc dù lab đã chạy chúng. Không build/deploy main hoặc #13 trung gian để lùi lab short links. Handoff lab đầy đủ đang ở [PR #15](https://github.com/cfotel2604/html-share-platform/pull/15), không chép code #15 vào PR auth để giải quyết docs.
+Theo owner: Google Admin và Employee login, private preview/retests trước đó; ngày 22/10 xác nhận mở443 rồi khách ngoài xem iframe và dùng thử lab OK. Owner đã xác nhận chi tiết ngày22/10: Employee owner-only, Admin mutation/audit actor, ngoài allowlist deny, policy revoke/disable/logout phiên cũ deny, rotate/revoke/reissue/unpublish đều đạt. Agent chưa có independent probe4G hoặc full cookie/mobile matrix; không suy owner-confirmed thành test browser do agent chạy hay production approval. [Bằng chứng và phạm vi](validation/2026-10-22-lab-acceptance.md).
 
-## Hồ sơ09/10 trước retarget — lịch sử
+**Cấu hình lưu bền đã xong:** owner bổ sung SECURITY_IMAGE, SSH xác nhận đúng tag `html-share-studio:share-dc7560ea1c34`; Compose config không shell override PASS, web running. Không cần chạy lại migration/backfill/restart. Public443 áp dụng mọi nginx vhost trên IP: inventory/restrict các site khác còn cần review.
 
+## Mốc cutover đã hoàn tất
 
-> Snapshot **2026-10-09 (Asia/Saigon)**, đã đối chiếu GitHub/CI, bổ sung HTTPS/SSH chỉ đọc VM lab và owner-confirmed Employee login. Snapshot PR head trước cập nhật docs là `417c50d`. Đọc cùng [AI_HANDOFF](AI_HANDOFF.md), [PLAN](../PLAN.md) và [AGENTS](../AGENTS.md). Markdown không thay GitHub live.
+Owner hoàn tất runbook8.2.2 migration0003/backfill, fingerprint metadata trước/sau khớp2 sites/2 versions; sau đó8.2.3 web candidate đã chạy. Inventory3 sites/7 versions ngày 22/10 phản ánh dùng ứng dụng sau cutover, không phải mismatch baseline. Gateway/DB/storage giữ runtime; không reset dữ liệu hoặc đổi host ID/ownership/storage.
 
-## Tiến độ đã kiểm chứng
+Sự cố EACCES #16: image b1e copy root-owned0600 SQL/helpers từ checkout umask077 khiến runtime node không đọc được. Fix dc7560e chuẩn hóa scripts/db, giữ USER node và SQL bytes; CI restrictive-checkout/non-root preflight +20 integration groups PASS. Fixed image VM UID1000/21files PASS, migration0003 nay đã áp dụng. [Hồ sơ fix/recovery](validation/2026-10-21-runtime-permissions.md). Không dùng lại image b1e hoặc migrate root.
 
-| Hạng mục | Trạng thái | Bằng chứng |
-| --- | --- | --- |
-| P0/P1/handoff | PR #2/#4/#7 merged; origin/main `78cb7ca` | Git log và GitHub |
-| Local MVP | PR #5 Ready, head `235cc62`, base main; chưa merge | [PR #5](https://github.com/cfotel2604/html-share-platform/pull/5) |
-| Upload #9 | Findings đã sửa; integration regression vẫn pass sau auth mới | [Validation #9](validation/2026-10-09-upload-hardening.md) |
-| Studio UI | PR #12 Ready, head `4ab546a`, base codex/local-mvp; chưa merge | [PR #12](https://github.com/cfotel2604/html-share-platform/pull/12) |
-| Auth/RBAC #8 | Clerk Development đã bật, allowlist 1 Admin/1 Employee; Google Admin login/list và Employee login được owner xác nhận; server kiểm identity Google thật | [Draft PR #13](https://github.com/cfotel2604/html-share-platform/pull/13); ownership/mutations/deny/revoke/logout thật còn chờ |
-| Origin #10 | Hostname, manifest/digest, HTTP/iframe sandbox, trusted viewer và private preview; Chrome local pass | [Validation](validation/2026-10-09-auth-origin-gates.md); TLS content VM thật đã kiểm; trusted viewer/R2/Safari/Zalo còn mở |
-| Kiểm thử | 79 unit tests; lint/typecheck/build; 9 nhóm upload + 6 nhóm DB/S3 integration; CI cả 3 jobs SUCCESS tại `417c50d` trước mốc docs này | [application](https://github.com/cfotel2604/html-share-platform/actions/runs/37896443966), [docs](https://github.com/cfotel2604/html-share-platform/actions/runs/37896443885), [security](https://github.com/cfotel2604/html-share-platform/actions/runs/37896443936) |
-| Docker owner | Web/gateway healthy, image html-share-studio:security-613f2b7; AUTH_MODE=clerk lưu trong env private | http://127.0.0.1:3100; [deploy/rollback](validation/2026-10-09-auth-origin-gates.md) |
-| VM lab TLS | `hsp-lab`, source/image `417c50d`; web/gateway healthy, TLS Let's Encrypt wildcard lab, nginx/timer PASS | [Nghiệm thu VM](validation/2026-10-09-lab-domain-tls.md); app ports loopback, storage ports không publish |
-| Domain/link decision | Production/lab domains Accepted; viewer 10 base62 tách host ID 128 bit **chưa triển khai** | [ADR-0004](adr/0004-domains-and-share-codes.md); Studio/viewer VM hiện qua tunnel |
-| Preservation | Auth activation giữ 10 site; chỉ web recreate, gateway/DB/MinIO IDs và data mounts không đổi | Trước đó 17 legacy versions backfill; 9 sites cũ + 1 fixture unpublished |
-| Tracking | #1/#3/#6 CLOSED; #8/#9/#10/#11 OPEN | #9/#11 chờ review/merge; #8/#10 còn gate bên ngoài |
+Code đã có10 base62 exact-case/CSPRNG/UNIQUE, atomic rotate/revoke/reissue và tombstones, API canonical URL không fallback host ID. Update/publish không phục hồi mã revoked. Thu hồi viewer không chặn direct content còn published; unpublish/delete chặn request mới, không thu hồi tab đã tải. Rollback ưu tiên SHARE_LINK_MUTATIONS_ENABLED=false, giữ mapping/schema; không lùi binary bật lại 32 hex aliases sau revocation.
 
-Owner đã giao #8/#10 và Docker local. Mốc hostname thay web/gateway, migration **0002 bổ sung**, không sửa 0001/storage/site pointers. Mốc Clerk chỉ recreate web, dùng keys owner đặt trong `.env`, thêm AUTH_MODE=clerk; secret/credentials khác giữ nguyên. Checkout owner `b3f8119`, foundation cổng 3000 không đổi. Không sửa main, merge PR, đổi DNS hoặc deploy production.
+## Review/merge tiếp theo
 
-## Kết quả và giới hạn
+Theo [MERGE_PLAN](MERGE_PLAN.md), #5 đã merged; #12 merged base cũ đã được khắc phục bằng #17 MERGED main6bdd298 sau owner chấp thuận, giữ ancestry/UI nguyên vẹn. Chuỗi còn lại #13 → #15, retarget/check diff/CI khi được giao. [Review #5/recovery](https://github.com/cfotel2604/html-share-platform/pull/17) có exact-main CI50tests PASS và equality checks; main trung gian vẫn local/demo, không deploy public.
 
-API kiểm session server, allowlist/role DB; mutation exact Origin/Host. Ownership trước ingest và fresh actor/role dưới locks; online revoke/provider fail closed, không fallback demo. Keys Development khớp cùng instance (BAPI + public JWKS), secret chỉ web; Compose nhận NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY hoặc CLERK_PUBLISHABLE_KEY (ưu tiên tên thứ hai). Owner đã xác nhận Google Admin login/thấy website và Employee login thành công; server đối chiếu primary email verified/Google external identity với allowlist. Unit/DB integration pass cho Employee/deny/revoke/CSRF; login thật không chứng minh owner-only/mutation/audit/deny/revoke/logout, các luồng đó chưa smoke đầy đủ. Guest/spoof API 401, unknown Host 404, CSRF 403, demo login bị tắt 503 đã kiểm trên Clerk lab.
+Owner xác nhận toàn bộ real-session/link lifecycle cases đều đạt và giao chuyển Ready/merge #13 → #15, kiểm CI sau retarget và chốt handoff. #13 đã merge commit6d30d22, main tree bằng tested head8f204c3. #15 đã retarget main và sync dependency merge, không conflict/runtime/schema change; kiểm final-head CI rồi merge theo quyền đã nhận. Không deploy/chạy migration/backfill; ADR/release gates còn riêng. [Review retarget](reviews/2026-10-22-auth-and-share-retarget.md).
 
-Gateway chỉ serve manifest bất biến sau kiểm size/SHA-256, hostname và trạng thái. Private preview: grant 128-bit, DB hash, actor/site/version scope, TTL 3 phút. HTTP sandbox mọi HTML, iframe không allow-same-origin; viewer host riêng không mở API/sign-in/preview. Chrome 154 HTTPS `.test` chứng minh cookie/storage/workers/popup/top navigation bị chặn, root CSS/classic/modules/fetch/HTTPS CDN hoạt động. Self-signed/DNS override chỉ local, không thay chứng cứ domain/TLS thật. Owner dùng `*.uploads.localhost:4100`, viewer `/view/<id>` giữ nguyên.
+## Gate trước pilot/production
 
-Regression #9 giữ cap stream 22 MiB trước parser, file 20 MiB, denied zero writes, rollback/cleanup và hostile ZIP tests. API auth dùng Clerk SDK trực tiếp; Next proxy không chạy API để tránh body buffering/truncation làm hỏng early 413. COMMIT unknown giữ objects/trả 503; cleanup failure/crash còn cần reconciliation, lifecycle/rate/concurrency P5/P6 chưa triển khai. `no-store` chặn request mới sau unpublish, không thu hồi tab đã tải.
+- Private R2/IAM/API cleanup/gateway read-only; VM MinIO legacy là hiện trạng lab, không mở rộng ngoại lệ staging/production.
+- Production Clerk/Google OAuth; provider quota/fail-closed; real-session quyền/ownership/deny/revoke/logout/audit.
+- Browser domain thật: cookie cfvn.cloud sibling/cross-environment, direct/iframe/preview, Safari/iOS/Android/Zalo/crawlers; không nới sandbox.
+- DNS/reserved/vhost inventory/regression, production wildcard/renewal và rollback drill, preview-hostname redaction toàn pipeline, edge per-IP/concurrency/cache/unpublish. Budget viewer 600/min chỉ mỗi process, không thay anti-DDoS.
+- ADR-0001/0003 vẫn Proposed; ADR-0002/0004 Accepted cho UI boundary/domain-link. P5/P6 orphan/lifecycle/rate/retention còn mở. Staging/pilot và owner/security release review trước production; backup/restore ngoài MVP theo owner.
 
-## Quyết định owner
+## Quyết định và hồ sơ lịch sử
 
-- Studio ODS blue, sáng/tối; presentation → workflow → typed HTTP adapter → backend. ESLint enforce ADR-0002; Next cùng web container lab, gateway riêng, có thể thay UI sau.
-- Domain đã chốt 2026-10-09: Studio `studio.ods.vn` / `studio-lab.ods.vn`; trusted viewer `view.ods.vn/<share-code>` / `view-lab.ods.vn/<share-code>`; HTML `<host-id>.space-ods.cfvn.cloud` / `<host-id>.lab-space-ods.cfvn.cloud`. ADR-0004 Accepted về lựa chọn domain/link; ADR-0001/0003 vẫn Proposed cho security/release review. TLS content lab đã có nginx/Let's Encrypt DNS-01; production chưa triển khai. Cookie boundary phải kiểm `Domain=cfvn.cloud`, kể cả sibling/cross-environment.
-- Host ID giữ 32 hex/128 bit; chốt share code 10 base62 server mapping, rotation không thu hồi direct URL. Code hiện còn viewer ID dài, alias migration/collision/rate limiting phải xử lý trong thay đổi riêng.
-- Production R2 private; MinIO legacy là lựa chọn local, VM hiện dùng nội bộ theo runbook nhưng không thay gate R2/không mở rộng ngoại lệ staging/production. Docker/VPS giai đoạn đầu. ZIP 20 MiB nén / 100 MiB giải nén / 500 files / depth 12 / 1000 entries.
-- Retention configurable; backup/restore ngoài MVP theo owner.
+Studio tập trung ODS blue, graphite/light, presentation → workflow → typed HTTP adapter → backend; lint enforce [ADR-0002](adr/0002-replaceable-studio-ui.md). Có thể thay UI, giữ auth/storage/publish bên server và gateway riêng. Domain production/lab và viewer 10 base62/host-ID 128 bit ở [ADR-0004](adr/0004-domains-and-share-codes.md).
 
-## Việc tiếp theo
-
-1. Keys/allowlist/Google Admin và Employee login đã xong theo owner. Tiếp theo smoke Employee owner-only và Admin mutation/actual audit, email ngoài allowlist, policy revoke/disabled và logout với session thật theo [SECURITY_LAB](SECURITY_LAB.md); dùng fixture riêng, không sửa site cũ. Không ghi email/key vào chat logs/Issue/docs. Giữ Clerk mode, không tự fallback demo.
-2. Review chain #5 → #12 → #13; #13 Draft, base codex/11-studio-ui. Sau dependency merge đổi base/check CI; chưa được giao merge tự động. #8/#10 chưa đóng.
-3. #10: chuyển trusted Studio/viewer lab từ tunnel sang hostname đã chốt khi vhost/DNS/TLS/Clerk redirects đạt; browser direct/iframe/preview trên domain thật. Tiếp read-only DNS/route/reserved inventory/regression/rollback, production wildcard/renewal riêng, R2 IAM/cleanup, preview hostname log redaction toàn pipeline, Safari/iOS/Android/Zalo và owner/security review ADR-0001; staging/pilot trước production. P5/P6 lifecycle/orphan/rate/concurrency còn mở.
-4. Triển khai share-code/mapping/rotation riêng theo ADR-0004; không giả định URL base62 đã chạy. Chỉ đổi viewer code không thu hồi published content.
-
-## Kiểm chứng lại
-
-Fetch origin --prune, log origin/main, gh pr view 5/12/13 với state/isDraft/headRefOid/mergeable/statusCheckRollup, gh issue list. Runtime Docker Desktop revision `613f2b77ac00179f33d6bf13c08007a87b910963`; VM image/source `417c50d` (digest ở nghiệm thu VM); test/CI fix `5ab1807` không đổi runtime. Các lần up owner phải giữ **compose.security.yaml và SECURITY_IMAGE đúng tag**, không build checkout owner cũ. Bàn giao trong branch được giao, không main.
+Ngày 09/10: [upload hardening](validation/2026-10-09-upload-hardening.md), [auth/origin](validation/2026-10-09-auth-origin-gates.md), [short-link86 unit/20 integration/Chrome](validation/2026-10-09-short-viewer-links.md), [TLS VM](validation/2026-10-09-lab-domain-tls.md). Ngày 21/10: [origins/network finding](validation/2026-10-21-lab-public-origins.md), [build review](validation/2026-10-21-pr15-build-review.md), [EACCES/retry](validation/2026-10-21-runtime-permissions.md). Các snapshot cũ không thay trạng thái ngày 22/10; không rerun full suite chỉ vì docs/env samples.

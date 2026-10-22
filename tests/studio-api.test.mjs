@@ -113,3 +113,13 @@ test("a non-JSON server failure has a readable error instead of a parser crash",
       /không hợp lệ/.test(error.message),
   );
 });
+
+test("share actions use same-origin session and server canonical URL", async () => {
+  const calls = [], result = { id: "site", share_code: "AbC123xYz9", share_url: "https://view-lab.ods.vn/AbC123xYz9" };
+  const api = createStudioApi(async (url, init) => { calls.push([url,init]); return reply(result); });
+  assert.deepEqual(await api.rotateShare("a/b"), result);
+  await api.revokeShare("a/b");
+  assert.deepEqual(calls.map(([url,init])=>[url,init.method,init.credentials]), [
+    ["/api/sites/a%2Fb/share","POST","same-origin"], ["/api/sites/a%2Fb/share","DELETE","same-origin"],
+  ]);
+});

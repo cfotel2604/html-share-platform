@@ -14,19 +14,24 @@ type Filter = "all" | "published" | "unpublished";
 type Actions = {
   onUpdate: (site: SiteSummary, file: File) => Promise<boolean>;
   onToggle: (site: SiteSummary) => Promise<boolean>;
+  onRotateShare: (site: SiteSummary) => Promise<boolean>;
+  onRevokeShare: (site: SiteSummary) => Promise<boolean>;
 };
 function SiteRow({
   site,
   busy,
   onUpdate,
   onToggle,
+  onRotateShare,
+  onRevokeShare,
 }: Actions & { site: SiteSummary; busy: boolean }) {
   const updateInput = useRef<HTMLInputElement>(null);
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
   const published = site.status === "published";
-  const preview = site.share_url ?? `/view/${site.id}`;
+  const preview = site.share_url;
   async function copy() {
+    if (!preview) return;
     setCopyError(false);
     setCopied(false);
     try {
@@ -49,7 +54,7 @@ function SiteRow({
           <span className={`studio-status ${published ? "is-published" : ""}`}>
             <span />
             {published
-              ? "Đang chia sẻ"
+              ? "Đã xuất bản"
               : site.status === "draft"
                 ? "Bản nháp"
                 : "Đã tắt"}
@@ -72,7 +77,7 @@ function SiteRow({
               Xem riêng <ArrowUpRight size={14} aria-hidden="true" />
             </a>
           )}
-          {published && (
+          {published && preview && (
             <>
               <a
                 className="studio-button"
@@ -83,7 +88,7 @@ function SiteRow({
                 Mở preview
                 <ArrowUpRight size={14} aria-hidden="true" />
               </a>
-              <button className="studio-button" type="button" onClick={copy}>
+              <button className="studio-button" type="button" onClick={copy} disabled={busy}>
                 {copied ? (
                   <Check size={14} aria-hidden="true" />
                 ) : (
@@ -123,13 +128,26 @@ function SiteRow({
               void onToggle(site);
             }}
           >
-            {published ? "Tắt chia sẻ" : "Xuất bản lại"}
+            {published ? "Tắt xuất bản" : "Xuất bản lại"}
           </button>
         </div>
         <span className="studio-sr-only" role="status">
           {copied ? `Đã sao chép link của ${site.display_name}.` : ""}
         </span>
-        {copyError && (
+        <details className="studio-description">
+          <summary>Link chia sẻ</summary>
+          <p>Đổi hoặc thu hồi link xem sẽ vô hiệu hóa link cũ. Nội dung trực tiếp vẫn mở khi website đang xuất bản; dùng Tắt xuất bản để chặn nội dung.</p>
+          <div className="studio-site-actions">
+            <button className="studio-button" type="button" disabled={busy} onClick={() => {
+              if (!preview || window.confirm("Đổi link xem? Link cũ sẽ hết hiệu lực, bạn cần gửi lại link mới.")) void onRotateShare(site);
+            }}>{preview ? "Đổi link xem" : "Tạo link xem"}</button>
+            {preview && <button className="studio-button" type="button" disabled={busy} onClick={() => {
+              if (window.confirm("Thu hồi link xem? Nội dung trực tiếp vẫn mở khi website đang xuất bản.")) void onRevokeShare(site);
+            }}>Thu hồi link xem</button>}
+          </div>
+          {!preview && <p role="status">Chưa có link xem đang hoạt động.</p>}
+        </details>
+        {copyError && preview && (
           <p className="studio-copy-fallback" role="alert">
             Không thể sao chép tự động. Bạn có thể sao chép đường dẫn này:{" "}
             <input
@@ -155,6 +173,8 @@ export function SiteList({
   onRefresh,
   onUpdate,
   onToggle,
+  onRotateShare,
+  onRevokeShare,
 }: Actions & {
   sites: SiteSummary[];
   busy: string;
@@ -253,11 +273,13 @@ export function SiteList({
         <div className="studio-sites">
           {filtered.map((site) => (
             <SiteRow
-              key={site.id}
+              key={site.id + ":" + site.share_code}
               site={site}
               busy={Boolean(busy)}
               onUpdate={onUpdate}
               onToggle={onToggle}
+              onRotateShare={onRotateShare}
+              onRevokeShare={onRevokeShare}
             />
           ))}
         </div>

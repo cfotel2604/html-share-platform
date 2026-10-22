@@ -14,7 +14,7 @@ Hostname public `<site-id>.space-ods.cfvn.cloud` phục vụ root assets, chỉ 
 
 Preview riêng dùng hostname `<site-id>--<grant>.space-ods.cfvn.cloud`: site ID 32 hex + `--` + grant base32 26 ký tự = 60, dưới giới hạn DNS label 63. Token entropy 128 bit; DB chỉ lưu SHA-256, scope site + immutable version + actor, TTL 3 phút. Mỗi asset request kiểm expiry, actor/policy active và ownership/Admin. Không cookie, query token, redirect grant hoặc truyền session quản trị vào HTML. Root assets/modules hoạt động mà không rewrite HTML. Hostname grant phải được redaction khỏi access/DNS/log pipeline ở staging; không bật logging raw Host/URL. Đây là bearer capability, không link public lâu dài.
 
-Published HTML chỉ cho iframe từ viewer; preview grant chỉ cho iframe từ Studio. Viewer chỉ trusted metadata và iframe, không Clerk provider/session xử lý. Shell target tại `view.ods.vn/<share-code>` (implementation hiện vẫn dùng site ID 32 hex), `/view/<id>` của Studio redirect về viewer khi cấu hình viewer riêng. Loopback lab có thể giữ trusted shell trên web để tương thích link cũ.
+Published HTML chỉ cho iframe từ viewer; preview grant chỉ cho iframe từ Studio. Viewer chỉ trusted metadata và iframe, không Clerk provider/session xử lý. PR #15 resolve `view.ods.vn/<share-code>` và `/view/<share-code>` redirect về viewer khi cấu hình host riêng. Loopback lab có thể giữ trusted shell trên web bằng mã ngắn; alias host ID 32 hex bị tắt. Runtime VM tại nghiệm thu trước cutover vẫn dùng link dài.
 
 ## Consequences and limits
 
@@ -24,4 +24,4 @@ Clerk BAPI mỗi request thêm latency/quota; provider failure fail closed, khô
 
 No-store và trạng thái được kiểm mỗi request; unpublish/expiry không thu hồi HTML đã tải trong tab. CSP chặn workers, frames/forms/popups/parent navigation và storage; HTTPS classic CDN được phép, external API chưa allowlist nên bị chặn. HTML tự điều hướng tab trực tiếp không đồng nghĩa có thể truy cập parent cookie. Cache/CDN, rate/concurrency, expiry-row cleanup và orphan lifecycle vẫn cần P5/P6.
 
-ADR-0001 giữ Proposed. Local self-signed TLS/Chrome probes không xác nhận DNS inventory/website regression, private R2 IAM hay Safari/Zalo. [Nghiệm thu VM](../validation/2026-10-09-lab-domain-tls.md) bổ sung content wildcard TLS thật bằng Let's Encrypt/nginx; không còn bắt buộc Cloudflare Full (strict) cho baseline này. Studio/viewer còn tunnel và share code chưa triển khai.
+ADR-0001 giữ Proposed. Local self-signed TLS/Chrome probes không xác nhận DNS inventory/website regression, private R2 IAM hay Safari/Zalo. [Nghiệm thu VM](../validation/2026-10-09-lab-domain-tls.md) bổ sung content wildcard TLS thật bằng Let's Encrypt/nginx; không còn bắt buộc Cloudflare Full (strict) cho baseline này. Ngày22/10 [web VM đã cutover #15/DB0003](../LAB_HANDOFF.md), Studio/viewer public HTTPS, owner xác nhận khách ngoài tải iframe sau mở443. Việc đó không tự chuyển ADR sang Accepted hoặc đóng các release gates.

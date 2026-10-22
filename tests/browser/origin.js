@@ -13,7 +13,7 @@ async (page) => {
   if(await page.evaluate(()=>localStorage.getItem('trusted-marker'))!=='present')throw new Error('Trusted control unavailable');
   await page.goto('https://studio.ods.test:4443/boundary');
   await page.getByText('Existing trusted origin fixture').waitFor();
-  const viewer='https://view.ods.test:4443/'+fixture.published;
+  const viewer='https://view.ods.test:4443/'+fixture.publishedCode;
   const response=await page.goto(viewer);
   if(response.status()!==200)throw new Error('Viewer shell failed: '+response.status());
   if(response.headers()['set-cookie'])throw new Error('Viewer created an auth cookie');

@@ -6,7 +6,7 @@ const server=createServer({key:readFileSync("/app/tls/key.pem"),cert:readFileSyn
   if(host==="studio.ods.test" && req.url==="/fixture-ids") {
     const fixture=JSON.parse(readFileSync("/app/browser-artifacts/fixture.json","utf8"));
     res.writeHead(200,{"Content-Type":"application/json","Cache-Control":"no-store"});
-    res.end(JSON.stringify({published:fixture.published,privateSite:fixture.privateSite}));return;
+    res.end(JSON.stringify({published:fixture.published,publishedCode:fixture.publishedCode,privateSite:fixture.privateSite}));return;
   }
   if(host==="cdn.safe.test" && req.url==="/cdn.js") {res.writeHead(200,{"Content-Type":"text/javascript","Cache-Control":"no-store"});res.end("window.cdnWorked=true");return;}
   if(["studio.ods.test","matbao.test","www.matbao.test","mail.matbao.test"].includes(host) && req.url==="/boundary") {
