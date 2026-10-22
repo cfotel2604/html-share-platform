@@ -2,6 +2,8 @@
 
 Implementation #8/#10 ở [PR #13](https://github.com/cfotel2604/html-share-platform/pull/13). Dùng branch `codex/8-10-auth-origin-gates`; base Studio vì #5/#12 chưa merge. [Validation](validation/2026-10-09-auth-origin-gates.md) phân biệt bằng chứng local và gate ngoài môi trường.
 
+**VM hiện tại ngày22/10:** dùng [LAB_HANDOFF](LAB_HANDOFF.md) và [env/overlay samples](../deploy/lab-public.env.example) làm điểm vào vận hành. Web #15 đã chạy, DB0003/backfill xong, owner xác nhận khách ngoài tải iframe sau mở443. Các lệnh bootstrap/local Desktop và snapshot21/10 bên dưới không phải yêu cầu reconfigure/redeploy VM hiện hữu. Review/merge theo [MERGE_PLAN](MERGE_PLAN.md); private R2/production/security gates vẫn riêng.
+
 ## Google/Clerk Development
 
 Trong Clerk Development instance, bật Google; tắt các phương thức login khác để phù hợp mô hình đã chọn. Server còn kiểm tra primary email verified và Google external account khớp email. Lưu keys trong `.env` của **checkout owner** `html-share-platform-local-mvp`, không checkout main/Issue/chat:

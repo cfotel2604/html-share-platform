@@ -1,5 +1,7 @@
 # Public origins lab sẵn sàng — 2026-10-21
 
+> Cập nhật22/10: owner đã mở443/tcp any và xác nhận bên ngoài tải iframe/dùng thử OK; SSH xác nhận rule IPv4/IPv6, web #15/DB0003 đã chạy. Finding UFW chặn content dưới đây thuộc mốc21/10 trước xử lý, không còn là trạng thái hiện tại. Xem [bằng chứng mới](2026-10-22-lab-acceptance.md) và [handoff](../LAB_HANDOFF.md).
+
 Refs [Issue #10](https://github.com/cfotel2604/html-share-platform/issues/10), [#8](https://github.com/cfotel2604/html-share-platform/issues/8), [#14](https://github.com/cfotel2604/html-share-platform/issues/14), [Draft PR #15](https://github.com/cfotel2604/html-share-platform/pull/15). Snapshot theo Asia/Saigon; kiểm VM qua SSH `lab-b` chỉ đọc tại `/opt/hsp/src`.
 
 ## Đính chính phạm vi public — network gate chưa đạt

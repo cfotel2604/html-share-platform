@@ -1,6 +1,6 @@
 # Mã viewer ngắn — Issue #14
 
-Implementation [Draft PR #15](https://github.com/cfotel2604/html-share-platform/pull/15), [Issue #14](https://github.com/cfotel2604/html-share-platform/issues/14), branch `codex/14-short-viewer-links`, dựa trên PR #13 vì dependency chưa merge. [ADR-0004](adr/0004-domains-and-share-codes.md) là quyết định owner. [Kiểm chứng local](validation/2026-10-09-short-viewer-links.md) đã pass; VM/Docker owner chưa được cập nhật trong mốc này.
+Implementation [Draft PR #15](https://github.com/cfotel2604/html-share-platform/pull/15), [Issue #14](https://github.com/cfotel2604/html-share-platform/issues/14), branch `codex/14-short-viewer-links`, dựa trên PR #13 vì dependency chưa merge. [ADR-0004](adr/0004-domains-and-share-codes.md) là quyết định owner. [Kiểm chứng local](validation/2026-10-09-short-viewer-links.md) đã pass; **web/DB lab VM đã cutover** theo [handoff22/10](LAB_HANDOFF.md), owner dùng thử OK. Desktop chưa xác minh cutover; các bước dưới dùng cho upgrade/cutover mới, không yêu cầu lặp lại trên VM đã chạy.
 
 ## Thiết kế
 
@@ -29,6 +29,8 @@ Viewer tại `view*/<code>`; nếu chưa có VIEWER_PUBLIC_ORIGIN thì canonical
 ## Backfill và deploy được giao sau review
 
 **Operator pin cập nhật sau EACCES #16:** dùng `dc7560ea1c34cbe060779fbe69bb2f574e170431` / image `html-share-studio:share-dc7560ea1c34`, không dùng candidate b1e cũ. [Khắc phục permissions](validation/2026-10-21-runtime-permissions.md): Dockerfile chuẩn hóa scripts/db, CI checkout hạn chế + non-root image check PASS; runbook umask022 cho source,077 cho private artifact và preflight trước stop web. Khi retry8.2.2, export đúng image mới và lấy baseline metadata mới vì web cũ đã restore. Không chạy migration bằng root hoặc sửa bytes SQL.
+
+**Cập nhật22/10:** retry8.2.2 và bật web8.2.3 đã xong, migrations/history/manifest đạt. Các hướng dẫn retry/kiểm runbook ngày21/10 dưới đây là hồ sơ trước cutover. Việc tiếp theo là lưu tag private env, chuẩn hóa [LAB_HANDOFF](LAB_HANDOFF.md) và [review/merge](MERGE_PLAN.md); không stop web hoặc chạy lại migration/backfill chỉ vì docs mới.
 
 ### Merge, image và database là các bước riêng
 

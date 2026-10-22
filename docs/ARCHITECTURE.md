@@ -4,7 +4,7 @@ Trạng thái: **Proposed** cho release/security; domain và thiết kế link *
 
 Implementation lab #13 đã có Clerk server auth/RBAC, gateway hostname/manifest, trusted viewer và private preview theo [ADR-0003](adr/0003-server-rbac-and-preview-capabilities.md). [Validation](validation/2026-10-09-auth-origin-gates.md) ghi code/Chrome local đã kiểm; [nghiệm thu VM](validation/2026-10-09-lab-domain-tls.md) bổ sung owner-confirmed Admin/Employee login và TLS content lab, không coi R2/domain viewer/mobile gates đạt; không đổi trạng thái Proposed thành production approval.
 
-[Cập nhật 2026-10-21](validation/2026-10-21-lab-public-origins.md): public Studio/viewer lab HTTPS đã sẵn sàng, owner xác nhận private preview/retests và agent kiểm routes/headers/VM chỉ đọc. Runtime VM vẫn `417c50d`, DB chỉ 0001/0002, chưa short-link cutover; các mô tả tunnel ở nghiệm thu 09/10 là lịch sử. R2/cookie/mobile/security review còn riêng.
+[Cập nhật 2026-10-22](LAB_HANDOFF.md): web VM `share-dc7560ea1c34`, DB0001/0002/0003, short viewer đã chạy; gateway giữ security-417c50d trong web-only cutover. Studio/viewer public HTTPS qua Cloudflare, content direct VM/nginx; owner mở443 và xác nhận khách ngoài tải iframe/dùng thử OK. Agent kiểm runtime/DB/headers chỉ đọc. R2/real-session security/cookie/mobile/release review còn riêng; các snapshot tunnel-only/chưa cutover là lịch sử.
 
 ```mermaid
 flowchart TD
@@ -36,7 +36,7 @@ Site ID xuất hiện trong hostname public; dùng giá trị random đủ entro
 
 ## Branded link và cách sinh hostname
 
-Bảng domain production/lab ở ADR-0004. PR #15 resolve viewer bằng share code active + site published, trả canonical URL từ server; code/test local đã pass. VM tại nghiệm thu `417c50d` vẫn dùng site ID 32 hex và tunnel loopback; chưa cutover candidate. Content HTTPS lab đã hoạt động theo nghiệm thu.
+Bảng domain production/lab ở ADR-0004. PR #15 resolve viewer bằng share code active + site published, trả canonical URL từ server; code/test local đã pass và web lab VM đã cutover ngày22/10. Content giữ host ID32hex/HTTPS/sandbox; viewer không giữ alias ID dài. [Lab handoff](LAB_HANDOFF.md) là baseline vận hành hiện tại.
 
 - `studio.ods.vn`: Next.js dashboard, Clerk Google Development (P2), API Route Handlers `/api/*` chung container. Danh sách email được phép, role Employee/Admin phải kiểm tra **trên server**. PostgreSQL và gateway kết nối bằng Docker internal network, chưa cần `api.ods.vn`.
 - Link gửi khách: `https://view.ods.vn/<share-code>` trả **trusted viewer shell** (title, mô tả Open Graph và iframe responsive), tuyệt đối không trả raw HTML đã upload. Viewer không dùng cookie/session quản trị, không nhúng HTML untrusted vào DOM hoặc SSR. Redirect `studio.ods.vn/view/<share-code>` về viewer khi cấu hình host riêng; alias host ID 32 hex trả 404. Lookup có budget mỗi process trước DB, no-store/no-referrer; edge per-IP/multiple replicas cần gate riêng.

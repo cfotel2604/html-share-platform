@@ -26,7 +26,7 @@ Lab và production content vẫn chung parent `cfvn.cloud`. Wildcard và hostnam
 - Đổi/revoke mã chỉ làm link viewer cũ không còn resolve. Khi triển khai rotation, các alias viewer theo host ID phải bị tắt hoặc có chính sách migration hữu hạn; không giữ đường dẫn bypass lâu dài.
 - Direct URL vẫn truy cập được khi site còn published. Muốn chặn request nội dung mới phải unpublish/delete; không thu hồi được nội dung đã tải. Rotation host ID là thay đổi riêng cần thiết kế/review. Mã ngẫu nhiên không thay thế authentication cho nội dung bí mật.
 
-**Trạng thái implementation:** PR #15/Issue #14 tại runtime commit `1c183f50c0d90c109ff23ef84e23e04adff5a7c7` triển khai share code/mapping/rotate/revoke/reissue, migration 0003 và backfill; alias host ID bị tắt. [Kiểm chứng local](../validation/2026-10-09-short-viewer-links.md) pass, [cutover/rollback](../SHARE_LINKS.md) chưa chạy trên VM/owner Desktop. VM tại nghiệm thu `417c50d` vẫn dùng link dài; bảng không khẳng định trusted lab hostname đã public end-to-end.
+**Trạng thái implementation:** PR #15/Issue #14 triển khai share code/mapping/rotate/revoke/reissue, migration0003/backfill và alias host ID404. [Kiểm chứng local](../validation/2026-10-09-short-viewer-links.md) pass. Ngày22/10 [web VM đã chạy fixed runtime dc7560e và DB0003](../LAB_HANDOFF.md); owner xác nhận bên ngoài tải iframe sau mở443 và dùng thử lab OK. Desktop chưa xác minh cutover, production chưa triển khai; bảng domain là quyết định cấu hình, không phải release approval.
 
 Runtime hỗ trợ domain mới qua cấu hình; default trong `origin-config.mjs` vẫn là domain cũ, còn `.env.example` là loopback lab. Khi triển khai phải đặt PUBLIC_SITE_DOMAIN rõ theo môi trường; PR #15 không đổi default domain hoặc redeploy owner.
 
@@ -57,6 +57,8 @@ GATEWAY_PREVIEW_ORIGIN=https://studio.ods.vn
 Không ghi Clerk/S3 secrets vào tài liệu. Compose security overlay hiện lấy public port từ `GATEWAY_PORT`; chỉ đặt `PUBLIC_SITE_PORT=` trong env chưa đủ. Cần overlay cuối ghi đè `web.environment.PUBLIC_SITE_PORT` và `gateway.environment.PUBLIC_SITE_PORT` bằng chuỗi rỗng cho HTTPS 443, giữ gateway nội bộ loopback 4100. Xem [SECURITY_LAB](../SECURITY_LAB.md).
 
 Ngày 2026-10-09, VM vẫn dùng Studio/viewer qua SSH tunnel `http://127.0.0.1:3100`, `VIEWER_PUBLIC_ORIGIN` rỗng và gateway frame-ancestors là loopback. `studio-lab.ods.vn` / `view-lab.ods.vn` là đích cấu hình đã chốt; chưa xác minh public end-to-end. Chỉ chuyển trusted origins/frame ancestors sau khi vhost/DNS/TLS và Clerk redirect đã kiểm, không thêm `*` để né lỗi iframe/CSRF.
+
+Snapshot09/10 trên là lịch sử: ngày22/10 trusted hosts đã public HTTPS, content direct VM/nginx với public443 do owner mở. [LAB_HANDOFF](../LAB_HANDOFF.md) ghi env mẫu, overlays/image pin và phạm vi bằng chứng; không thay quyết định domain hoặc các boundary bảo mật.
 
 ## Evidence và gates còn lại
 

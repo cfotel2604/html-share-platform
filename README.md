@@ -6,7 +6,7 @@ Nền tảng nội bộ để nhân viên tải lên HTML/CSS/JavaScript hoặc 
 
 ## Trạng thái
 
-**P0/P1** đã merge. Local MVP #5 và Studio #12 Ready, chưa merge; **Draft PR #13** bổ sung Clerk/RBAC và hostname sandbox, đã kiểm thử/deploy Docker local. **Draft PR #15** bổ sung link viewer 10 base62 và đổi/thu hồi/tạo lại link, đã kiểm thử local, chưa cutover VM/owner Desktop. Lab đã bật Clerk Development; owner xác nhận Google Admin và Employee đăng nhập thành công. Ngày 2026-10-21, public Studio/viewer HTTPS đã sẵn sàng, content giữ HTTPS wildcard/sandbox; owner xác nhận preview/retests. Quyền/mutations/deny/revoke/logout thật, cookie/mobile, R2 và release review vẫn còn gate. Xem [tiến độ gần nhất](docs/PROJECT_STATUS.md).
+**P0/P1** đã merge. Local MVP #5 và Studio #12 Ready; auth/origin #13 và short-link #15 còn Draft, chưa merge. Ngày **2026-10-22**, lab VM đã chạy web `share-dc7560ea1c34`, migration0003/backfill hoàn tất; owner mở443 và xác nhận iframe từ bên ngoài/dùng thử OK. SSH kiểm runtime/DB/headers; real-session security cases và production gates còn review riêng. [Tiến độ](docs/PROJECT_STATUS.md), [lab handoff và env mẫu](docs/LAB_HANDOFF.md), [thứ tự review/merge](docs/MERGE_PLAN.md).
 
 - [PLAN và roadmap P0–P7](PLAN.md)
 - [Kiến trúc và luồng upload/publish](docs/ARCHITECTURE.md)
@@ -20,6 +20,7 @@ Nền tảng nội bộ để nhân viên tải lên HTML/CSS/JavaScript hoặc 
 - [Bằng chứng auth/origin và rollback image hiện tại](docs/validation/2026-10-09-auth-origin-gates.md)
 - [ADR-0004 — domain production/lab và mã chia sẻ đã chốt](docs/adr/0004-domains-and-share-codes.md)
 - [Nghiệm thu VM lab và đối chiếu runbook TLS](docs/validation/2026-10-09-lab-domain-tls.md)
+- [Nghiệm thu lab ngày22/10 và phạm vi bằng chứng](docs/validation/2026-10-22-lab-acceptance.md)
 
 ## Nguyên tắc bảo mật
 
@@ -46,7 +47,7 @@ YAML workflow và Issue templates được parse bằng `scripts/check_yaml.py` 
 
 Cookie parent-domain `cfvn.cloud` (chung giữa content lab/production) và tính tương thích iframe/opaque-origin trên mobile/Zalo còn là P4 security gates bắt buộc. Xem [PLAN](PLAN.md) và [ADR-0001](docs/adr/0001-public-site-origin-isolation.md).
 
-Ngày 2026-10-21, public HTTPS `studio-lab.ods.vn`/`view-lab.ods.vn` đã sẵn sàng; owner xác nhận preview/retests và agent kiểm routes/headers qua SSH/HTTPS. [Readiness VM](docs/validation/2026-10-21-lab-public-origins.md): runtime vẫn `417c50d`, chưa cutover PR #15 có mã viewer 10 base62. Cần migration 0003/backfill trước triển khai candidate; viewer URL dài cũ trả 404, cần gửi link mới. Đổi mã chỉ thu hồi viewer, direct URL còn mở khi published. Xem [runbook](docs/SHARE_LINKS.md), [kết quả local](docs/validation/2026-10-09-short-viewer-links.md), [ADR-0004](docs/adr/0004-domains-and-share-codes.md).
+Lab hiện dùng `studio-lab.ods.vn`/`view-lab.ods.vn` HTTPS qua Cloudflare; content wildcard trỏ thẳng VM/nginx, UFW443 đã mở cho khách Internet theo owner. Web #15 resolve mã10base62, alias32hex trả404; gateway giữ security-417c50d có chủ đích. [Lab handoff](docs/LAB_HANDOFF.md) ghi image pin cần lưu trong env private, bốn Compose overlays và rollback. Mã viewer đổi không thu hồi direct URL còn published. Private R2/Clerk production/cookie/mobile/security release vẫn cần gate tương ứng; chưa deploy production.
 
 ## Làm việc với GitHub
 
