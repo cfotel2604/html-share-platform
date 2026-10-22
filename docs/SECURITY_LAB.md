@@ -1,6 +1,6 @@
 # Cấu hình Clerk và gateway cho Docker lab
 
-Implementation #8/#10 ở [PR #13](https://github.com/cfotel2604/html-share-platform/pull/13). Dùng branch `codex/8-10-auth-origin-gates`; base Studio vì #5/#12 chưa merge. [Validation](validation/2026-10-09-auth-origin-gates.md) phân biệt bằng chứng local và gate ngoài môi trường.
+Implementation #8/#10 ở [PR #13](https://github.com/cfotel2604/html-share-platform/pull/13) đã merge main6d30d22; #15 sau retarget main cũng đã merge main0c17a09 ngày22/10 theo owner giao. #8 lab/P2 CLOSED sau owner detailed acceptance, #10 release gates OPEN. [Validation](validation/2026-10-09-auth-origin-gates.md) là hồ sơ local09/10; [lab handoff](LAB_HANDOFF.md) và [merge record](MERGE_PLAN.md) ghi trạng thái mới. Các lệnh baseline #13 dưới đây không phải yêu cầu build/deploy lại lab hiện hữu.
 
 **VM hiện tại ngày22/10:** dùng [LAB_HANDOFF](LAB_HANDOFF.md) và [env/overlay samples](../deploy/lab-public.env.example) làm điểm vào vận hành. Web #15 đã chạy, DB0003/backfill xong, owner xác nhận khách ngoài tải iframe sau mở443. Các lệnh bootstrap/local Desktop và snapshot21/10 bên dưới không phải yêu cầu reconfigure/redeploy VM hiện hữu. Review/merge theo [MERGE_PLAN](MERGE_PLAN.md); private R2/production/security gates vẫn riêng.
 
@@ -117,7 +117,7 @@ services:
 
 Security overlay suy GATEWAY_VIEWER_ORIGIN từ VIEWER_PUBLIC_ORIGIN và GATEWAY_PREVIEW_ORIGIN từ STUDIO_PUBLIC_ORIGIN. Kiểm cấu hình bằng `docker compose ... config --quiet` rồi chỉ lọc các field public được phép; không dump toàn config/env chứa secrets. Production dùng cấu hình tương ứng trong ADR-0004 và wildcard certificate/gia hạn riêng.
 
-PR #15/Issue #14 đã triển khai viewer 10 base62, mapping và rotate/revoke/reissue; [kiểm chứng local](validation/2026-10-09-short-viewer-links.md) pass. VM/owner Desktop chưa cutover candidate; runtime tại nghiệm thu trước đó vẫn dùng site ID 32 hex. Triển khai sau review cần migration 0003 + [backfill/runbook](SHARE_LINKS.md); candidate trả 404 cho alias host ID, owner cần gửi link ngắn mới. Không rollback binary cũ bật lại alias sau revocation. Đổi mã không chặn direct URL; unpublish/delete mới chặn request nội dung mới.
+PR #15 đã merge viewer10base62/mapping/rotate/revoke/reissue và fix EACCES#16; #14/#16 CLOSED. [Kiểm chứng local](validation/2026-10-09-short-viewer-links.md) pass; VM web đã cutover candidate dc7560e, migration0003/backfill xong ngày22/10 theo [lab handoff](LAB_HANDOFF.md), owner xác nhận detailed session/link lifecycle cases đều đạt. Desktop chưa xác minh cutover. Không yêu cầu lặp [backfill/runbook](SHARE_LINKS.md) trên VM đã chạy; alias host-ID32hex trả404. Không rollback binary cũ bật lại alias sau revocation. Đổi mã không chặn direct URL; unpublish/delete mới chặn request nội dung mới.
 
 ## Gate trước public (#10 vẫn mở)
 

@@ -1,5 +1,7 @@
 # Review #13/#15 sau đồng bộ main — 2026-10-22
 
+> Sau report này, owner đã giao merge; #13/#15 nay MERGED, #8/#14/#16 CLOSED, #10 OPEN. [Report sau merge](2026-10-22-stack-merged.md) là trạng thái mới; các gate/quyền chờ ở dưới là snapshot lúc review.
+
 Refs [#13](https://github.com/cfotel2604/html-share-platform/pull/13), [#15](https://github.com/cfotel2604/html-share-platform/pull/15), #8/#10/#14/#16; [review auth](2026-10-22-pr13-retarget.md), [handoff](../LAB_HANDOFF.md), [merge plan](../MERGE_PLAN.md).
 
 ## Quyền, dependency và conflict

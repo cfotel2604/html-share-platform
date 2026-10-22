@@ -4,7 +4,7 @@ Trạng thái: **Proposed** cho release/security; domain và thiết kế link *
 
 Implementation lab #13 đã có Clerk server auth/RBAC, gateway hostname/manifest, trusted viewer và private preview theo [ADR-0003](adr/0003-server-rbac-and-preview-capabilities.md). [Validation](validation/2026-10-09-auth-origin-gates.md) ghi code/Chrome local đã kiểm; [nghiệm thu VM](validation/2026-10-09-lab-domain-tls.md) bổ sung owner-confirmed Admin/Employee login và TLS content lab, không coi R2/domain viewer/mobile gates đạt; không đổi trạng thái Proposed thành production approval.
 
-[Cập nhật 2026-10-22](LAB_HANDOFF.md): web VM `share-dc7560ea1c34`, DB0001/0002/0003, short viewer đã chạy; gateway giữ security-417c50d trong web-only cutover. Studio/viewer public HTTPS qua Cloudflare, content direct VM/nginx; owner mở443 và xác nhận khách ngoài tải iframe/dùng thử OK. Agent kiểm runtime/DB/headers chỉ đọc. R2/real-session security/cookie/mobile/release review còn riêng; các snapshot tunnel-only/chưa cutover là lịch sử.
+[Cập nhật 2026-10-22](LAB_HANDOFF.md): web VM `share-dc7560ea1c34`, DB0001/0002/0003, short viewer đã chạy; gateway giữ security-417c50d trong web-only cutover. Studio/viewer public HTTPS qua Cloudflare, content direct VM/nginx; owner mở443 và xác nhận khách ngoài tải iframe và detailed session/link lifecycle cases đều đạt. Agent kiểm runtime/DB/headers chỉ đọc. #13/#15 đã merge main, #8/#14/#16 CLOSED; #10 giữ R2/productionClerk/cookie/mobile/release review. Các snapshot tunnel-only/chưa cutover là lịch sử; merge source không đổi runtime VM.
 
 ```mermaid
 flowchart TD

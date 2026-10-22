@@ -6,7 +6,7 @@ Nền tảng nội bộ để nhân viên tải lên HTML/CSS/JavaScript hoặc 
 
 ## Trạng thái
 
-**P0/P1** đã merge. Owner đã merge MVP #5 vào main1ed0eb0; #12 merge vào base cũ đã được [recovery #17](https://github.com/cfotel2604/html-share-platform/pull/17) đưa UI vào main6bdd298, CI55tests PASS. Auth/origin #13 và short-link #15 còn Draft, chưa merge. Ngày **2026-10-22**, lab VM đã chạy web `share-dc7560ea1c34`, migration0003/backfill hoàn tất; owner mở443 và xác nhận iframe từ bên ngoài/dùng thử OK. SSH kiểm runtime/DB/headers; real-session security cases và production gates còn review riêng. [Tiến độ](docs/PROJECT_STATUS.md), [lab handoff và env mẫu](docs/LAB_HANDOFF.md), [thứ tự review/merge](docs/MERGE_PLAN.md).
+**P0/P1, MVP/upload, Studio, auth/origin và short links đã vào main**: #5, recovery UI#17, #13 và #15 (mốc code `0c17a09`) đã merge theo owner giao. #8/#9/#11/#14/#16 CLOSED; #10 còn security/release gates. Ngày **2026-10-22**, lab giữ web `share-dc7560ea1c34`, migration0003/backfill đã hoàn tất; owner xác nhận iframe từ bên ngoài và detailed session/link lifecycle cases đều đạt. Merge source không deploy hoặc chạy lại migration. [Commit/CI/acceptance](docs/reviews/2026-10-22-stack-merged.md) phân biệt owner-confirmed và agent checks; production chưa được phê duyệt. [Tiến độ](docs/PROJECT_STATUS.md), [lab handoff và env mẫu](docs/LAB_HANDOFF.md), [thứ tự review/merge](docs/MERGE_PLAN.md).
 
 - [PLAN và roadmap P0–P7](PLAN.md)
 - [Kiến trúc và luồng upload/publish](docs/ARCHITECTURE.md)
