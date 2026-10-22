@@ -1,5 +1,20 @@
 # AI Agent handoff — HTML Share Platform
 
+> Bàn giao **2026-10-22 (Asia/Saigon)**. #13 đã retarget main6bdd298 theo owner giao, sync main chỉ conflict hai docs/status/handoff; đang review/tests. #15 tiếp theo, còn base #13. Chưa merge/Ready/deploy từ mốc này. [PROJECT_STATUS](PROJECT_STATUS.md), [validation](validation/2026-10-09-auth-origin-gates.md).
+
+## Việc hiện tại và xác nhận mới
+
+- Worktree managed `C:\Users\admin\.codex\worktrees\studio-main-recovery\html-share-platform` đang branch codex/8-10-auth-origin-gates cho PR13 (đã tái sử dụng worktree sạch sau recovery17). PR15 vẫn ở `C:\Users\admin\Documents\Codex\html-share-platform-pr5-sync`, codex/14-short-viewer-links. Giữ owner Desktop/env/untracked/volumes; main checkout có thể cũ.
+- Main6bdd298 đã có #5 + UI #12 qua #17; #9/#11 CLOSED. #13 base main, head4ac9689 trước sync. #15 base codex/8-10-auth-origin-gates; CI trước sync e834f13 SUCCESS. Fetch/re-query head/base/CI mới trước kết luận.
+- Owner xác nhận đầy đủ case Employee owner-only, Admin mutation/audit actor, ngoài allowlist deny, policy revoke/disable/logout session cũ deny, rotate/revoke/reissue/unpublish link lifecycle đều đạt. Ghi là owner-confirmed real-session evidence. Không yêu cầu gửi keys/cookies hoặc tự revoke người dùng thật.
+- Lab runtime web/source dc7560e, gateway security-417c50d, schema0001/0002/0003 và short links đã chạy; trusted Studio/viewer HTTPS public, direct content VM/nginx/public443. Private env image pin đã lưu và config không shell override PASS. Retarget/review không deploy/migrate/backfill/DNS hoặc đổi dữ liệu lab.
+- Resolve docs giữ cả auth implementation/evidence và main merge metadata mới. Không sửa code runtime hoặc SQL để giải quyết merge. Kiểm equality source/security/schema trước-sau, unit79/lint/typecheck/build/15integration theo CI và cập nhật report.
+- Tiếp review/sync #15, giữ code share/tombstones/0003/permissions và lab handoff; chỉ retarget main sau dependency merge. User mới giao retarget/review và xử lý dependency; quyền Ready/merge phải theo chỉ dẫn cụ thể và kết quả gates, không suy production approval.
+- R2 private/IAM/cleanup, production Clerk/OAuth, cookie cfvn.cloud sibling/cross-environment/browser/mobile/Zalo/crawlers, edge/concurrency/cache/log redaction toàn pipeline, DNS/vhost/renewal/rollback/pilot còn riêng. ADR0001/0003 Proposed,0002/0004 Accepted. Không đánh dấu gates chưa kiểm thành PASS hoặc lùi sandbox.
+
+## Hồ sơ09/10 trước retarget — lịch sử
+
+
 > Bàn giao **2026-10-09 (Asia/Saigon)**. GitHub/CI đã xác minh; mốc domain bổ sung HTTPS/SSH chỉ đọc VM và owner-confirmed Employee login. PR head trước cập nhật docs `417c50d`. Đọc cùng [PROJECT_STATUS](PROJECT_STATUS.md), [validation](validation/2026-10-09-auth-origin-gates.md) và [SECURITY_LAB](SECURITY_LAB.md).
 
 ## Bắt đầu phiên tiếp theo

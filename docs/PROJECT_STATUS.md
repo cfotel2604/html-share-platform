@@ -1,5 +1,25 @@
 # Project status — HTML Share Platform
 
+> Snapshot **2026-10-22 (Asia/Saigon)**: owner giao retarget/review #13, sau đó xử lý #15. #13 đã đổi base main6bdd298, đang sync/kiểm CI; chỉ conflict docs status/handoff, runtime không conflict. Chưa merge #13/#15 hoặc deploy. [AI_HANDOFF](AI_HANDOFF.md), [review #5/recovery](reviews/2026-10-22-pr5-and-studio-merge.md), [validation #13](validation/2026-10-09-auth-origin-gates.md).
+
+## Mốc hiện tại
+
+- Main `6bdd298ab89dfe9a9061fb64203d3b3215fe4809` đã có #5 và UI #12 qua recovery #17. #9/#11 CLOSED; #8/#10/#14/#16 OPEN.
+- #13 Draft, branch codex/8-10-auth-origin-gates, **base main**. Merge main chỉ đụng docs/status/handoff; giữ Clerk/RBAC/hostname/preview implementation từ4ac9689 và ghi lại source equality/schema checksums. CI đúng head mới phải kiểm sau push.
+- #15 Draft vẫn base #13 để diff short-link riêng; đồng bộ dependency sau #13 sync. Không retarget #15 main trước khi dependency vào main rồi hiểu nhầm diff auth thành scope share-link.
+- **Owner xác nhận từng case đều đạt ngày22/10:** Employee không sửa site người khác; Admin mutation/audit đúng actor; email ngoài allowlist bị chặn; revoke/disable và logout chặn phiên cũ; rotate/revoke/reissue và unpublish chặn link cũ. Đây là owner-confirmed real-session evidence, không giả làm browser test do agent chạy.
+- Lab đã chạy web/source dc7560e với short links và DB0001/0002/0003; gateway security-417c50d. Public Studio/viewer HTTPS, owner mở443 và xác nhận iframe ngoài office. SECURITY_IMAGE đã lưu private env, SSH/Compose config không shell override PASS. Không migrate/backfill/restart hoặc đổi env/allowlist/data trong retarget/review.
+- Test lịch sử #13:79unit/15integration groups/Chrome local; chạy CI mới cho source đã sync main. ADR-0001/0003 vẫn Proposed cho security/release; R2/cookie sibling/mobile/Zalo/log/edge/DNS/renewal/production OAuth/pilot vẫn là gates riêng.
+
+## Bằng chứng và ranh giới review
+
+Auth đọc verified Google identity + session active online + allowlist/status/role DB; exact Origin/Host, Employee owner-only/Admin audit và fresh actor locks trước storage. API upload không đi qua Next proxy buffering; HTTP/iframe sandbox, hostname/PSL/manifest/digest/private preview giữ nguyên. Không phát hiện blocker mới trong phần code đã đọc; kết luận cuối và CI ghi trong review report sau kiểm tra.
+
+Nhánh #13 chưa chứa share-code implementation/0003/EACCES fix của #15, mặc dù lab đã chạy chúng. Không build/deploy main hoặc #13 trung gian để lùi lab short links. Handoff lab đầy đủ đang ở [PR #15](https://github.com/cfotel2604/html-share-platform/pull/15), không chép code #15 vào PR auth để giải quyết docs.
+
+## Hồ sơ09/10 trước retarget — lịch sử
+
+
 > Snapshot **2026-10-09 (Asia/Saigon)**, đã đối chiếu GitHub/CI, bổ sung HTTPS/SSH chỉ đọc VM lab và owner-confirmed Employee login. Snapshot PR head trước cập nhật docs là `417c50d`. Đọc cùng [AI_HANDOFF](AI_HANDOFF.md), [PLAN](../PLAN.md) và [AGENTS](../AGENTS.md). Markdown không thay GitHub live.
 
 ## Tiến độ đã kiểm chứng
