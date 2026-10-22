@@ -2,6 +2,16 @@
 
 > Bàn giao **2026-10-22 (Asia/Saigon)** sau merge theo owner giao. Chuỗi #5 → UI#17 → #13 → #15 đã vào main; mốc tích hợp code `0c17a09b68960d785f8b67b2a1585b0f3af919b8`. Lab đã nghiệm thu, giữ source/web dc7560e và gateway security-417c50d; không deploy/migrate/backfill trong mốc merge. [Status](PROJECT_STATUS.md), [lab](LAB_HANDOFF.md), [merge record](MERGE_PLAN.md), [review/CI](reviews/2026-10-22-stack-merged.md).
 
+## Phiên tiếp #10 — audit chỉ đọc 22/10
+
+Main đã fetch/xác minh `72e048efc7a7e919efb26bfd8e1f613ff88b4307` sau #18, đủ 3 workflows PASS; đọc log 86 unit/20 groups, không rerun local code tests. [Draft PR #19](https://github.com/cfotel2604/html-share-platform/pull/19) trên `codex/10-prepilot-audit`, worktree `C:\Users\admin\.codex\worktrees\10-prepilot-audit\html-share-platform`, audit commit `ecb7f8b`. Primary main `78cb7ca` chậm 52 commits giữ nguyên; không reset/clean hay đổi owner worktrees. PR #19 chưa merge; exact head/CI phải kiểm live.
+
+Đọc [audit và acceptance matrix](validation/2026-10-22-prepilot-audit.md) trước công việc #10 tiếp. SSH/runtime/HTTP mới xác nhận pins/services/loopback và viewer/direct sandbox/no-store/no-cookie, API/alias/synthetic denial 404. Nginx có 3 HTTPS vhost khác chung cổng 443, authoritative DNS/route/private inventory và external regression chưa hoàn tất. Content có 30r/s/burst100, chưa có concurrency evidence. Gateway/web dùng cùng root MinIO credential nên R2/read-only IAM chưa đạt. Preview access format không Host/query nhưng error/DNS/SNI/Cloudflare/collector vẫn chưa chứng minh redaction toàn pipeline.
+
+Gap code nhỏ tiếp theo: trusted viewer Open Graph metadata (hiện thiếu `og:title`/`og:description`), không fetch/render upload để tạo card; test revoked/unpublished/not-found và cookie/auth boundary. UA giả lập Facebook/Zalo canonical 200 không thay crawler thật; Python 403 qua Cloudflare chưa rõ nguyên nhân. Chuẩn bị fixtures/browser evidence và R2 credential separation/cleanup/Clerk staging checklist song song; provider provisioning, runtime/policy patch, TLS failure/rollback drill cần scope được giao riêng. Không tự sửa dịch vụ vì finding audit.
+
+Audit chỉ docs; không deploy/migrate/backfill/SQL/DNS/UFW/env/secret/provider changes. Owner-confirmed real-session/lifecycle evidence giữ nguyên, chưa full browser/cookie/mobile matrix. #10 OPEN, ADR-0001/0003 Proposed. Phiên này chưa recheck DB row counts/migrations hoặc Desktop; các inventory số liệu bên dưới là lịch sử của mốc trước.
+
 ## Bắt đầu phiên tiếp theo
 
 Đọc AGENTS/README/PLAN/ARCHITECTURE/WORKFLOW/ADRs và các handoff trên. Kiểm git status/worktree/remotes, fetch origin --prune, log origin/main và live GitHub. Main checkout owner có thể cũ, không dùng nó để kết luận code chưa merge; không reset/clean hoặc sửa main trực tiếp. Giữ untracked/env/uploads/volumes.

@@ -2,6 +2,14 @@
 
 > Snapshot **2026-10-22 (Asia/Saigon)** sau owner giao Ready/merge #13 → #15 và chốt handoff. Chuỗi code đã vào main tại `0c17a09b68960d785f8b67b2a1585b0f3af919b8`; lab giữ runtime dc7560e đã nghiệm thu, không deploy hoặc chạy lại migration/backfill trong mốc merge. [Lab handoff](LAB_HANDOFF.md), [merge record](MERGE_PLAN.md), [review sau merge](reviews/2026-10-22-stack-merged.md), [AI_HANDOFF](AI_HANDOFF.md). Markdown không thay kiểm GitHub/VM hiện tại.
 
+## Audit tiếp #10 — 2026-10-22
+
+[Draft PR #19](https://github.com/cfotel2604/html-share-platform/pull/19), branch `codex/10-prepilot-audit`, audit commit `ecb7f8b` từ main `72e048e` sau #18. Đã fetch/kiểm GitHub: main có 3 workflows SUCCESS, log 86 unit/20 integration groups PASS; lúc bắt đầu không PR mở, chỉ #10 OPEN. Primary main `78cb7ca` chậm 52 commits, giữ nguyên; audit trong worktree riêng. [Báo cáo/ma trận acceptance](validation/2026-10-22-prepilot-audit.md) ghi phạm vi và kế hoạch tiếp, CI current PR head kiểm riêng.
+
+SSH chỉ đọc xác nhận source/web `dc7560e`, gateway `security-417c50d` và services healthy, ports/pins không đổi. Viewer/direct 200 sandbox/no-store/no-cookie, viewer API/alias32hex/synthetic unknown 404. Inventory mới có 8 nginx server blocks, 3 HTTPS vhost khác cùng cổng 443; full DNS/route/private inventory và external regression chưa đạt. Content nginx đã có 30r/s/burst100; không thấy limit_conn. Gateway/web cùng MinIO root credential, chưa có R2/read-only IAM evidence. TLS lab hết hạn 07/01/2027, timer/service success không thay renewal/failure drill.
+
+Canonical viewer 200 với UA giả lập Facebook/Zalo nhưng thiếu `og:title`/`og:description`; Python UA 403 qua Cloudflare chưa rõ nguyên nhân. Ưu tiên tiếp: inventory/origin access và preview-log privacy, sửa trusted OG metadata có test; chuẩn bị R2/IAM/cleanup/Clerk staging rồi browser/device/crawler và TLS/pilot matrix. Audit chỉ tài liệu, không đổi VM/DNS/UFW/provider/SQL. Owner-confirmed real-session cases bên dưới vẫn giữ riêng; #10 OPEN, ADR-0001/0003 Proposed.
+
 ## Trạng thái đã kiểm
 
 | Hạng mục | Trạng thái hiện tại |

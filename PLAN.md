@@ -69,6 +69,8 @@ Xem [kiến trúc và luồng dữ liệu](docs/ARCHITECTURE.md), [ADR-0001](doc
 
 Mỗi issue có một phạm vi rõ, nhánh riêng, Draft PR để ghi tiến độ và kết quả test. Chỉ merge khi gate của phase đạt. Chạy staging và pilot trước production. Không tự merge/deploy từ tài liệu này.
 
+Kế hoạch tiếp #10 ngày 22/10 trong [Draft PR #19](https://github.com/cfotel2604/html-share-platform/pull/19): [audit/acceptance matrix](docs/validation/2026-10-22-prepilot-audit.md), commit `ecb7f8b` từ main `72e048e`. Ưu tiên inventory/origin access chung cổng 443 và preview log privacy; trusted Open Graph metadata + fixtures/evidence; R2/IAM/cleanup/Clerk staging sau khi được giao provider; browser/cookie/mobile/crawler, TLS failure/rollback và pilot trước release. Audit không đóng acceptance một phần hoặc đổi trạng thái Proposed của ADR-0001/0003.
+
 ## 5. Quyết định owner (2026-10-08; domain cập nhật 2026-10-09) và các gate còn mở
 
 1. **Domain / chia sẻ:** chọn `studio.ods.vn` cho dashboard, `view.ods.vn/<share-code>` cho link gửi khách và `<site-id>.space-ods.cfvn.cloud` cho origin chạy HTML; Lab tương ứng `studio-lab.ods.vn`, `view-lab.ods.vn/<share-code>`, `<site-id>.lab-space-ods.cfvn.cloud`. Quyết định mới thay `matbao.one`; viewer10base62 độc lập host ID128bit đã chạy lab VM ngày22/10, Studio/viewer có public HTTPS; tunnel chỉ là đường vận hành tùy chọn. Xem ADR-0004 và [handoff lab](docs/LAB_HANDOFF.md). Studio/viewer chỉ serve trusted shell, không render raw HTML upload trên origin quản trị.
