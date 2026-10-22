@@ -1,0 +1,5 @@
+# Apply alongside the existing lab's compose.yaml; only replace its web image.
+services:
+  web:
+    image: ${STUDIO_WEB_IMAGE:?Set STUDIO_WEB_IMAGE to the tested local image tag}
+    pull_policy: never
