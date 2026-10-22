@@ -1,14 +1,14 @@
 # Project status — HTML Share Platform
 
-> Snapshot **2026-10-22 (Asia/Saigon)**: lab đã chạy web short-link, owner xác nhận iframe từ mạng ngoài và dùng thử OK; SSH xác minh runtime/DB/headers. Main đã nhận #5 tại1ed0eb0; #12 merge vào base cũ, UI chờ recovery #17. [Lab handoff](LAB_HANDOFF.md), [merge plan](MERGE_PLAN.md), [bằng chứng](validation/2026-10-22-lab-acceptance.md), [AI_HANDOFF](AI_HANDOFF.md). Markdown không thay kiểm GitHub/VM hiện tại.
+> Snapshot **2026-10-22 (Asia/Saigon)**: lab đã chạy web short-link, owner xác nhận iframe từ mạng ngoài và dùng thử OK; SSH xác minh runtime/DB/headers. Main6bdd298 đã có #5 và UI #12 qua recovery #17; #13/#15 còn Draft. [Lab handoff](LAB_HANDOFF.md), [merge plan](MERGE_PLAN.md), [bằng chứng](validation/2026-10-22-lab-acceptance.md), [AI_HANDOFF](AI_HANDOFF.md). Markdown không thay kiểm GitHub/VM hiện tại.
 
 ## Trạng thái đã kiểm
 
 | Hạng mục | Trạng thái hiện tại |
 | --- | --- |
-| P0/P1 | #2/#4/#7 merged; origin/main nay1ed0eb0 sau #5 |
+| P0/P1 | #2/#4/#7 merged; origin/main nay6bdd298 sau recovery #17 |
 | Local MVP/upload #9 | Owner đã merge #5 vào main1ed0eb0; review sau merge không phát hiện thêm blocker local MVP, exact-main CI50tests PASS; #9 CLOSED |
-| Studio/UI #11 | #12 MERGED vào codex/local-mvp2df738b sau #5; UI chưa main. [Recovery #17](https://github.com/cfotel2604/html-share-platform/pull/17) Draft/base main, giữ tree UI4ab546a |
+| Studio/UI #11 | #12 MERGED vào base cũ; [recovery #17](https://github.com/cfotel2604/html-share-platform/pull/17) nay MERGED main6bdd298, UI4ab546a đã vào main; 55tests/CI PASS |
 | Auth/origin #8/#10 | #13 Draft, head4ac9689, base codex/11-studio-ui; CI SUCCESS; gates review/release còn mở |
 | Short-link/permissions #14/#16 | #15 Draft, base codex/8-10-auth-origin-gates; CI SUCCESS tại fdf24eb trước cập nhật merge này; head sau push cần kiểm riêng |
 | VM source/web | dc7560ea1c34cbe060779fbe69bb2f574e170431; web html-share-studio:share-dc7560ea1c34 healthy |
@@ -16,7 +16,7 @@
 | Database VM | 0001/0002/0003; 3 sites/7 versions, 3 active/3 revoked links; thiếu history/manifest đều0 |
 | Public lab | Studio/viewer HTTPS qua Cloudflare; content direct VM/nginx; owner đã mở443/tcp any IPv4/IPv6 và xác nhận khách ngoài tải iframe |
 | Docker Desktop | Theo mốc09/10: security-613f2b7, Clerk Development; chưa recheck ngày 22/10, không coi là runtime VM |
-| GitHub Issues | #9 CLOSED sau #5; #8/#10/#11/#14/#16 OPEN; #17 Draft chờ quyền merge cụ thể |
+| GitHub Issues | #9 CLOSED sau #5; #9/#11 CLOSED; #8/#10/#14/#16 OPEN; #17 MERGED main6bdd298 theo owner giao; #13/#15 vẫn Draft |
 
 ## Nghiệm thu và giới hạn bằng chứng
 
@@ -36,7 +36,7 @@ Code đã có10 base62 exact-case/CSPRNG/UNIQUE, atomic rotate/revoke/reissue v�
 
 ## Review/merge tiếp theo
 
-Theo [MERGE_PLAN](MERGE_PLAN.md), #5 đã merged; #12 merged nhầm base cũ nên chuẩn bị recovery #17 base main, giữ ancestry và code UI nguyên vẹn, không revert. Chuỗi còn lại #17 → #13 → #15, retarget/check diff/CI sau dependency merge. [Review #5/recovery](https://github.com/cfotel2604/html-share-platform/pull/17) có exact-main CI50tests PASS và equality checks; main trung gian vẫn local/demo, không deploy public.
+Theo [MERGE_PLAN](MERGE_PLAN.md), #5 đã merged; #12 merged base cũ đã được khắc phục bằng #17 MERGED main6bdd298 sau owner chấp thuận, giữ ancestry/UI nguyên vẹn. Chuỗi còn lại #13 → #15, retarget/check diff/CI khi được giao. [Review #5/recovery](https://github.com/cfotel2604/html-share-platform/pull/17) có exact-main CI50tests PASS và equality checks; main trung gian vẫn local/demo, không deploy public.
 
 #13/#15 giữ Draft đến review/gates scope đạt; owner dùng thử lab không tự là GitHub review approval. Cần chốt bằng chứng session thật Employee owner-only/Admin audit/ngoài allowlist/revoke/logout và link lifecycle. Merge source không tự deploy VM; chưa được giao merge/production.
 

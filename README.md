@@ -6,7 +6,7 @@ Nền tảng nội bộ để nhân viên tải lên HTML/CSS/JavaScript hoặc 
 
 ## Trạng thái
 
-**P0/P1** đã merge. Owner đã merge MVP #5 vào main1ed0eb0; #12 merge vào base cũ codex/local-mvp nên UI đang chờ [recovery #17](https://github.com/cfotel2604/html-share-platform/pull/17). Auth/origin #13 và short-link #15 còn Draft, chưa merge. Ngày **2026-10-22**, lab VM đã chạy web `share-dc7560ea1c34`, migration0003/backfill hoàn tất; owner mở443 và xác nhận iframe từ bên ngoài/dùng thử OK. SSH kiểm runtime/DB/headers; real-session security cases và production gates còn review riêng. [Tiến độ](docs/PROJECT_STATUS.md), [lab handoff và env mẫu](docs/LAB_HANDOFF.md), [thứ tự review/merge](docs/MERGE_PLAN.md).
+**P0/P1** đã merge. Owner đã merge MVP #5 vào main1ed0eb0; #12 merge vào base cũ đã được [recovery #17](https://github.com/cfotel2604/html-share-platform/pull/17) đưa UI vào main6bdd298, CI55tests PASS. Auth/origin #13 và short-link #15 còn Draft, chưa merge. Ngày **2026-10-22**, lab VM đã chạy web `share-dc7560ea1c34`, migration0003/backfill hoàn tất; owner mở443 và xác nhận iframe từ bên ngoài/dùng thử OK. SSH kiểm runtime/DB/headers; real-session security cases và production gates còn review riêng. [Tiến độ](docs/PROJECT_STATUS.md), [lab handoff và env mẫu](docs/LAB_HANDOFF.md), [thứ tự review/merge](docs/MERGE_PLAN.md).
 
 - [PLAN và roadmap P0–P7](PLAN.md)
 - [Kiến trúc và luồng upload/publish](docs/ARCHITECTURE.md)

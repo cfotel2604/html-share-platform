@@ -14,7 +14,7 @@
 6. Chỉ đổi sang Ready for review khi lint/typecheck/build/test phù hợp pass và checklist xong.
 7. Review, merge vào `main` sau khi đạt gate. Release production yêu cầu quyết định triển khai riêng; dùng staging và canary/pilot.
 
-Stack lab có [kế hoạch review/merge](MERGE_PLAN.md) và [bàn giao VM](LAB_HANDOFF.md). #5 đã vào main nhưng #12 merged vào base cũ sau đó; chuỗi còn lại là recovery #17 → #13 → #15. Đề xuất merge commit để giữ ancestry, retarget main/kiểm diff và CI sau mỗi dependency merge. Nghiệm thu lab không tự là lệnh merge, đóng Issue hoặc phê duyệt production.
+Stack lab có [kế hoạch review/merge](MERGE_PLAN.md) và [bàn giao VM](LAB_HANDOFF.md). #5 đã vào main nhưng #12 merged vào base cũ sau đó; recovery #17 đã vào main6bdd298, chuỗi còn lại #13 → #15 khi được giao. Đề xuất merge commit để giữ ancestry, retarget main/kiểm diff và CI sau mỗi dependency merge. Nghiệm thu lab không tự là lệnh merge, đóng Issue hoặc phê duyệt production.
 
 ## Quy ước kiểm tra
 

@@ -6,7 +6,7 @@
 
 Đọc AGENTS/README/PLAN/ARCHITECTURE/WORKFLOW/ADRs và ba handoff docs trên từ branch được giao. Kiểm git status/worktrees/remotes, fetch origin --prune, log origin/main, gh pr view5/12/13/15 và issues. Main checkout có thể cũ; giữ owner worktrees/untracked/env/volumes, không reset/clean. Không update main trực tiếp.
 
-Task worktree `C:\Users\admin\Documents\Codex\html-share-platform-pr5-sync`, branch `codex/14-short-viewer-links`, PR15 base #13. Owner đã merge #5 main1ed0eb0 rồi #12 vào codex/local-mvp2df738b; UI chưa main. [Recovery #17](https://github.com/cfotel2604/html-share-platform/pull/17) Draft/base main, branch codex/11-studio-main-recovery; managed worktree `C:\Users\admin\.codex\worktrees\studio-main-recovery\html-share-platform`, merge3296738 giữ tree UI4ab546a, backend/schema không đổi. #5 review sau merge không phát hiện thêm blocker local MVP, CI exact-main50tests/lint/typecheck/build/docs PASS. #9 CLOSED; #11/#8/#10/#14/#16 OPEN. #13/#15 vẫn Draft, chưa retarget/merge. PR15 CI tại fdf24eb SUCCESS; head docs mới cần check sau push. Không revert #12, không tự merge #17 khi chưa được giao; chưa production.
+Task worktree `C:\Users\admin\Documents\Codex\html-share-platform-pr5-sync`, branch `codex/14-short-viewer-links`, PR15 base #13. Owner merge #5 main1ed0eb0 rồi #12 vào base cũ2df738b; sau khi chuẩn bị/CI55tests PASS, owner giao Ready/merge [recovery #17](https://github.com/cfotel2604/html-share-platform/pull/17), nay MERGED main6bdd298. Branch codex/11-studio-main-recovery; managed worktree `C:\Users\admin\.codex\worktrees\studio-main-recovery\html-share-platform`, merge3296738 giữ tree UI4ab546a, backend/schema không đổi. #5 review sau merge không phát hiện thêm blocker local MVP, CI exact-main50tests/lint/typecheck/build/docs PASS. #9/#11 CLOSED; #8/#10/#14/#16 OPEN. #13/#15 vẫn Draft, chưa retarget/merge. PR15 CI tại fdf24eb SUCCESS; head docs mới cần check sau push. Không revert #12; #17 đã merge đúng head cc5a85c theo owner giao. Main tree khớp tested head/UI ancestry, backend/schema/env không đổi. Chưa production.
 
 ## Runtime VM đã kiểm ngày 22/10
 
@@ -42,7 +42,7 @@ EACCES #16 fix dc7560e: Dockerfile a+rX scripts/db sau COPY, giữ USER node/roo
 ## Việc tiếp theo
 
 1. Image pin đã lưu và config PASS. Reviewer chốt các case session thật ownership/Admin audit/deny/revoke/logout và lifecycle theo MERGE_PLAN; không yêu cầu gửi keys/emails lại hoặc tự khóa người dùng thật.
-2. #5 đã merged; #12 merged base cũ. Recovery #17 đưa UI nguyên vẹn vào main; sau merge #17 mới retarget/review #13 rồi #15 khi được giao. Kiểm head/base/CI, tránh squash ancestry trừ khi re-stack đúng; chưa tự merge #17/#13/#15.
+2. #5 đã merged; #12 merged base cũ. Recovery #17 đã đưa UI nguyên vẹn vào main6bdd298; tiếp retarget/review #13 rồi #15 khi được giao. Kiểm head/base/CI, tránh squash ancestry trừ khi re-stack đúng; #13/#15 chưa retarget/merge.
 3. #8/#10 còn release gates: R2 private/IAM/cleanup, production Clerk/OAuth, cookie cfvn.cloud sibling/cross-environment/browser/mobile/Zalo/crawler, edge limits/cache/unpublish, full log redaction, DNS/vhost inventory và TLS renewal/rollback. ADR-0001/0003 Proposed,0002/0004 Accepted cho quyết định riêng. Staging/pilot/release review trước production; legacy MinIO không đáp ứng gateR2.
 
 ## Môi trường và hồ sơ cũ

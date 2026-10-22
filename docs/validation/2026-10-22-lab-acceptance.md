@@ -26,3 +26,9 @@ Kiểm tra cập nhật PASS: required docs và 25 Markdown files/local links, 6
 ## Cập nhật sau owner lưu env và merge stack cùng ngày
 
 SSH chỉ đọc xác nhận SECURITY_IMAGE đã lưu đúng share-dc7560ea1c34, Compose config không shell override PASS, web running. Finding env thiếu biến ở snapshot đầu ngày trên đã xử lý. GitHub: #5 owner merge main1ed0eb0, #9 CLOSED; #12 owner merge base cũ codex/local-mvp2df738b sau đó nên UI chưa main. Agent review exact-main code/CI50tests PASS, chuẩn bị [recovery #17](https://github.com/cfotel2604/html-share-platform/pull/17) base main giữ UI tree4ab546a/backend unchanged; chưa tự merge recovery hoặc #13/#15. Handoff/MERGE_PLAN đã đổi sang chuỗi #17 → #13 → #15.
+
+## Recovery UI đã merge theo owner giao
+
+Owner chấp thuận Ready/merge #17. Agent kiểm đúng base main1ed0eb0/headcc5a85c, 2checks SUCCESS/55tests PASS, rồi merge commit (không delete branch) tạo main `6bdd298ab89dfe9a9061fb64203d3b3215fe4809`. Git xác nhận UI4ab546a là ancestor main, main tree bằng tested headcc5a85c, backend/API/scripts/db/compose.yaml/.env.example so main trước đó không đổi. #13/#15 còn Draft/base cũ; không retarget/merge/deploy. Handoff/MERGE_PLAN nay ghi #13 → #15 là chuỗi còn lại.
+
+Main merge6bdd298 [application](https://github.com/cfotel2604/html-share-platform/actions/runs/39777248694) và [docs](https://github.com/cfotel2604/html-share-platform/actions/runs/39777248681) SUCCESS. Đối chiếu #11: acceptance checklist đã đạt, UI nay thực sự vào main qua #17 nên Issue11 đã CLOSED (không gửi comment). #9/#11 CLOSED; #8/#10/#14/#16 vẫn OPEN.

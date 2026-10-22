@@ -4,13 +4,13 @@ Kế hoạch cập nhật sau owner merge #5 và #12. [Lab handoff](LAB_HANDOFF.
 
 ## GitHub đã kiểm trực tiếp
 
-Main `1ed0eb0d35961118de6e22f17be13b4bae95cc19`: #5 đã merged ngày22/10 19:02:23 Asia/Saigon. #12 merged một phút sau vào base cũ `codex/local-mvp`, commit2df738b; UI không vào main. Không mất code, không revert #12. Agent review lại #5, exact-main application/docs SUCCESS (50 tests/0fail/lint/typecheck/build).
+Main hiện `6bdd298ab89dfe9a9061fb64203d3b3215fe4809` sau owner giao merge recovery #17 lúc19:18:18 Asia/Saigon. #5 trước đó đã merged main1ed0eb0 lúc19:02:23. #12 merged một phút sau vào base cũ `codex/local-mvp`, commit2df738b; UI khi đó chưa main, nay đã khôi phục qua #17. Không mất code, không revert #12. Agent review lại #5, exact-main application/docs SUCCESS (50 tests/0fail/lint/typecheck/build).
 
 | PR | Trạng thái/base hiện tại | Bước tiếp |
 | --- | --- | --- |
 | [#5](https://github.com/cfotel2604/html-share-platform/pull/5) | MERGED vào main1ed0eb0, #9 CLOSED | Đã review sau merge, không merge lại |
-| [#12](https://github.com/cfotel2604/html-share-platform/pull/12) | MERGED vào codex/local-mvp2df738b, tree đúng UI4ab546a | Recovery #17 đưa UI vào main |
-| [#17](https://github.com/cfotel2604/html-share-platform/pull/17) | Draft, base main; branch codex/11-studio-main-recovery | Recovery3296738 merge local-mvp vào nhánh từ main, backend/schema/env không đổi; review/CI và quyền merge cụ thể |
+| [#12](https://github.com/cfotel2604/html-share-platform/pull/12) | MERGED vào codex/local-mvp2df738b, tree đúng UI4ab546a | Đã vào main qua #17 |
+| [#17](https://github.com/cfotel2604/html-share-platform/pull/17) | MERGED main6bdd298, tested headcc5a85c | Owner giao Ready/merge; 55tests/application/docs SUCCESS; main tree/equality/backend checks PASS |
 | [#13](https://github.com/cfotel2604/html-share-platform/pull/13) | Draft, base codex/11-studio-ui, head4ac9689 | Sau #17 vào main mới retarget main/check diff/conflicts/CI khi được giao |
 | [#15](https://github.com/cfotel2604/html-share-platform/pull/15) | Draft, base codex/8-10-auth-origin-gates | Sau #13 merge mới retarget/check; CI fdf24eb SUCCESS trước cập nhật docs này |
 
@@ -18,7 +18,7 @@ Main `1ed0eb0d35961118de6e22f17be13b4bae95cc19`: #5 đã merged ngày22/10 19:02
 
 ## Trình tự còn lại
 
-1. Reviewer/owner chốt recovery #17 và CI head mới; chỉ Ready/merge khi được giao. Yêu cầu ban đầu là review/merge #5 đã được owner merge trước lúc kiểm, không tự coi là quyền merge PR bổ sung.
+1. Recovery #17 đã review/CI55tests PASS, owner giao Ready/merge và đã merge main6bdd298. Không lặp merge/revert #12; main tree khớp cc5a85c và chứa ancestor UI4ab546a, backend/schema không đổi.
 2. Sau #17 vào main, retarget #13 main khi được giao; review auth/gateway/migration0002 và checklist dưới, giải quyết docs conflicts giữ trạng thái mới. Chỉ chuyển Ready khi scope/gates đạt.
 3. Sau #13 vào main, retarget #15 main, kiểm diff/CI/share lifecycle/0003/permissions/handoff. Không tự merge #13/#15 từ thao tác recovery UI.
 4. Ghi commit/PR/base/checks mới trong PROJECT_STATUS/AI_HANDOFF đúng branch. Main trung gian chỉ local/demo/path gateway, không build/deploy lên lab đang chạy Clerk/hostname/short links. Không chạy lại migration chỉ vì merge source.
@@ -51,6 +51,6 @@ Review code/merge vào main không tự phê duyệt pilot/production. Không h�
 ## Issue và release tiếp theo
 
 - #9 đã CLOSED sau merge #5 vào main; đã xác minh trạng thái trực tiếp.
-- #11 còn OPEN dù #12 merged base cũ; cần recovery #17 vào main và acceptance. #14/#16 theo #15, chỉ đóng sau review/merge/acceptance tương ứng; Refs không đảm bảo auto-close.
+- #11 đã CLOSED sau recovery #17 vào main và đối chiếu acceptance checklist đã đạt. #14/#16 theo #15, chỉ đóng sau review/merge/acceptance tương ứng; Refs không đảm bảo auto-close.
 - #8/#10 tiếp tục mở cho phần evidence/gates chưa hoàn tất; nếu tách phần release thành Issues mới phải ghi mapping và acceptance rõ, không bỏ checklist cũ.
 - Trước pilot/production: private R2 (VM MinIO legacy không đạt), production Clerk/OAuth, cookie/mobile/Zalo, edge limits/log redaction, vhost/DNS inventory và renewal/rollback, security/owner review. Chưa được giao thay DNS hoặc triển khai production.
