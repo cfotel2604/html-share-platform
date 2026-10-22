@@ -122,3 +122,25 @@ docker compose -p html-share-local-mvp down # giữ volume thử nghiệm
 ```
 
 Chỉ thử nội bộ: wildcard DNS / kiểm kê ảnh hưởng tới `matbao.one`, Cloudflare R2 thật, `studio.ods.vn` / `view.ods.vn`, Clerk/Google, email allowlist, quota theo tài khoản và lưu trữ phiên bản nâng cao được xử lý ở các giai đoạn sau. Mặc dù CSP và sandbox hạn chế nội dung tải lên, đây chưa phải cấu hình phục vụ công khai.
+
+## Studio UI và thay giao diện về sau
+
+Studio tập trung dùng ODS blue, hỗ trợ sáng/tối, kéo/chọn HTML/ZIP, lọc trạng thái và sao chép link. Presentation nằm trong `src/components/studio/`; workflow và typed HTTP adapter nằm trong `src/features/studio/`. Server services chỉ được gọi qua `/api/*`; lint cấm imports DB/storage/server auth trong UI. Xem [ADR-0002 và API contract](docs/adr/0002-replaceable-studio-ui.md).
+
+### Cập nhật riêng web trên Docker lab hiện có
+
+Thực hiện tại checkout UI đã kiểm thử; dùng đúng đường dẫn Compose/.env của lab đang chạy. Không in `docker compose config` đầy đủ vì output chứa credentials; dùng `config --quiet`.
+
+```powershell
+$labRoot = (Resolve-Path ../html-share-platform-local-mvp).Path
+$uiRoot = (Get-Location).Path
+$revision = git rev-parse HEAD
+$env:STUDIO_WEB_IMAGE = "html-share-studio:ui-$($revision.Substring(0,7))"
+$rollbackImage = docker inspect html-share-local-mvp-web-1 --format '{{.Image}}'
+docker tag $rollbackImage html-share-studio:before-ui
+docker build --label "org.opencontainers.image.revision=$revision" -t $env:STUDIO_WEB_IMAGE .
+docker compose -p html-share-local-mvp --project-directory $labRoot --env-file "$labRoot/.env" -f "$labRoot/compose.yaml" -f "$uiRoot/compose.studio-ui.yaml" config --quiet
+docker compose -p html-share-local-mvp --project-directory $labRoot --env-file "$labRoot/.env" -f "$labRoot/compose.yaml" -f "$uiRoot/compose.studio-ui.yaml" up -d --no-deps --no-build web
+```
+
+Giữ nguyên PostgreSQL/MinIO/gateway, ports và volumes; không chạy migrations trong lần đổi UI. Để rollback, đặt `STUDIO_WEB_IMAGE=html-share-studio:before-ui` và chạy lại lệnh `up` cuối. Khi đã dùng override, các lần cập nhật sau cũng cần override này; chạy `up --build` từ checkout lab cũ có thể đưa giao diện cũ trở lại. Đây là deploy local được owner giao, không phải production release.
