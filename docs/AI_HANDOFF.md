@@ -1,6 +1,12 @@
 # AI Agent handoff — HTML Share Platform
 
-## Independent review được đối chiếu — 2026-10-23
+## R1/R2 đã implement, chờ re-review — 2026-10-23
+
+Owner giao sửa sau review326d3b4. Implementation **0ad5152a82b594708d50f3eabbb729c83791f190**, branch codex/cloudflare-studio-integration/Draft #23 (base #22/#21); docs follow-up theo sau. [Evidence/acceptance/rollback](validation/2026-10-23-cloudflare-upload-fixes.md). Local95unit/31Cloudflare groups/lint/typecheck/Nextbuild/3Worker dry-run PASS. Fresh token provider gắn verified user/session/origin, mint qua BAPI không TTL/template override; SDK + exactsub/sid/azp/expiry checks, Worker online session/Google/D1 policy giữ nguyên. Actual Clerk phải chứng minh freshazp đúng; thiếu/sai thì deny, chưa có provider evidence. Stablefinalizekey/recoverytokenmới và no speculative delete được regression cover.
+
+R2 thêm **D1-only0003_cleanup_resweeps.sql**, giữ nguyên0001/0002D1 và0001–0003PostgreSQL. cleanup_after schedule/backfill, aborted tombstones không bị loại vĩnh viễn bởi cleanup_at;5phút rồi daily khi hết hạn>24h, limit10/max50. Crash/partial-delete giữ due time; committed/grant references bảo vệ. Giữ tombstones vô thời hạn cho tới khi có reviewed purge/fencing policy; cần đo chi phí/backlog/audit trước Cron. Node pipeline15phút, PUT/readback30giây, RPC15giây/attempt; request cancel và body destroy, provider PUT có thể vẫn hoàn tất và resweep thu gom. R1/R2 chờ independent re-review; #20/#10 OPEN, ADR0001/0003/0005 Proposed, không tự merge/provision/deploy/enableCron hoặc đổi lab. Nhắc owner `npx wrangler logout` ở mốc hoàn tất dự án như mục bên dưới; chưa phải mốc đó.
+
+## Independent review được đối chiếu — snapshot trước bản sửa, 2026-10-23
 
 Reviewed implementation head0a3c9d0 của Draft #23, base #22/#21. [Review response](reviews/2026-10-23-cloudflare-upload-review.md): cả R1JWT hết hạn trong upload và R2PUT đến sau terminal cleanup đều tái hiện, P2/request changes trước operational pilot. Existing19groups PASS, supplied2probes assert bug PASS; defaultJWTclockskew5000ms cũng tái hiện. Authenticated manual cleanup dọn được orphan; automatic resweep thì bỏ qua cleanup_at. Chưa sửa code. Tiếp theo sửa fresh-token provider đúng user/session + upload/request deadlines + cleanup late-write convergence, giữ idempotency/unknown-commit/reference protection và Cron tắt. Gọi lại getToken() không tham số vẫn trả captured token. Không kết luận500R2HEAD bắt buộc Paid; phân biệt internal-service limit, kiểm CPU/tổngcalls/account thật. Đọc toàn review trước sửa.
 

@@ -1,5 +1,7 @@
 # Đối chiếu independent review — Cloudflare upload lifecycle
 
+**Cập nhật sau review:** owner giao sửa R1/R2; implementation0ad5152 và [regression evidence](../validation/2026-10-23-cloudflare-upload-fixes.md) đã có, chờ independent re-review. Nội dung dưới là findings/bằng chứng tại baseline0a3c9d0, không phải trạng thái implementation mới.
+
 2026-10-23; Refs #20/#10, Draft PR #23 stacked trên #22/#21. Reviewed implementation head: `0a3c9d09fd004b213bc07483a180db5a4750b513`. Tài liệu này bổ sung bằng chứng cho [local validation](../validation/2026-10-23-cloudflare-pilot.md) và [runbook](../CLOUDFLARE_PILOT_RUNBOOK.md); không phải bản sửa implementation hoặc phê duyệt pilot.
 
 ## Đầu vào và phạm vi

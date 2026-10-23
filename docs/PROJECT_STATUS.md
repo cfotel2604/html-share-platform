@@ -1,6 +1,10 @@
 # Project status — HTML Share Platform
 
-## Review bổ sung — 2026-10-23
+## R1/R2 implementation chờ re-review — 2026-10-23
+
+Owner giao sửa hai P2; implementation **0ad5152** trên Draft #23 sau baseline326d3b4. Token provider server-side mint qua Clerk BAPI cho đúng user/session/azp, giữ Worker auth/policy/idempotency; Node có deadlines/cancel. D1 migration mới0003cleanup_resweeps (không sửa migration cũ hoặc SQL PostgreSQL) giữ aborted tombstones để quét lại theo cleanup_after,5phút rồi hằng ngày, reference guards giữ nguyên và Cron vẫn tắt. Local **95unit/31Cloudflare groups**, lint/typecheck, Next build và3Worker dry-run PASS. [Evidence và acceptance](validation/2026-10-23-cloudflare-upload-fixes.md). Các findings chờ independent re-review; actual Clerk mint phải có đúngazp, remote/cost/mobile gates còn #10. Docs head/CI theo GitHub; không merge/deploy/provision hoặc đổi lab.
+
+## Review bổ sung — snapshot trước bản sửa, 2026-10-23
 
 Đối chiếu ZIP review với implementation head0a3c9d0 của Draft #23: **R1 captured-JWT expiry và R2 late-writer orphan đều xác nhận P2, cần sửa trước operational pilot**. Rerun19Cloudflare groups PASS;2supplied bug probes PASS và kiểm lại JWT với SDK default5000ms vẫn tái hiện; manual cleanup dọn được orphan nhưng automatic reconciler bỏ sót. Đây là review/docs, chưa sửa implementation; CI xanh tại reviewed heads không phủ hai race này. [Kết luận/phản biện/acceptance](reviews/2026-10-23-cloudflare-upload-review.md). #21/#22/#23 vẫn Draft, #20/#10 OPEN, không merge/provision/deploy hoặc đổi lab. Owner xác nhận Wrangler login thành công; nhắc logout tại mốc hoàn tất dự án trong handoff/runbook.
 

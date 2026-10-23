@@ -2,7 +2,7 @@
 
 Refs #20/#10, Draft [#21](https://github.com/cfotel2604/html-share-platform/pull/21) → [#22](https://github.com/cfotel2604/html-share-platform/pull/22) → [#23](https://github.com/cfotel2604/html-share-platform/pull/23). [Contract](../CLOUDFLARE_PILOT.md), [ADR-0005 Proposed](../adr/0005-path-sandbox-cloudflare-pilot.md), [runbook](../CLOUDFLARE_PILOT_RUNBOOK.md).
 
-**Subsequent review at implementation0a3c9d0:** [two P2 upload-lifecycle findings confirmed](../reviews/2026-10-23-cloudflare-upload-review.md): captured JWT expiry and PUT arriving after cleanup_at. Existing19groups rerun PASS but do not cover these interleavings. The green evidence below remains scoped to its executed cases; operational pilot requires fixes and regression acceptance. No implementation fix is included in this review handoff.
+**Subsequent review at implementation0a3c9d0:** [two P2 upload-lifecycle findings confirmed](../reviews/2026-10-23-cloudflare-upload-review.md): captured JWT expiry and PUT arriving after cleanup_at. Existing19groups rerun PASS but do not cover these interleavings. Later owner-authorized implementation0ad5152 has [95unit/31Cloudflare groups and fix evidence](2026-10-23-cloudflare-upload-fixes.md), awaiting re-review. The green evidence below remains scoped to its original executed cases; provider/pilot acceptance is still separate.
 
 ## Source and scope
 
