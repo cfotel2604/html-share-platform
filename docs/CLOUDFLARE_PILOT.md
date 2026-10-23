@@ -14,6 +14,8 @@ Worker API requires `X-HSP-Service-Token` (server-only random256-bit secret) and
 | POST `/v1/uploads` | Reserve new site/version or existing-site intent with expected revision; no publish |
 | POST `/v1/uploads/:id/finalize` | Verified manifest, revision/actor guard, version+assets+pointer+audit+receipt batch |
 | POST `/v1/uploads/:id/abort` | Mark uncommitted intent terminal for safe cleanup |
+| POST `/v1/uploads/:id/cleanup` | Delete only aborted, unreferenced intent prefix; retryable |
+| GET `/internal/health` | Service-token-only aggregate readiness; no metadata/session required |
 | GET `/v1/receipts/:key` | Actor-scoped outcome recovery; no speculative storage deletion |
 | PATCH `/v1/sites/:id` | Publish/unpublish or soft-delete, revision and audit |
 | POST/DELETE `/v1/sites/:id/share` | Rotate/reissue or revoke, no resurrection |
@@ -30,6 +32,8 @@ Only public/preview Workers serve assets. Public `/<code>` canonical308 to `/<co
 D1 is the only metadata authority in pilot. Immutable version assets are normalized/indexed, writes use guarded batches, site revisions and actor policy rechecks. Upload intents expire; finalized receipts make retries idempotent. Cleanup must first atomically abort an intent and exclude all version/grant references. Never cleanup after uncertain finalize until receipt is resolved. Upload-to-publish has no distributed R2/D1 transaction.
 
 ## Acceptance and release boundary
+
+Implementation23/10: stacked Draft #21 → #22 → #23, integration source dcdfd0b; [runbook](CLOUDFLARE_PILOT_RUNBOOK.md) and [local evidence](validation/2026-10-23-cloudflare-pilot.md).90unit/19local D1/R2 groups and Chrome/Firefox7groups each PASS. Scheduled reconciliation is implemented with system audit/fencing but no Cron configured; full remote quotas/cost must be reviewed before provisioning.
 
 Local checks must cover A/B HTML/direct/nested/preview; CSP/opaque origin/CORS; modules and relative assets; invalid paths/active formats; ownership/policy/revision races; audit rollback and lost acknowledgements; tombstones; private preview expiry/revoke; tampered/missing objects; streaming; no PostgreSQL fallback or VM serving dependency. Record synthetic evidence without codes/grants/PII.
 

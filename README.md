@@ -6,6 +6,8 @@ Nền tảng nội bộ để nhân viên tải lên HTML/CSS/JavaScript hoặc 
 
 ## Trạng thái
 
+**Pilot độc lập ngày2026-10-23:** Workers theo path + D1 metadata/private R2, giữ Node ZIP, không viewer iframe trên Studio và không browser persistence. Owner đã giao implement qua Draft #21 → #22 → #23; [ADR-0005 Proposed](docs/adr/0005-path-sandbox-cloudflare-pilot.md), [contract](docs/CLOUDFLARE_PILOT.md), [local runbook](docs/CLOUDFLARE_PILOT_RUNBOOK.md), [evidence](docs/validation/2026-10-23-cloudflare-pilot.md). Đây là code/local tests, chưa provision/deploy Cloudflare hoặc thay lab cũ. Các mục dưới tiếp tục mô tả baseline lab; không dùng chúng để cấu hình pilot.
+
 **P0/P1, MVP/upload, Studio, auth/origin và short links đã vào main**: #5, recovery UI#17, #13 và #15 (mốc code `0c17a09`) đã merge theo owner giao. #8/#9/#11/#14/#16 CLOSED; #10 còn security/release gates. Ngày **2026-10-22**, lab giữ web `share-dc7560ea1c34`, migration0003/backfill đã hoàn tất; owner xác nhận iframe từ bên ngoài và detailed session/link lifecycle cases đều đạt. Merge source không deploy hoặc chạy lại migration. [Commit/CI/acceptance](docs/reviews/2026-10-22-stack-merged.md) phân biệt owner-confirmed và agent checks; production chưa được phê duyệt. [Tiến độ](docs/PROJECT_STATUS.md), [lab handoff và env mẫu](docs/LAB_HANDOFF.md), [thứ tự review/merge](docs/MERGE_PLAN.md).
 
 - [PLAN và roadmap P0–P7](PLAN.md)
