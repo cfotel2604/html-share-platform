@@ -10,7 +10,7 @@ try {
   const argument = name => { const index = process.argv.indexOf(name); return index < 0 ? undefined : process.argv[index + 1]; };
   const directory = privateDirectory(argument('--private-dir'));
   const stage = argument('--stage');
-  const stages = ['initial', 'node-offline', 'a-unpublished', 'a-republished', 'a-revoked', 'a-reissued', 'a-final-unpublished'];
+  const stages = ['initial', 'node-offline', 'a-unpublished', 'a-republished', 'a-revoked', 'a-reissued', 'a-final-unpublished', 'preview-expired'];
   if (!stages.includes(stage)) throw new Error('Select a documented acceptance stage');
   const resources = JSON.parse(await readFile(resolve(directory, 'resources.json'), 'utf8'));
   const generated = await readEnv(resolve(directory, '.env.generated'));
@@ -40,7 +40,8 @@ try {
     if (asset && (response.headers.get('access-control-allow-origin') !== '*' || response.headers.has('access-control-allow-credentials'))) throw new Error('Asset CORS check failed');
     await response.body?.cancel();
   }
-  for (const [label, name] of [['A', 'Pilot acceptance A 2026-10-23'], ['B', 'Pilot acceptance B 500 files 2026-10-23']]) {
+  if (stage === 'preview-expired' && (!saved.preview || Date.parse(saved.preview.expiresAt) > Date.now())) throw new Error('Preview expiry not reached');
+  for (const [label, name] of stage === 'preview-expired' ? [] : [['A', 'Pilot acceptance A 2026-10-23'], ['B', 'Pilot acceptance B 500 files 2026-10-23']]) {
     const rows = await query(`SELECT s.id,s.status,s.active_version_id,l.code,
       (SELECT count(*) FROM version_assets a WHERE a.version_id=s.active_version_id) AS assets
       FROM sites s LEFT JOIN site_share_links l ON l.site_id=s.id AND l.revoked_at IS NULL WHERE s.display_name=?`, [name]);

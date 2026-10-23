@@ -10,6 +10,7 @@ import {
   Upload,
 } from "lucide-react";
 import type { SiteSummary } from "@/features/studio/types";
+import { ConfirmShareDialog } from "./confirm-share-dialog";
 type Filter = "all" | "published" | "unpublished";
 type Actions = {
   pathBased?:boolean;
@@ -30,6 +31,7 @@ function SiteRow({
   const updateInput = useRef<HTMLInputElement>(null);
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
+  const [pendingAction, setPendingAction] = useState<"rotate" | "revoke" | null>(null);
   const published = site.status === "published";
   const preview = site.share_url;
   async function copy() {
@@ -141,14 +143,28 @@ function SiteRow({
           <p>{pathBased?'Đổi hoặc thu hồi link sẽ chặn nội dung qua link cũ. Nội dung đã tải trong tab không thể thu hồi.':'Đổi hoặc thu hồi link xem sẽ vô hiệu hóa link cũ. Nội dung trực tiếp vẫn mở khi website đang xuất bản; dùng Tắt xuất bản để chặn nội dung.'}</p>
           <div className="studio-site-actions">
             <button className="studio-button" type="button" disabled={busy} onClick={() => {
-              if (!preview || window.confirm("Đổi link xem? Link cũ sẽ hết hiệu lực, bạn cần gửi lại link mới.")) void onRotateShare(site);
+              if (preview) setPendingAction("rotate");
+              else void onRotateShare(site);
             }}>{preview ? "Đổi link xem" : "Tạo link xem"}</button>
             {preview && <button className="studio-button" type="button" disabled={busy} onClick={() => {
-              if (window.confirm(pathBased?"Thu hồi link và chặn request nội dung mới qua link này?":"Thu hồi link xem? Nội dung trực tiếp vẫn mở khi website đang xuất bản.")) void onRevokeShare(site);
+              setPendingAction("revoke");
             }}>Thu hồi link xem</button>}
           </div>
           {!preview && <p role="status">Chưa có link xem đang hoạt động.</p>}
         </details>
+        {pendingAction && (
+          <ConfirmShareDialog
+            action={pendingAction}
+            siteName={site.display_name}
+            pathBased={pathBased}
+            busy={busy}
+            onCancel={() => setPendingAction(null)}
+            onConfirm={() => {
+              setPendingAction(null);
+              if (!busy) void (pendingAction === "rotate" ? onRotateShare(site) : onRevokeShare(site));
+            }}
+          />
+        )}
         {copyError && preview && (
           <p className="studio-copy-fallback" role="alert">
             Không thể sao chép tự động. Bạn có thể sao chép đường dẫn này:{" "}
