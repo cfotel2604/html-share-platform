@@ -8,6 +8,8 @@
 
 **Remote pilot được giao riêng 2026-10-23:** [provider preflight](docs/validation/2026-10-23-cloudflare-desktop.md): private R2/D1/ba Workers đã tạo, D1-only0001–0003 đã áp, Studio Docker localhost3101 healthy. Clerk Development backend/Google identities đã kiểm; session/token issuance và Node S3 credential còn pending, chưa nghiệm thu upload/pilot. Không đổi lab/VM runtime/DNS/UFW hoặc production, không tự merge. ADR vẫn Proposed; Cron tắt, source review và operational acceptance tiếp tục riêng.
 
+**Provider follow-up sau khi owner điền keys/login:** [Draft #27 / evidence](docs/validation/2026-10-23-provider-fixes.md), #25/#26: documented Clerk refreshSession thay BAPI mint thiếuazp; bounded exact R2 listing thay500HEAD. Real500-file upload195095ms, public serving khi Node dừng, unpublish/private preview/expiry/revoke/reissue và direct/nested probes PASS;103unit/33Cloudflare groups PASS. Dialog xác nhận trong trang thay native confirm bị kẹt ở IAB. Các snapshot pending phía trên là lịch sử; source review, full browser/security/Clerk revoke/cost/logging/cleanup/rollback còn gate. D1-only/lab/ADR Proposed/Cron off giữ nguyên.
+
 **Trạng thái:** Proposed cho release/security gates; domain và thiết kế mã chia sẻ đã Accepted ngày 2026-10-09 theo [ADR-0004](docs/adr/0004-domains-and-share-codes.md).
 
 **Mô hình truy cập:** A — nhân viên có tài khoản được upload/quản lý; người có link xem công khai, không cần đăng nhập.
