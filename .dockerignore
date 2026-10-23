@@ -2,6 +2,10 @@
 .github
 .next
 node_modules
+.wrangler
+**/.wrangler
+.dev.vars*
+**/.dev.vars*
 .env
 .env.*
 !.env.example

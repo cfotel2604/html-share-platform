@@ -19,7 +19,7 @@ python -B scripts/check_yaml.py
 git diff --check
 ```
 
-`build:workers` uses Wrangler **--dry-run** only. Config templates contain placeholder resource IDs, `workers_dev:false`, `preview_urls:false`, no Cron and observability disabled. Do not remove those restrictions or execute a remote migration/deploy to make a local test work.
+`build:workers` uses Wrangler **--dry-run** only. Config templates contain placeholder resource IDs, `workers_dev:false`, `preview_urls:false`, no Cron and observability disabled. `.dev.vars*` and `.wrangler` state are excluded from Git and Docker build context, including nested directories. Do not remove those restrictions or execute a remote migration/deploy to make a local test work.
 
 Miniflare is pinned to the same `5.20261019.2-beta` used by Wrangler4.152.0; its supported V4 conversion adapter loads the test configuration. This prerelease is development tooling only, not an application auth/runtime bypass. Local D1/R2 are ephemeral and private. Production Worker entrypoints never import `tests/cloudflare/test-api.mjs`; fixture identity does not exist in deployed bundles.
 

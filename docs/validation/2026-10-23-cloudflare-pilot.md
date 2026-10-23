@@ -4,7 +4,7 @@ Refs #20/#10, Draft [#21](https://github.com/cfotel2604/html-share-platform/pull
 
 ## Source and scope
 
-Main72e048e verified by fetch/GitHub before implementation. ADR77ae10a, core3b74981, integration implementation **dcdfd0b**; subsequent handoff is docs-only, exact current head/CI must be checked in PR. Primary main and all previous owner worktrees remain unchanged. Existing PR #19 audit is independent, not a dependency or merged in this task.
+Main72e048e verified by fetch/GitHub before implementation. ADR77ae10a, core3b74981, integration implementation **dcdfd0b**; subsequent handoff and Docker-context exclusion of Worker secret/emulator files do not change app/Worker source. Exact current head/CI must be checked in PR. Primary main and all previous owner worktrees remain unchanged. Existing PR #19 audit is independent, not a dependency or merged in this task.
 
 No SSH/runtime mutation, deployment, remote provisioning, DNS/UFW, env/image change, migration/backfill or real upload/session data access. PostgreSQL SQL0001–0003 have byte-identical diff against origin/main. Fixtures contain synthetic identities/assets only; raw codes/grants/HTML/provider secrets are not included in this report.
 
