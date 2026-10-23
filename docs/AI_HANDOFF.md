@@ -1,5 +1,9 @@
 # AI Agent handoff — HTML Share Platform
 
+## Pilot path Workers/D1/R2 — 2026-10-23
+
+Task #20 được owner giao implement, Refs #10. Worktree `C:\Users\admin\.codex\worktrees\cloudflare-path-pilot\html-share-platform` từ main72e048e; bắt đầu branch codex/cloudflare-path-adr. Đọc [ADR-0005 Proposed](adr/0005-path-sandbox-cloudflare-pilot.md) và [contract](CLOUDFLARE_PILOT.md). Ba Draft PR docs → core → integration; không merge tự động. PR #19 audit giữ nguyên, không đưa nó làm dependency. Pilot dữ liệu synthetic riêng, D1-only; Node giữ ZIP, public/preview Workers riêng; native R2 binding không phải IAM read-only. Lab/source/images/env/DB/volumes/DNS/UFW giữ nguyên, không remote provisioning/deploy. Các snapshot bên dưới mô tả lab cũ; SQL0001–0003 không được sửa.
+
 > Bàn giao **2026-10-22 (Asia/Saigon)** sau merge theo owner giao. Chuỗi #5 → UI#17 → #13 → #15 đã vào main; mốc tích hợp code `0c17a09b68960d785f8b67b2a1585b0f3af919b8`. Lab đã nghiệm thu, giữ source/web dc7560e và gateway security-417c50d; không deploy/migrate/backfill trong mốc merge. [Status](PROJECT_STATUS.md), [lab](LAB_HANDOFF.md), [merge record](MERGE_PLAN.md), [review/CI](reviews/2026-10-22-stack-merged.md).
 
 ## Bắt đầu phiên tiếp theo

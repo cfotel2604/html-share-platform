@@ -1,5 +1,7 @@
 # Kiến trúc và luồng dữ liệu (đề xuất)
 
+Ngày 2026-10-23, owner giao [pilot path-based Workers + private R2 + D1](adr/0005-path-sandbox-cloudflare-pilot.md), Refs #20/#10; [contract và gates](CLOUDFLARE_PILOT.md). Pilot không có viewer iframe/hostname-per-site, giữ HTTP sandbox và không persistence; Node giữ ZIP, Worker API ghi D1, public/preview Workers đọc D1/R2 trực tiếp. Phần PostgreSQL/hostname dưới đây vẫn mô tả lab cũ, không phải yêu cầu triển khai pilot. ADR-0001/0003/0005 giữ Proposed.
+
 Trạng thái: **Proposed** cho release/security; domain và thiết kế link **Accepted** theo [ADR-0004](adr/0004-domains-and-share-codes.md). Triển khai vẫn theo [ADR-0001](adr/0001-public-site-origin-isolation.md).
 
 Implementation lab #13 đã có Clerk server auth/RBAC, gateway hostname/manifest, trusted viewer và private preview theo [ADR-0003](adr/0003-server-rbac-and-preview-capabilities.md). [Validation](validation/2026-10-09-auth-origin-gates.md) ghi code/Chrome local đã kiểm; [nghiệm thu VM](validation/2026-10-09-lab-domain-tls.md) bổ sung owner-confirmed Admin/Employee login và TLS content lab, không coi R2/domain viewer/mobile gates đạt; không đổi trạng thái Proposed thành production approval.

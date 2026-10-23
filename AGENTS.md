@@ -20,6 +20,8 @@ Khi kết thúc một mốc công việc (merge PR, đổi base, giải quyết 
 
 ## Các ranh giới kỹ thuật bắt buộc
 
+**Pilot mới được owner giao ngày 2026-10-23:** áp dụng [ADR-0005](docs/adr/0005-path-sandbox-cloudflare-pilot.md) và [contract](docs/CLOUDFLARE_PILOT.md) cho Workers path-based + D1/private R2, không yêu cầu hostname mỗi site hoặc viewer iframe trong pilot. Mọi HTML/direct/nested vẫn có HTTP sandbox không allow-same-origin, không browser persistence. Đây là scope triển khai thử, ADR vẫn Proposed; các yêu cầu hostname/viewer bên dưới tiếp tục áp dụng cho lab cũ. Không sửa runtime/DNS/UFW/env/SQL lab hoặc tạo dual-write; không provision/deploy remote khi chưa được giao riêng.
+
 - Nhân viên đăng nhập và có RBAC khi upload/đổi trạng thái; guest chỉ được truy cập public site đang published.
 - HTML/JS upload không được chạy cùng origin/eTLD+1 với dashboard, cũng không được chạy server-side.
 - Mỗi site phải có hostname publish riêng (`<host-id>.space-ods.cfvn.cloud`, lab `<host-id>.lab-space-ods.cfvn.cloud`), viewer `view.ods.vn/<share-code>` (lab `view-lab.ods.vn/<share-code>`) chỉ serve shell tin cậy; iframe và HTTP response HTML upload phải có sandbox không `allow-same-origin`. Không giảm mức cô lập origin để đơn giản hóa tính năng preview.

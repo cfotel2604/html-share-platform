@@ -2,6 +2,8 @@
 
 **Ngày lập:** 2026-10-08
 
+**Pilot owner giao 2026-10-23 — #20, Refs #10:** [ADR-0005 Proposed](docs/adr/0005-path-sandbox-cloudflare-pilot.md), [implementation contract](docs/CLOUDFLARE_PILOT.md). Ba Draft PR: ADR/contracts → Cloudflare D1/R2/Workers core → Studio/Node bridge. Pilot dùng dữ liệu mới, D1-only metadata, native binding, preview Worker riêng, relative-assets/HTTP sandbox/no persistence; giữ nguyên lab cũ và SQL0001–0003. Local emulation trước remote approval; không tự merge/deploy.
+
 **Trạng thái:** Proposed cho release/security gates; domain và thiết kế mã chia sẻ đã Accepted ngày 2026-10-09 theo [ADR-0004](docs/adr/0004-domains-and-share-codes.md).
 
 **Mô hình truy cập:** A — nhân viên có tài khoản được upload/quản lý; người có link xem công khai, không cần đăng nhập.
