@@ -2,6 +2,8 @@
 
 ## Pilot kiến trúc mới — 2026-10-23
 
+ADR/contracts PR #21 (77ae10a) Draft; core bắt đầu trên codex/cloudflare-path-core từ #21. D1/R2 Miniflare11 nhóm PASS, legacy86unit PASS, lint/typecheck/docs/7YAML/diff PASS; ba Worker bundle `wrangler deploy --dry-run` PASS, không deploy. API default không có fixture auth; fixture adapter chỉ ở tests. Node/Studio integration và browser/remote gates chưa xong tại mốc core. SQL PostgreSQL/lab giữ nguyên.
+
 Owner giao implement #20, Refs #10: [ADR-0005 Proposed](adr/0005-path-sandbox-cloudflare-pilot.md), [contract](CLOUDFLARE_PILOT.md), ba Draft PR theo thứ tự docs → core → integration. Main đã fetch/xác minh72e048e; #19 audit Draft/CI PASS giữ độc lập. Tạo worktree cloudflare-path-pilot từ main, không sửa main/lab/SQL đã áp dụng. Hiện bắt đầu ADR/contracts; code và kiểm chứng từng PR sẽ ghi ở handoff. Remote provider/browser/security gates chưa đạt; không suy owner giao implement thành production approval.
 
 > Snapshot **2026-10-22 (Asia/Saigon)** sau owner giao Ready/merge #13 → #15 và chốt handoff. Chuỗi code đã vào main tại `0c17a09b68960d785f8b67b2a1585b0f3af919b8`; lab giữ runtime dc7560e đã nghiệm thu, không deploy hoặc chạy lại migration/backfill trong mốc merge. [Lab handoff](LAB_HANDOFF.md), [merge record](MERGE_PLAN.md), [review sau merge](reviews/2026-10-22-stack-merged.md), [AI_HANDOFF](AI_HANDOFF.md). Markdown không thay kiểm GitHub/VM hiện tại.

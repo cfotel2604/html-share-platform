@@ -1,0 +1,32 @@
+// Local/build template only; replace resource IDs after separate provisioning approval.
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "hsp",
+  "main": "public.mjs",
+  "compatibility_date": "2026-07-29",
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": {
+    "enabled": false
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "hsp-pilot-local",
+      "database_id": "00000000-0000-0000-0000-000000000020",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "ASSETS",
+      "bucket_name": "hsp-pilot-local"
+    }
+  ],
+  "vars": {
+    "PUBLIC_ORIGIN": "https://hsp.odsusercontent.workers.dev",
+    "STUDIO_ORIGIN": "https://studio.ods.vn",
+    "PREVIEW_ORIGIN": "https://hsp-preview.odsusercontent.workers.dev",
+    "API_ORIGIN": "https://hsp-api.odsusercontent.workers.dev"
+  }
+}
