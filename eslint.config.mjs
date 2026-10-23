@@ -15,6 +15,12 @@ export default defineConfig([
             {
               group: [
                 "@/lib/db",
+                "@/lib/cloudflare-*",
+                "@/lib/metadata-backend",
+                "@/lib/platform-ops",
+                "**/lib/cloudflare-*",
+                "**/lib/metadata-backend",
+                "**/lib/platform-ops",
                 "@/lib/demo-auth",
                 "@/lib/auth",
                 "@/lib/auth-policy",

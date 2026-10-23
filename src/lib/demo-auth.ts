@@ -2,12 +2,13 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { db } from "./db";
 import { authMode } from "./auth-config";
+import { metadataBackend } from "./metadata-backend";
 
 const COOKIE_NAME = "ods_local_demo_session";
 const SEVEN_DAYS = 7 * 24 * 60 * 60;
 
 export function demoEnabled() {
-  return authMode() === "local-demo" && process.env.LOCAL_DEMO_MODE === "1" &&
+  return metadataBackend()==='postgres' && authMode() === "local-demo" && process.env.LOCAL_DEMO_MODE === "1" &&
     Boolean(process.env.LOCAL_DEMO_PASSWORD && process.env.LOCAL_DEMO_SESSION_SECRET);
 }
 

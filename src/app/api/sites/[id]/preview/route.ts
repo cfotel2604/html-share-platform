@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireActor,sameOrigin } from "@/lib/auth";
-import { createPreview } from "@/lib/preview";
+import { createPreview } from "@/lib/platform-ops";
 import { apiError } from "@/lib/api-error";
 import { UploadError } from "@/lib/upload-error";
 export async function POST(request: Request,context: {params:Promise<{id:string}>}) {

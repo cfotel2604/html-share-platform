@@ -4,7 +4,7 @@ on:
     paths:
       - 'cloudflare/**'
       - 'tests/cloudflare/**'
-      - 'src/lib/cloudflare-*'
+      - 'src/**'
       - 'package*.json'
       - '.github/workflows/cloudflare-pilot.yml'
   push:

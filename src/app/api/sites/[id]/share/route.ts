@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireActor, sameOrigin } from "@/lib/auth";
-import { changeShareLink } from "@/lib/share-links";
+import { changeShareLink } from "@/lib/platform-ops";
 import { apiError } from "@/lib/api-error";
 import { UploadError } from "@/lib/upload-error";
 export const runtime = "nodejs";

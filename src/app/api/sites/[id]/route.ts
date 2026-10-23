@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireActor, sameOrigin } from "@/lib/auth";
-import { assertSiteOwner, setPublished, uploadVersion } from "@/lib/site-ops";
+import { assertSiteOwner, setPublished, uploadVersion } from "@/lib/platform-ops";
 import { readUpload } from "@/lib/upload-request";
 import { apiError } from "@/lib/api-error";
 import { UploadError } from "@/lib/upload-error";

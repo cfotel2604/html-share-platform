@@ -1,11 +1,16 @@
-import { actor as authenticate } from './shared/auth.mjs';
+import { actor as authenticate,service } from './shared/auth.mjs';
 import { origin,json,HttpError,hash } from './shared/policy.mjs';
 import * as metadata from './shared/metadata.mjs';
+import { reconcileExpired } from './shared/reconcile.mjs';
 export function createApi(authenticateActor=authenticate) {
   return async (request,env)=>{
     try {
       origin(env);origin({...env,PUBLIC_ORIGIN:env.PREVIEW_ORIGIN});
+      if(new Set([env.PUBLIC_ORIGIN,env.PREVIEW_ORIGIN,env.STUDIO_ORIGIN,env.API_ORIGIN]).size!==4) throw new HttpError(503);
       if(new URL(request.url).origin!==env.API_ORIGIN) throw new HttpError(404);
+      if(request.method==='GET'&&new URL(request.url).pathname==='/internal/health') {
+        await service(request,env);await env.DB.prepare('SELECT 1').first();return json({status:'ready'});
+      }
       const actor=await metadata.current(env.DB,await authenticateActor(request,env));
       const path=new URL(request.url).pathname,method=request.method;
       const key=request.headers.get('Idempotency-Key');
@@ -48,5 +53,5 @@ export function createApi(authenticateActor=authenticate) {
     } catch(e) {return json({error:e instanceof HttpError?e.message:'Service unavailable'},e instanceof HttpError?e.status:503);}
   };
 }
-const worker={fetch:createApi()};
+const worker={fetch:createApi(),scheduled:(_event,env,ctx)=>ctx.waitUntil(reconcileExpired(env,{dryRun:false}))};
 export default worker;

@@ -4,6 +4,9 @@ import { db } from "./db";
 import { ownerId } from "./demo-auth";
 import { authMode, clerkAvailable, dashboardHost, trustedOrigins } from "./auth-config";
 import { AuthError, resolveClerkActor, type Actor } from "./auth-policy";
+import { metadataBackend } from "./metadata-backend";
+import { cloudflareClient,type PilotIdentity } from "./cloudflare-rpc";
+import { UploadError } from "./upload-error";
 export { sameOrigin } from "./auth-config";
 export { AuthError } from "./auth-policy";
 
@@ -31,6 +34,7 @@ export async function currentActor(request?: Request): Promise<Actor | null> {
     return null;
   }
   if (authMode() === "local-demo") {
+    if(metadataBackend()==='cloudflare') throw new AuthError(503,"Pilot yêu cầu Clerk, không hỗ trợ demo auth");
     const id = await ownerId();
     if (!id) return null;
     const user = await db().query<{ id: string; role: Actor["role"] }>("SELECT id,role FROM users WHERE id=$1 AND status='active'", [id]);
@@ -40,6 +44,13 @@ export async function currentActor(request?: Request): Promise<Actor | null> {
   try {
     const identity = await clerkSession(request);
     if (!identity?.userId || !identity.sessionId) return null;
+    if(metadataBackend()==='cloudflare') {
+      const token=await identity.getToken();
+      if(!token) return null;
+      const actor=await cloudflareClient(token)<PilotIdentity>('/v1/actor');
+      if(typeof actor.id!=='string'||!['employee','admin'].includes(actor.role)) throw new AuthError(503);
+      return {...actor,mode:'clerk',sessionToken:token};
+    }
     const client = await clerkClient();
     // Online session check makes revoke effective immediately, not at JWT expiry.
     const session = await client.sessions.getSession(identity.sessionId);
@@ -47,6 +58,7 @@ export async function currentActor(request?: Request): Promise<Actor | null> {
     return await resolveClerkActor(await client.users.getUser(identity.userId));
   } catch (error) {
     if (error instanceof AuthError) throw error;
+    if(error instanceof UploadError && [401,403,404,503].includes(error.status)) throw new AuthError(error.status as 401|403|404|503,error.message);
     throw new AuthError(503, "Chưa xác minh được phiên đăng nhập. Vui lòng thử lại.");
   }
 }

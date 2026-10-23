@@ -3,6 +3,7 @@ import { test,before,after } from 'node:test';
 import { harness } from './harness.mjs';
 import { finalize } from '../../cloudflare/shared/metadata.mjs';
 import { serve } from '../../cloudflare/shared/serve.mjs';
+import { reconcileExpired } from '../../cloudflare/shared/reconcile.mjs';
 let h;
 before(async()=>{h=await harness();});
 after(async()=>{await h?.close();});
@@ -124,4 +125,38 @@ test('serving returns a stream without buffering bytes; DB outage fails closed',
   const reader=res.body.getReader();await reader.read();assert.equal(reads,1);await reader.cancel();
   env.DB.prepare=()=>{throw new Error('synthetic DB outage');};
   assert.equal((await serve(new Request(h.vars.PUBLIC_ORIGIN+'/AbCdEf1234/'),env)).status,503);
+});
+test('expired intent reconciliation dry-run, durable retry and active/grant reference protection',async()=>{
+  const active=await h.publish(),orphan=await h.upload();
+  await h.db.prepare("UPDATE upload_intents SET expires_at='2000-01-01T00:00:00.000Z' WHERE id IN (?,?)").bind(active.intent.id,orphan.intent.id).run();
+  const env={...h.vars,DB:h.db,ASSETS:h.bucket};
+  const dry=await reconcileExpired(env);assert.ok(dry.candidates>=1);
+  assert.ok(await h.bucket.head(orphan.intent.storagePrefix+'/index.html'));
+  const applied=await reconcileExpired(env,{dryRun:false});assert.ok(applied.cleaned>=1);
+  assert.equal(await h.bucket.head(orphan.intent.storagePrefix+'/index.html'),null);
+  assert.ok(await h.bucket.head(active.intent.storagePrefix+'/index.html'));
+  assert.equal((await h.db.prepare('SELECT cleanup_at FROM upload_intents WHERE id=?').bind(orphan.intent.id).first()).cleanup_at!==null,true);
+  const failed=await h.upload();await h.db.prepare("UPDATE upload_intents SET expires_at='2000-01-01T00:00:00.000Z' WHERE id=?").bind(failed.intent.id).run();
+  const report=await reconcileExpired({...env,ASSETS:{list:async()=>{throw new Error('synthetic storage outage');}}},{dryRun:false});assert.ok(report.failed>=1);
+  assert.equal((await h.db.prepare('SELECT state FROM upload_intents WHERE id=?').bind(failed.intent.id).first()).state,'aborted');
+  assert.ok((await reconcileExpired(env,{dryRun:false})).cleaned>=1);
+});
+test('local indexed read probe reports latency and D1 rows without content or identifiers',async()=>{
+  const f=await h.publish(),samples=[];let rows=0;
+  const DB={prepare(sql){return {bind(...args){return {async first(){const result=await h.db.prepare(sql).bind(...args).all();rows+=result.meta.rows_read??0;return result.results[0]??null;}};}};}};
+  for(let i=0;i<16;i++) {
+    const start=performance.now();const res=await serve(new Request(h.vars.PUBLIC_ORIGIN+'/'+f.code+'/'),{...h.vars,DB,ASSETS:h.bucket});
+    assert.equal(res.status,200);await res.body.cancel();samples.push(performance.now()-start);
+  }
+  samples.sort((a,b)=>a-b);assert.ok(samples.at(-1)<5000);assert.ok(rows<16*30);
+  console.info(JSON.stringify({localReadProbe:{requests:16,p50ms:Math.round(samples[8]),p95ms:Math.round(samples[15]),rowsRead:rows}}));
+});
+test('soft-delete denies both public content and an existing private capability',async()=>{
+  const f=await h.publish();
+  const grant=await (await h.api('/v1/sites/'+f.site.id+'/preview',{method:'POST'})).json();
+  const key=crypto.randomUUID();
+  const response=await h.api('/v1/sites/'+f.site.id,{method:'PATCH',key,body:{deleted:true}});assert.equal(response.status,200);
+  assert.equal((await h.publicWorker.fetch(h.vars.PUBLIC_ORIGIN+'/'+f.code+'/')).status,404);
+  assert.equal((await h.previewWorker.fetch(grant.url)).status,404);
+  assert.equal((await h.api('/v1/sites/'+f.site.id,{method:'PATCH',key,body:{deleted:true}})).status,200);
 });

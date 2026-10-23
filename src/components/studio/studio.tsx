@@ -11,7 +11,7 @@ import { LoginPanel } from "./login-panel";
 import { UploadPanel } from "./upload-panel";
 import { SiteList } from "./site-list";
 import Link from "next/link";
-export function Studio() {
+export function Studio({pathBased=false}:{pathBased?:boolean}) {
   const studio = useStudio();
   const signedIn = studio.session === "signed-in";
   return (
@@ -79,8 +79,9 @@ export function Studio() {
           </section>
         ) : (
           <div className="studio-workspace">
-            <UploadPanel busy={Boolean(studio.busy)} onCreate={studio.create} />
+            <UploadPanel busy={Boolean(studio.busy)} onCreate={studio.create} pathBased={pathBased} />
             <SiteList
+              pathBased={pathBased}
               sites={studio.sites}
               busy={studio.busy}
               onRefresh={studio.refresh}

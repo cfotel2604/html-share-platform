@@ -153,5 +153,6 @@ export async function cleanup(env,actor,id) {
     if(page.objects.length) await env.ASSETS.delete(page.objects.map(o=>o.key));
     count+=page.objects.length;cursor=page.truncated?page.cursor:undefined;
   } while(cursor);
+  await stmt(env.DB,"UPDATE upload_intents SET cleanup_at=? WHERE id=? AND state='aborted'",[now(),id]).run();
   return {removed:count};
 }

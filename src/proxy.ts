@@ -11,6 +11,9 @@ export default async function proxy(request: NextRequest, event: NextFetchEvent)
   const viewerPath = /^\/view\/[A-Za-z0-9]{10}$/.test(path);
   const legacyPath = /^\/(?:view\/)?[a-f0-9]{32}$/.test(path);
   const viewerOnly = viewerHost === host && !trustedOrigins().some(origin => new URL(origin).host === host);
+  if(process.env.METADATA_BACKEND==='cloudflare'&&(viewerOnly||publicPath||viewerPath||legacyPath)) {
+    return new NextResponse('Not found',{status:404,headers:{'Cache-Control':'no-store','Referrer-Policy':'no-referrer'}});
+  }
   const permitted = authMode() === "local-demo" ? loopbackHost(host) : trustedOrigins().some(origin => new URL(origin).host === host);
   if (!viewerOnly && !permitted && !path.startsWith("/api/health/")) return new NextResponse("Not found", { status: 404 });
   if (legacyPath) return new NextResponse("Not found", { status: 404, headers: { "Cache-Control": "no-store", "Referrer-Policy": "no-referrer" } });

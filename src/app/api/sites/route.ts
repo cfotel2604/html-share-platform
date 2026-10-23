@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireActor, sameOrigin } from "@/lib/auth";
-import { listSites, uploadVersion } from "@/lib/site-ops";
+import { listSites, uploadVersion } from "@/lib/platform-ops";
 import { readUpload } from "@/lib/upload-request";
 import { apiError } from "@/lib/api-error";
 export const runtime = "nodejs";

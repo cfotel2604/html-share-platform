@@ -20,7 +20,7 @@ export function origin(env) {
   const url=new URL(env.PUBLIC_ORIGIN),studio=new URL(env.STUDIO_ORIGIN);
   const loop=u=>['127.0.0.1','localhost','[::1]'].includes(u.hostname);
   if(url.origin!==env.PUBLIC_ORIGIN || studio.origin!==env.STUDIO_ORIGIN ||
-    (url.protocol!=='https:' && !loop(url)) ||
+    (url.protocol!=='https:' && !loop(url)) || (studio.protocol!=='https:' && !loop(studio)) ||
     url.origin===studio.origin ||
     (!loop(url) && getDomain(url.hostname,{allowPrivateDomains:true})===getDomain(studio.hostname,{allowPrivateDomains:true})))
     throw new Error('Unsafe pilot origins');

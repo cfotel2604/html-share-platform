@@ -4,15 +4,16 @@ export async function service(request,env) {
   const expected=env.HSP_SERVICE_TOKEN,actual=request.headers.get('X-HSP-Service-Token')??'';
   if(typeof expected!=='string'||expected.length<32||await hash(actual)!==await hash(expected)) throw new HttpError(401);
 }
-export async function actor(request,env) {
+export function createActor({verify=verifyToken,client:createClient=createClerkClient}={}) {
+return async function actor(request,env) {
   await service(request,env);
   const token=/^Bearer (\S+)$/.exec(request.headers.get('Authorization')??'')?.[1];
   if(!token||!env.CLERK_SECRET_KEY) throw new HttpError(401);
   let claims,user;
   try {
-    claims=await verifyToken(token,{secretKey:env.CLERK_SECRET_KEY,authorizedParties:[env.STUDIO_ORIGIN]});
+    claims=await verify(token,{secretKey:env.CLERK_SECRET_KEY,authorizedParties:[env.STUDIO_ORIGIN]});
     if(!claims.sid||!claims.sub) throw new HttpError(401);
-    const client=createClerkClient({secretKey:env.CLERK_SECRET_KEY});
+    const client=createClient({secretKey:env.CLERK_SECRET_KEY});
     const session=await client.sessions.getSession(claims.sid);
     if(session.status!=='active'||session.userId!==claims.sub||session.expireAt<=Date.now()) throw new HttpError(401);
     user=await client.users.getUser(claims.sub);
@@ -30,3 +31,5 @@ export async function actor(request,env) {
   if(!found) throw new HttpError(403);
   return found;
 }
+}
+export const actor=createActor();

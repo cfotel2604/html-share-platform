@@ -1,7 +1,7 @@
 import type { PoolClient } from "pg";
 import { db } from "./db";
 
-export type Actor = { id: string; role: "employee" | "admin"; mode: "clerk" | "local-demo" };
+export type Actor = { id: string; role: "employee" | "admin"; mode: "clerk" | "local-demo"; sessionToken?: string };
 export class AuthError extends Error {
   constructor(public readonly status: 401 | 403 | 404 | 503, message = "Không có quyền truy cập") { super(message); }
 }

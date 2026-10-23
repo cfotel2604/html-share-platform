@@ -4,9 +4,11 @@ import { FileArchive, FileCode2, Plus, Upload, X } from "lucide-react";
 export function UploadPanel({
   busy,
   onCreate,
+  pathBased=false,
 }: {
   busy: boolean;
   onCreate: (file: File, name: string) => Promise<boolean>;
+  pathBased?:boolean;
 }) {
   const input = useRef<HTMLInputElement>(null);
   const [name, setName] = useState("");
@@ -54,6 +56,7 @@ export function UploadPanel({
     <section className="studio-upload-panel" aria-labelledby="upload-title">
       <h2 id="upload-title">Tạo website</h2>
       <p className="studio-description">Bắt đầu với một file HTML hoặc ZIP.</p>
+      {pathBased&&<p className="studio-caption">Chỉ trang tĩnh dùng đường dẫn tài nguyên tương đối. Không hỗ trợ cookie, localStorage, PWA hoặc SPA dùng router tại root.</p>}
       <form onSubmit={submit}>
         <label className="studio-label" htmlFor="name">
           Tên website

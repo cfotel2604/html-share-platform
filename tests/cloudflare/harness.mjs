@@ -1,6 +1,6 @@
-import { Miniflare,Log,LogLevel } from 'miniflare';
+import { Miniflare,Log,LogLevel,convertV4MiniflareOptions } from 'miniflare';
 import { build } from 'esbuild';
-import { mkdtemp,readFile } from 'node:fs/promises';
+import { mkdtemp,readFile,readdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join,resolve } from 'node:path';
 import { createHash } from 'node:crypto';
@@ -17,10 +17,12 @@ export async function harness() {
       bindings:{...vars,PUBLIC_ORIGIN:name==='preview'?vars.PREVIEW_ORIGIN:vars.PUBLIC_ORIGIN},
       d1Databases:{DB:'hsp-pilot-test'},r2Buckets:{ASSETS:'hsp-pilot-test'}});
   }
-  const mf=new Miniflare({workers,log:new Log(LogLevel.NONE),inspectorPort:0});
+  const mf=new Miniflare(convertV4MiniflareOptions({workers,log:new Log(LogLevel.NONE),inspectorPort:0}));
   const db=await mf.getD1Database('DB','api'),bucket=await mf.getR2Bucket('ASSETS','api');
-  const sql=await readFile(resolve('cloudflare/migrations/0001_pilot.sql'),'utf8');
-  for(const part of sql.replace(/^--.*$/gm,'').split(';').filter(s=>s.trim())) await db.prepare(part).run();
+  for(const name of (await readdir(resolve('cloudflare/migrations'))).filter(n=>n.endsWith('.sql')).sort()) {
+    const sql=await readFile(resolve('cloudflare/migrations',name),'utf8');
+    for(const part of sql.replace(/^--.*$/gm,'').split(';').filter(s=>s.trim())) await db.prepare(part).run();
+  }
   for(const [id,role] of [['a','employee'],['b','employee'],['admin','admin']]) {
     await db.prepare('INSERT INTO auth_allowlist VALUES(?,?,?)').bind(id+'@example.test',role,'active').run();
     await db.prepare('INSERT INTO users VALUES(?,?,?,?)').bind(id,'clerk:'+id,id+'@example.test','active').run();
@@ -34,7 +36,7 @@ export async function harness() {
     const begin=await api('/v1/uploads',{method:'POST',actor,body:{name:'Synthetic',...(siteId?{siteId}:{})}});
     if(begin.status!==201) throw new Error('Fixture begin failed '+begin.status);
     const intent=await begin.json(),assets=[];
-    const types={html:'text/html; charset=utf-8',htm:'text/html; charset=utf-8',json:'application/json; charset=utf-8',js:'text/javascript; charset=utf-8',css:'text/css; charset=utf-8'};
+    const types={html:'text/html; charset=utf-8',htm:'text/html; charset=utf-8',json:'application/json; charset=utf-8',js:'text/javascript; charset=utf-8',mjs:'text/javascript; charset=utf-8',css:'text/css; charset=utf-8'};
     for(const [path,body] of Object.entries(files)) {
       const obj=await bucket.put(intent.storagePrefix+'/'+path,body);
       assets.push({path,type:types[path.split('.').at(-1)],size:Buffer.byteLength(body),sha256:createHash('sha256').update(body).digest('hex'),etag:obj.etag});
