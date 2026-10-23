@@ -52,6 +52,26 @@ test('pilot RPC cancellation bounds a stalled token provider before any HTTP req
   await assert.rejects(()=>rpc('/v1/sites','GET',undefined,undefined,controller.signal),e=>e.status===503);
   assert.equal(requests,0);
 });
+
+test('server-rendered private preview keeps refresh credential in the verified request scope',async t=>{
+  const keys=['METADATA_BACKEND','AUTH_MODE','AUTH_TRUSTED_ORIGINS','CLERK_SECRET_KEY','CLERK_PUBLISHABLE_KEY'],old=keys.map(k=>process.env[k]);
+  Object.assign(process.env,{METADATA_BACKEND:'cloudflare',AUTH_MODE:'clerk',AUTH_TRUSTED_ORIGINS:'https://studio.example.test',CLERK_SECRET_KEY:'sk_test_synthetic',CLERK_PUBLISHABLE_KEY:'pk_test_synthetic'});
+  t.after(()=>keys.forEach((k,i)=>old[i]===undefined?delete process.env[k]:process.env[k]=old[i]));
+  let scope;
+  const {currentActor}=tsLoader({
+    'next/headers':{headers:async()=>new Headers({host:'studio.example.test',cookie:'synthetic-private-refresh'})},
+    '@clerk/nextjs/server':{auth:async()=>({userId:'verified-user',sessionId:'verified-session',getToken:async()=> 'verified-seed'})},
+    './cloudflare-token':{
+      clerkRefreshCookie:async(header,key)=>{assert.equal(header,'synthetic-private-refresh');assert.equal(key,'pk_test_synthetic');return 'synthetic-credential';},
+      clerkTokenProvider:value=>{scope=value;return async()=> 'verified-token';},
+    },
+    './cloudflare-rpc':{cloudflareClient:()=>async()=>({id:'internal-user',role:'employee'})},
+    './db':{db:()=>{throw new Error('PG forbidden');}},
+  })(new URL('../src/lib/auth.ts',import.meta.url));
+  const actor=await currentActor();
+  assert.deepEqual(scope,{userId:'verified-user',sessionId:'verified-session',token:'verified-seed',origin:'https://studio.example.test',refreshToken:'synthetic-credential'});
+  assert.equal(actor.refreshToken,undefined);assert.equal(actor.sessionToken,undefined);
+});
 test('pilot disables PostgreSQL connection creation and local demo before any database access',async t=>{
   const previous=process.env.METADATA_BACKEND;process.env.METADATA_BACKEND='cloudflare';
   t.after(()=>previous===undefined?delete process.env.METADATA_BACKEND:process.env.METADATA_BACKEND=previous);

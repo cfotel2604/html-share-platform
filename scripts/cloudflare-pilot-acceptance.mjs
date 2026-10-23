@@ -23,6 +23,10 @@ try {
   let saved = { codes: {}, stages: [] };
   try { saved = JSON.parse(await readFile(privatePath, 'utf8')); } catch (error) { if (error.code !== 'ENOENT') throw error; }
   const checks = [];
+  const previewToken = (actor, key) => {
+    const signature = createHmac('sha256', generated.CLOUDFLARE_SERVICE_TOKEN).update(`preview\0${actor}\0${key}`).digest();
+    return createHash('sha256').update(Array.from(signature).join(',')).digest('hex').slice(0, 32);
+  };
   async function check(url, expected, { html = false, canonical = false, asset = false } = {}) {
     const response = await fetch(url, { redirect: 'manual', signal: AbortSignal.timeout(15000) });
     if (response.status !== expected || response.headers.has('set-cookie') || !response.headers.get('cache-control')?.includes('no-store')) {
@@ -62,7 +66,10 @@ try {
     await check(resources.origins.public + '/' + site.id + '/', 404);
     if (label === 'A' && stage === 'a-reissued' && saved.codes.A.length < 2) throw new Error('Reissue did not create a distinct code');
     const versions = await query('SELECT count(*) AS n FROM version_assets a JOIN site_versions v ON v.id=a.version_id WHERE v.site_id=? GROUP BY v.id', [site.id]);
-    checks.push({ site: label, state: site.status, activeAssets: site.assets, maxVersionAssets: Math.max(...versions.map(row => row.n)), historicalCodesChecked: saved.codes[label].length });
+    const timing = await query(`SELECT i.expires_at,r.created_at FROM upload_intents i JOIN mutation_receipts r
+      ON r.actor_id=i.actor_id AND r.action=?||i.id WHERE i.version_id=?`, ['upload.finalize:', site.active_version_id]);
+    const duration = timing[0] ? Date.parse(timing[0].created_at) - (Date.parse(timing[0].expires_at) - 30 * 60000) : null;
+    checks.push({ site: label, state: site.status, activeAssets: site.assets, maxVersionAssets: Math.max(...versions.map(row => row.n)), uploadDurationMs: duration, historicalCodesChecked: saved.codes[label].length });
     if (label === 'A' && stage === 'a-unpublished') {
       // Reconstruct only an already-authorized UI-created capability, in memory.
       // This does not insert a grant or bypass preview's DB/policy checks.
@@ -72,12 +79,11 @@ try {
       let verified = false;
       for (const grant of grants) {
         if (Date.parse(grant.expires_at) <= Date.now()) continue;
-        const signature = createHmac('sha256', generated.CLOUDFLARE_SERVICE_TOKEN).update(`preview\0${grant.actor_id}\0${grant.key}`).digest();
-        const token = createHash('sha256').update(Array.from(signature).join(',')).digest('hex').slice(0, 32);
+        const token = previewToken(grant.actor_id, grant.key);
         if (createHash('sha256').update(token).digest('hex') !== grant.token_hash) continue;
         await check(resources.origins.preview + '/' + token + '/', 200, { html: true });
         await check(resources.origins.preview + '/' + token + '/nested/page.html', 200, { html: true });
-        saved.preview = { token, expiresAt: grant.expires_at };
+        saved.preview = { actor: grant.actor_id, key: grant.key, expiresAt: grant.expires_at };
         verified = true; break;
       }
       if (!verified) throw new Error('Fresh UI-created preview grant required');
@@ -85,7 +91,7 @@ try {
     }
   }
   if (saved.preview && Date.parse(saved.preview.expiresAt) <= Date.now()) {
-    await check(resources.origins.preview + '/' + saved.preview.token + '/', 404);
+    await check(resources.origins.preview + '/' + previewToken(saved.preview.actor, saved.preview.key) + '/', 404);
     checks.push({ expiredPreview: 'denied' });
   }
   await check(resources.origins.public + '/assets/data.json', 404);

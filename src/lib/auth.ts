@@ -50,7 +50,7 @@ export async function currentActor(request?: Request): Promise<Actor | null> {
       if(!token) return null;
       const origin=trustedOrigins().find(value=>new URL(value).host===host);
       if(!origin) throw new AuthError(404,"Not found");
-      const refreshToken=request ? await clerkRefreshCookie(request.headers.get('cookie'),process.env.CLERK_PUBLISHABLE_KEY) : undefined;
+      const refreshToken=await clerkRefreshCookie((request?.headers ?? await headers()).get('cookie'),process.env.CLERK_PUBLISHABLE_KEY);
       const getSessionToken=clerkTokenProvider({userId:identity.userId,sessionId:identity.sessionId,origin,token,...(refreshToken?{refreshToken}:{})});
       const actor=await cloudflareClient(getSessionToken)<PilotIdentity>('/v1/actor');
       if(typeof actor.id!=='string'||!['employee','admin'].includes(actor.role)) throw new AuthError(503);

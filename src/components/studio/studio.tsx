@@ -12,7 +12,7 @@ import { UploadPanel } from "./upload-panel";
 import { SiteList } from "./site-list";
 import Link from "next/link";
 export function Studio({pathBased=false}:{pathBased?:boolean}) {
-  const studio = useStudio();
+  const studio = useStudio(undefined,{pathBased});
   const signedIn = studio.session === "signed-in";
   return (
     <div className="studio-app">

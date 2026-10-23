@@ -6,7 +6,7 @@ import type { AuthStatus, SiteSummary, StudioApi } from "./types";
 type Session =
   "checking" | "unavailable" | "signed-out" | "signed-in" | "error";
 
-export function useStudio(client: StudioApi = studioApi) {
+export function useStudio(client: StudioApi = studioApi, {pathBased=false}:{pathBased?:boolean}={}) {
   const router = useRouter();
   const [session, setSession] = useState<Session>("checking");
   const [sites, setSites] = useState<SiteSummary[]>([]);
@@ -126,7 +126,9 @@ export function useStudio(client: StudioApi = studioApi) {
     }),
     revokeShare: (site: SiteSummary) => mutate(site.id, async () => {
       await client.revokeShare(site.id);
-      return `Đã thu hồi link xem của “${site.display_name}”. Nội dung trực tiếp còn mở nếu website đang xuất bản.`;
+      return pathBased
+        ? `Đã thu hồi link của “${site.display_name}”. Link cũ đã bị chặn; nội dung đã tải trong tab không thể thu hồi.`
+        : `Đã thu hồi link xem của “${site.display_name}”. Nội dung trực tiếp còn mở nếu website đang xuất bản.`;
     }),
   };
 }

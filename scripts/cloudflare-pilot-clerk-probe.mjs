@@ -32,12 +32,19 @@ try {
       check.activeSessionFound = Boolean(chosen);
       if (chosen) {
         const fresh = await client.sessions.getToken(chosen.id);
-        const claims = await verifyToken(fresh.jwt, { secretKey: config.secret, authorizedParties: [state.origins.studio] });
-        check.freshSubjectMatches = claims.sub === user.id;
-        check.freshSessionMatches = claims.sid === chosen.id;
-        check.freshAzpPresent = typeof claims.azp === 'string';
-        check.freshAzpMatches = claims.azp === state.origins.studio;
-        check.freshLifetimeOver20s = claims.exp * 1000 > Date.now() + 20000;
+        try {
+          const claims = await verifyToken(fresh.jwt, { secretKey: config.secret, authorizedParties: [state.origins.studio] });
+          check.freshSubjectMatches = claims.sub === user.id;
+          check.freshSessionMatches = claims.sid === chosen.id;
+          check.freshAzpPresent = typeof claims.azp === 'string';
+          check.freshAzpMatches = claims.azp === state.origins.studio;
+          check.freshLifetimeOver20s = claims.exp * 1000 > Date.now() + 20000;
+        } catch {
+          // Diagnostic boolean only; unsigned decoding is never authorization.
+          check.sdkMintVerification = 'DENIED';
+          try { check.unverifiedMintAzpPresent = typeof JSON.parse(Buffer.from(fresh.jwt.split('.')[1], 'base64url').toString()).azp === 'string'; }
+          catch { check.unverifiedMintAzpPresent = false; }
+        }
       }
     }
     checks.push(check);
@@ -45,7 +52,8 @@ try {
   const passed = checks.some(check => check.role === 'admin' && check.googleVerified && check.userEnabled &&
     check.activeSessionFound && check.freshSubjectMatches && check.freshSessionMatches && check.freshAzpMatches && check.freshLifetimeOver20s);
   const report = { checkedAt: new Date().toISOString(), clerkBackend: 'reachable',
-    providerMintGate: passed ? 'PASS' : 'PENDING_OR_DENIED', authenticatedUploadGate: 'NOT_TESTED', checks };
+    providerMintGate: passed ? 'PASS' : 'PENDING_OR_DENIED',
+    sessionRefreshGate: 'USE_AUTHENTICATED_BROWSER_UPLOAD', authenticatedUploadGate: 'NOT_TESTED_BY_THIS_PROBE', checks };
   await writeFile(resolve(directory, 'clerk-probe.json'), JSON.stringify(report, null, 2) + '\n', { mode: 0o600 });
   console.log(JSON.stringify(report));
 } catch {
