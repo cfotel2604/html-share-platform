@@ -1,6 +1,6 @@
 # Cloudflare Desktop pilot — provider preflight
 
-2026-10-23; Refs #20/#10. Operations branch `codex/cloudflare-pilot-operations`, stacked on PR #23 head `187f4f5` / application implementation `0ad5152`. This is limited provider evidence, not operational acceptance or production approval. ADR-0001/0003/0005 remain Proposed.
+2026-10-23; Refs #20/#10. Operations implementation `0620344`, [Draft PR #24](https://github.com/cfotel2604/html-share-platform/pull/24), branch `codex/cloudflare-pilot-operations`, stacked on PR #23 head `187f4f5` / application implementation `0ad5152`. This is limited provider evidence, not operational acceptance or production approval. ADR-0001/0003/0005 remain Proposed.
 
 ## Authorization and isolation
 
