@@ -6,6 +6,8 @@
 
 **Follow-up R1/R2:** owner giao sửa sau review326d3b4; implementation0ad5152 có95unit/31Cloudflare groups PASS, [evidence/deadlines/token refresh/resweeps](docs/validation/2026-10-23-cloudflare-upload-fixes.md). [Re-review](docs/reviews/2026-10-23-cloudflare-rereview.md) tại headc581ccb chấp nhận code/local regressions,37selected groups PASS; actual Clerk mintedazp và resweep cost/retention còn remote gates, Cron tắt. Merge source và operational pilot approval là hai quyết định riêng.
 
+**Remote pilot được giao riêng 2026-10-23:** [provider preflight](docs/validation/2026-10-23-cloudflare-desktop.md): private R2/D1/ba Workers đã tạo, D1-only0001–0003 đã áp, Studio Docker localhost3101 healthy. Clerk Development backend/Google identities đã kiểm; session/token issuance và Node S3 credential còn pending, chưa nghiệm thu upload/pilot. Không đổi lab/VM runtime/DNS/UFW hoặc production, không tự merge. ADR vẫn Proposed; Cron tắt, source review và operational acceptance tiếp tục riêng.
+
 **Trạng thái:** Proposed cho release/security gates; domain và thiết kế mã chia sẻ đã Accepted ngày 2026-10-09 theo [ADR-0004](docs/adr/0004-domains-and-share-codes.md).
 
 **Mô hình truy cập:** A — nhân viên có tài khoản được upload/quản lý; người có link xem công khai, không cần đăng nhập.

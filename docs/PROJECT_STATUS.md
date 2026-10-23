@@ -1,5 +1,9 @@
 # Project status — HTML Share Platform
 
+## Remote Desktop pilot preflight — 2026-10-23
+
+Owner đã giao chủ động provision/deploy pilot riêng. Branch `codex/cloudflare-pilot-operations` từ #23 head187f4f5/implementation0ad5152; [provider evidence và gate còn thiếu](validation/2026-10-23-cloudflare-desktop.md). Namespace odsusercontent đã xác minh; tạo private R2/D1 hsp-pilot-desktop, áp D1-only0001–0003 và deploy ba Workers hsp-pilot/hsp-pilot-preview/hsp-pilot-api. API health200,7denial probes PASS; Studio Docker localhost3101 healthy/Google sign-in200,99unit/lint/typecheck/Dockerbuild PASS. Clerk Development backend/2Google identities đã kiểm, allowlist chỉ ở D1 mới; chưa active session, chưa credential S3 Node nên refresh/upload/provider lifecycle còn pending. Native binding không phải read-only IAM; Cron tắt, chưa nghiệm thu load/cost/logging/mobile/rollback/security. Lab/VM/runtime/DNS/UFW/SQL/env/volumes giữ nguyên; không merge hoặc production. #19/#21/#22/#23 Draft, #20/#10 OPEN, origin/main72e048e kiểm live; ADR0001/0003/0005 Proposed. Các mục bên dưới là snapshot trước remote authorization.
+
 ## R1/R2 accepted ở code/local — 2026-10-23
 
 [Independent re-review](reviews/2026-10-23-cloudflare-rereview.md) chấp nhận bản sửa tại headc581ccb/implementation0ad5152:37selected tests/groups PASS, không thấyP1/P2 mới trong upload-lifecycle delta. Agent xác minh riêng cả4jobsCI của headc581ccb PASS; #21/#22 cũng xanh, mọi PR cònDraft. Không phải fullsecurity/provider/operational approval, không tự merge. Bước tiếp theo là Clerk thật cho đúng user/session/Studioazp, rồi remote R2/D1/pilot sau explicit approval; owner chốt origin/Clerk/budget và agent chuẩn bị preflight. #20/#10OPEN; Cron tắt, tombstones/lab giữ nguyên, ADR0001/0003/0005Proposed. Docs tiếp theo không đổi code đã review.

@@ -1,6 +1,28 @@
 # Cloudflare pilot — local validation and operator handoff
 
-2026-10-23; Refs #20/#10, Draft PRs #21 → #22 → #23. [ADR-0005](adr/0005-path-sandbox-cloudflare-pilot.md) stays Proposed. This is an independent synthetic pilot; no existing VM/lab, PostgreSQL migration, .env, upload, image, DNS/UFW or volume is changed. There is no deploy automation.
+2026-10-23; Refs #20/#10, Draft PRs #21 → #22 → #23 plus the operations branch. [ADR-0005](adr/0005-path-sandbox-cloudflare-pilot.md) stays Proposed. Existing VM/lab, PostgreSQL migrations, owner env/uploads/images, DNS/UFW and volumes remain unchanged. Owner subsequently authorized independent remote pilot resources and Desktop Docker; see [current provider evidence](validation/2026-10-23-cloudflare-desktop.md). The commands below distinguish local checks, inspection and explicit mutations.
+
+## Current Desktop pilot
+
+Private config: `C:\Users\admin\Documents\Codex\html-share-platform-private\cloudflare-pilot`. Owner edits `.env.desktop` (Clerk Development keys, selected pilot emails, bucket-scoped R2 S3 credentials); agent manages `.env.generated`, Wrangler configs and receipts outside Git/build context. `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` is accepted and mapped to this app's server runtime key. `.env.vm` is a future Clerk Production placeholder, not an instruction to cut over VM.
+
+Independent D1/R2 `hsp-pilot-desktop` and public/preview/API Workers are deployed; migrations0001–0003 verified. Node Studio is `http://localhost:3101`, Compose project hsp-cf-desktop, only web/no PG/MinIO/volumes. Inspect without provisioning again:
+
+```powershell
+node scripts/cloudflare-pilot-check.mjs --private-dir C:\Users\admin\Documents\Codex\html-share-platform-private\cloudflare-pilot
+node scripts/cloudflare-pilot-clerk-probe.mjs --private-dir C:\Users\admin\Documents\Codex\html-share-platform-private\cloudflare-pilot
+```
+
+After private edits, explicitly run `node scripts/cloudflare-pilot-configure.mjs --private-dir <directory>` to verify Clerk, set API secret and insert missing allowlist entries without overwriting existing policy. It accepts Desktop Development keys only, never prints identity/secret values and does not create/revoke sessions. Provider mint probe uses existing active sessions; authenticated upload remains a separate gate. Stop if fresh token lacks exact Studio azp; do not weaken validation.
+
+Refresh only this standalone Desktop service, never the lab Compose project:
+
+```powershell
+docker compose --env-file C:\Users\admin\Documents\Codex\html-share-platform-private\cloudflare-pilot\.env.generated --env-file C:\Users\admin\Documents\Codex\html-share-platform-private\cloudflare-pilot\.env.desktop -f deploy/compose.cloudflare-pilot.yaml config --quiet
+docker compose --env-file C:\Users\admin\Documents\Codex\html-share-platform-private\cloudflare-pilot\.env.generated --env-file C:\Users\admin\Documents\Codex\html-share-platform-private\cloudflare-pilot\.env.desktop -f deploy/compose.cloudflare-pilot.yaml up -d --no-build web
+```
+
+Build the standalone service first when no matching image exists. Do not print full Compose config or container env. `cloudflare-pilot.mjs` defaults to read-only inventory; `--provision --private-dir <directory>` explicitly creates/migrates/deploys **only** the owned pilot names and must not be used as a status command. It refuses an unrecorded existing name, another account or changing the Workers namespace. Secret/deployment propagation has bounded health retry; provider check saves current deployed versions privately. Cron and observability remain disabled. OAuth cannot manage R2 tokens: Node needs Object Read & Write scoped only to the pilot bucket, entered privately. Real login/refresh/upload/lifecycle, budget, logging, browser and rollback gates remain open.
 
 ## Local checks without Cloudflare credentials
 
@@ -36,9 +58,9 @@ npx --yes --package @playwright/cli playwright-cli -s=hsp-path-pilot close
 
 Repeat in a separate CLI session with `--browser firefox`; install that browser if absent. The script resets synthetic sites, intercepts the content/preview/Studio hostnames to loopback, and aborts other network destinations. The Studio marker is synthetic, not the running owner Studio/Clerk account. The transport's `/reset`, `/control`, `/shutdown` and fixture auth are test-only, bind127.0.0.1, and are absent from Worker configs. Stop the fixture with Ctrl+C or its loopback POST `/shutdown`. Do not expose this transport publicly.
 
-## Real pilot configuration — separate approval required
+## Provisioning prerequisites — retained reference
 
-Account namespace `odsusercontent.workers.dev` has not been registered/verified in this task. Operator must first approve provisioning of independent D1/private R2/Clerk resources and choose Workers budget/limits. Full500-file finalize performs up to500R2 HEAD operations. Count native internal-service calls separately from external fetch: [current Workers limits](https://developers.cloudflare.com/workers/platform/limits/#subrequests) list1000internal-service subrequests on Free, so500R2HEAD alone does not establish a Paid requirement. Verify total R2/D1/external calls, CPU, duration and account limits; use bounded verification or a lower quota if required before claiming full500-file support on the chosen plan. Local timings cannot establish edge latency or billing cost.
+Namespace `odsusercontent.workers.dev` is now verified and independent provisioning was authorized; see the current section above. No subscription change was authorized/performed; budget/limits still need measurement. Full500-file finalize performs up to500R2 HEAD operations. Count native internal-service calls separately from external fetch: [current Workers limits](https://developers.cloudflare.com/workers/platform/limits/#subrequests) list1000internal-service subrequests on Free, so500R2HEAD alone does not establish a Paid requirement. Verify total R2/D1/external calls, CPU, duration and account limits; use bounded verification or a lower quota if required before claiming full500-file support on the chosen plan. Local timings cannot establish edge latency or billing cost.
 
 Create private R2 with public r2.dev/custom-bucket-domain access disabled. Scope Node S3 credentials to the pilot bucket with object access, never account Admin. No presigned GET or storage-prefix route. Native Worker bindings remain broader than GET-only code; read-only IAM gate is not satisfied by this design choice.
 
@@ -78,7 +100,7 @@ To stop the pilot, disable new Node mutations and public/preview routing after o
 
 Real namespace/resource/IAM/public-bypass checks; actual Clerk/OAuth/revoke/quota/outage; remote maxquota/load/concurrency/cost; real-domain Safari/iOS/Android/Zalo/crawler; complete access/error/DNS/SNI/analytics/collector redaction of preview paths; abuse/takedown and security review; rollback and limited pilot acceptance. Production uses a dedicated content domain separate from Studio's registrable domain. HTTP sandbox and relative-assets/no-persistence support restrictions are not negotiable compatibility switches.
 
-[Local evidence](validation/2026-10-23-cloudflare-pilot.md) distinguishes emulator/SDK fixtures from provider and owner evidence. #10 stays OPEN; ADR-0001/0003/0005 remain Proposed. No remote provisioning, migration or deployment was performed.
+[Local evidence](validation/2026-10-23-cloudflare-pilot.md) distinguishes emulator/SDK fixtures from provider and owner evidence. [Provider preflight](validation/2026-10-23-cloudflare-desktop.md) records subsequent independent provisioning/deployment and the limited checks actually passed. #10 stays OPEN; ADR-0001/0003/0005 remain Proposed. No production/lab deployment was performed.
 
 ## Final project handoff — local Cloudflare login
 

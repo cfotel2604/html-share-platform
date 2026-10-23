@@ -1,0 +1,28 @@
+# Standalone pilot: no legacy Compose files, PostgreSQL, MinIO or volumes.
+name: hsp-cf-desktop
+services:
+  web:
+    image: ${HSP_PILOT_IMAGE:-html-share-studio:cf-pilot-desktop}
+    build:
+      context: ..
+    env_file:
+      - ${HSP_PILOT_PRIVATE_DIR:?Set private config directory}/.env.generated
+      - ${HSP_PILOT_PRIVATE_DIR:?Set private config directory}/.env.desktop
+    environment:
+      NODE_ENV: production
+      METADATA_BACKEND: cloudflare
+      AUTH_MODE: clerk
+      LOCAL_DEMO_MODE: '0'
+      NEXT_TELEMETRY_DISABLED: '1'
+      CLERK_TELEMETRY_DISABLED: '1'
+      AUTH_TRUSTED_ORIGINS: ${AUTH_TRUSTED_ORIGINS:-http://localhost:3101}
+      STUDIO_PUBLIC_ORIGIN: ${STUDIO_PUBLIC_ORIGIN:-http://localhost:3101}
+    ports:
+      - '127.0.0.1:${HSP_PILOT_PORT:-3101}:3000'
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:3000/api/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 15s
+    restart: unless-stopped

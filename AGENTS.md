@@ -20,6 +20,8 @@ Khi kết thúc một mốc công việc (merge PR, đổi base, giải quyết 
 
 ## Các ranh giới kỹ thuật bắt buộc
 
+**Pilot remote được giao riêng ngày 2026-10-23:** owner cho phép chủ động CLI/Docker/SSH để triển khai pilot độc lập; [provider preflight](docs/validation/2026-10-23-cloudflare-desktop.md) ghi tài nguyên đã tạo và gate còn thiếu. Dùng branch/PR vận hành, private config ngoài Git và standalone Compose project hsp-cf-desktop. Quyền này không cho merge source, thay runtime lab/unrelated resources, DNS/UFW hoặc production cutover. Không provision/deploy lại chỉ để kiểm trạng thái, không tạo dual-write, không nới Clerk azp hoặc sandbox để vượt gate.
+
 **Pilot mới được owner giao ngày 2026-10-23:** áp dụng [ADR-0005](docs/adr/0005-path-sandbox-cloudflare-pilot.md) và [contract](docs/CLOUDFLARE_PILOT.md) cho Workers path-based + D1/private R2, không yêu cầu hostname mỗi site hoặc viewer iframe trong pilot. Mọi HTML/direct/nested vẫn có HTTP sandbox không allow-same-origin, không browser persistence. Đây là scope triển khai thử, ADR vẫn Proposed; các yêu cầu hostname/viewer bên dưới tiếp tục áp dụng cho lab cũ. Không sửa runtime/DNS/UFW/env/SQL lab hoặc tạo dual-write; không provision/deploy remote khi chưa được giao riêng.
 
 - Nhân viên đăng nhập và có RBAC khi upload/đổi trạng thái; guest chỉ được truy cập public site đang published.
