@@ -1,6 +1,24 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {tsLoader} from './helpers/load-ts.mjs';
+
+test('pilot workspace resolves verified identity and sites in one RPC on every request',async t=>{
+  const names=['METADATA_BACKEND','AUTH_MODE','AUTH_TRUSTED_ORIGINS','CLERK_SECRET_KEY','CLERK_PUBLISHABLE_KEY'],old=names.map(k=>process.env[k]);
+  Object.assign(process.env,{METADATA_BACKEND:'cloudflare',AUTH_MODE:'clerk',AUTH_TRUSTED_ORIGINS:'https://studio.example.test',CLERK_SECRET_KEY:'sk_test_synthetic',CLERK_PUBLISHABLE_KEY:'pk_test_synthetic'});
+  t.after(()=>names.forEach((k,i)=>old[i]===undefined?delete process.env[k]:process.env[k]=old[i]));
+  let calls=0,denied=false;
+  const {UploadError}=tsLoader()(new URL('../src/lib/upload-error.ts',import.meta.url));
+  const identity={userId:'user',sessionId:'session',getToken:async()=> 'verified-seed'};
+  const {currentStudioContext}=tsLoader({
+    '@clerk/nextjs/server':{clerkClient:async()=>({authenticateRequest:async()=>({toAuth:()=>identity})})},
+    './cloudflare-token':{clerkRefreshCookie:async()=>undefined,clerkTokenProvider:()=>async()=> 'verified-token'},
+    './cloudflare-rpc':{cloudflareClient:()=>async path=>{calls++;assert.equal(path,'/v1/workspace');if(denied) throw new UploadError('Denied',403);return {actor:{id:'internal-user',role:'employee'},sites:[{id:'owned'}]};}},
+    './upload-error':{UploadError},'./db':{db:()=>{throw new Error('PG forbidden');}},
+  })(new URL('../src/lib/auth.ts',import.meta.url));
+  const request=new Request('https://studio.example.test/api/workspace',{headers:{host:'studio.example.test'}});
+  assert.deepEqual((await currentStudioContext(request,true)).sites,[{id:'owned'}]);assert.equal(calls,1);
+  denied=true;await assert.rejects(()=>currentStudioContext(request,true),e=>e.status===403);assert.equal(calls,2);
+});
 test('pilot facade uses only authenticated Worker metadata; malformed backend never falls back to PG',async t=>{
   const names=['METADATA_BACKEND','CLOUDFLARE_API_ORIGIN','CLOUDFLARE_SERVICE_TOKEN'],saved=names.map(k=>process.env[k]);
   Object.assign(process.env,{METADATA_BACKEND:'cloudflare',CLOUDFLARE_API_ORIGIN:'https://hsp-api.odsusercontent.workers.dev',CLOUDFLARE_SERVICE_TOKEN:'synthetic-local-service-token-123456789'});

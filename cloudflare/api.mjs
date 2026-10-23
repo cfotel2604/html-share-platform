@@ -25,6 +25,7 @@ export function createApi(authenticateActor=authenticate) {
         if(!input||Array.isArray(input)||typeof input!=='object') throw new HttpError(400);
       }
       if(method==='GET'&&path==='/v1/actor') return json(actor);
+      if(method==='GET'&&path==='/v1/workspace') return json({actor,sites:await metadata.list(env,actor)});
       if(method==='GET'&&path==='/v1/sites') return json({sites:await metadata.list(env,actor)});
       if(method==='POST'&&path==='/v1/uploads') return json(await metadata.beginUpload(env,actor,key,input),201);
       let m;

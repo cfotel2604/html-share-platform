@@ -19,6 +19,17 @@ new Function("exports", compiled)(exports);
 const { createStudioApi, StudioApiError } = exports;
 const reply = (data, status = 200) => Response.json(data, { status });
 
+test("workspace bootstrap uses one same-origin no-store request for auth and sites", async () => {
+  const calls=[];
+  const workspace={auth:{signedIn:true,demoAvailable:false,provider:'clerk',role:'employee'},sites:[]};
+  const api=createStudioApi(async(url,init)=>{calls.push([url,init]);return reply(workspace);});
+  assert.deepEqual(await api.workspace(),workspace);
+  assert.equal(calls.length,1);
+  assert.equal(calls[0][0],'/api/workspace');
+  assert.equal(calls[0][1].credentials,'same-origin');
+  assert.equal(calls[0][1].cache,'no-store');
+});
+
 test("auth and site queries use the existing endpoints and same-origin session", async () => {
   const calls = [];
   const site = {

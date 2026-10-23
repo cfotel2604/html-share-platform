@@ -19,8 +19,9 @@ export function useStudio(client: StudioApi = studioApi, {pathBased=false}:{path
     let active = true;
     (async () => {
       try {
-        const auth = await client.auth();
-        const items = auth.signedIn ? await client.listSites() : [];
+        const workspace = client.workspace ? await client.workspace() : undefined;
+        const auth = workspace?.auth ?? await client.auth();
+        const items = workspace?.sites ?? (auth.signedIn ? await client.listSites() : []);
         if (!active) return;
         setSites(items);
         setAuthStatus(auth);

@@ -14,9 +14,11 @@ return async function actor(request,env) {
     claims=await verify(token,{secretKey:env.CLERK_SECRET_KEY,authorizedParties:[env.STUDIO_ORIGIN]});
     if(!claims.sid||!claims.sub) throw new HttpError(401);
     const client=createClient({secretKey:env.CLERK_SECRET_KEY});
-    const session=await client.sessions.getSession(claims.sid);
+    const [session,identity]=await Promise.all([
+      client.sessions.getSession(claims.sid),client.users.getUser(claims.sub),
+    ]);
     if(session.status!=='active'||session.userId!==claims.sub||session.expireAt<=Date.now()) throw new HttpError(401);
-    user=await client.users.getUser(claims.sub);
+    user=identity;
   } catch(e) {if(e instanceof HttpError) throw e;throw new HttpError(503,'Identity unavailable');}
   const primary=user.emailAddresses.find(a=>a.id===user.primaryEmailAddressId);
   const email=primary?.emailAddress?.trim().toLowerCase();

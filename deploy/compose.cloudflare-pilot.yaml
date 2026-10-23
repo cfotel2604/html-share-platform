@@ -20,8 +20,10 @@ services:
     ports:
       - '127.0.0.1:${HSP_PILOT_PORT:-3101}:3000'
     healthcheck:
-      test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:3000/api/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
-      interval: 10s
+      # Container liveness stays local. Remote readiness is an explicit preflight,
+      # not an idle Worker/D1 request every healthcheck interval.
+      test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:3000/api/health/live').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
       timeout: 5s
       retries: 6
       start_period: 15s

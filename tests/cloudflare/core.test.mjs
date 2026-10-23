@@ -7,6 +7,20 @@ import { reconcileExpired } from '../../cloudflare/shared/reconcile.mjs';
 let h;
 before(async()=>{h=await harness();});
 after(async()=>{await h?.close();});
+test('workspace bootstrap preserves ownership and checks policy on each fresh request',async()=>{
+  const own=await h.publish(),foreign=await h.publish(undefined,'b');
+  const response=await h.api('/v1/workspace');
+  assert.equal(response.status,200);assert.equal(response.headers.get('Cache-Control'),'no-store');
+  const workspace=await response.json();
+  assert.deepEqual(workspace.actor,{id:'a',role:'employee'});
+  assert.ok(workspace.sites.some(site=>site.id===own.site.id));
+  assert.ok(!workspace.sites.some(site=>site.id===foreign.site.id));
+  const admin=await (await h.api('/v1/workspace',{actor:'admin'})).json();
+  assert.ok(admin.sites.some(site=>site.id===foreign.site.id));
+  await h.db.prepare("UPDATE auth_allowlist SET status='disabled' WHERE email='a@example.test'").run();
+  try {assert.equal((await h.api('/v1/workspace')).status,403);}
+  finally {await h.db.prepare("UPDATE auth_allowlist SET status='active' WHERE email='a@example.test'").run();}
+});
 test('public canonical, direct/nested sandbox, asset allowlist and strict routes',async()=>{
   const f=await h.publish();
   const url=h.vars.PUBLIC_ORIGIN+'/'+f.code;

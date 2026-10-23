@@ -10,8 +10,10 @@ export type SiteSummary = {
   share_url: string | null;
 };
 export type AuthStatus = { signedIn: boolean; demoAvailable: boolean; available?: boolean; provider?: "clerk" | "local-demo" | "disabled"; role?: "employee" | "admin" | null; denied?: boolean };
+export type StudioWorkspace = { auth: AuthStatus; sites: SiteSummary[] };
 export type UploadResult = { id: string; fileCount: number };
 export interface StudioApi {
+  workspace?(): Promise<StudioWorkspace>;
   auth(): Promise<AuthStatus>;
   listSites(): Promise<SiteSummary[]>;
   login(password: string): Promise<void>;

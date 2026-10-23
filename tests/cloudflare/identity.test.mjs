@@ -6,6 +6,21 @@ import { createActor } from '../../cloudflare/shared/auth.mjs';
 import { harness } from './harness.mjs';
 let h;before(async()=>{h=await harness();});after(async()=>{await h?.close();});
 const {privateKey,publicKey}=generateKeyPairSync('rsa',{modulusLength:2048});
+test('independent Clerk lookups overlap but all identity checks complete before authorization',{timeout:5000},async()=>{
+  await h.db.prepare("UPDATE auth_allowlist SET status='active' WHERE email='a@example.test'").run();
+  const user={id:'a',primaryEmailAddressId:'e',banned:false,locked:false,emailAddresses:[{id:'e',emailAddress:'a@example.test',verification:{status:'verified'}}],externalAccounts:[{provider:'oauth_google',emailAddress:'a@example.test'}]};
+  let releaseUser,sessionUser='a';
+  const userStarted=new Promise(resolve=>{releaseUser=resolve;});
+  const actor=createActor({verify:async()=>({sid:'verified-session',sub:'a'}),client:()=>({
+    sessions:{getSession:async()=>{await userStarted;return {userId:sessionUser,status:'active',expireAt:Date.now()+60_000};}},
+    users:{getUser:async()=>{releaseUser();return user;}},
+  })});
+  const env={...h.vars,DB:h.db,CLERK_SECRET_KEY:'sk_test_synthetic'};
+  const request=new Request(env.API_ORIGIN+'/v1/workspace',{headers:{Authorization:'Bearer synthetic-verified','X-HSP-Service-Token':env.HSP_SERVICE_TOKEN}});
+  assert.equal((await actor(request,env)).id,'a');
+  user.banned=true;await assert.rejects(()=>actor(request,env),e=>e.status===403);
+  user.banned=false;sessionUser='other-user';await assert.rejects(()=>actor(request,env),e=>e.status===401);
+});
 function jwt(extra={}) {
   const timestamp=Math.floor(Date.now()/1000),head=Buffer.from(JSON.stringify({alg:'RS256',typ:'JWT'})).toString('base64url');
   const payload=Buffer.from(JSON.stringify({iss:'https://clerk.synthetic.test',sub:'a',sid:'session_synthetic',iat:timestamp,nbf:timestamp-5,exp:timestamp+120,azp:'https://studio.ods.vn',role:'admin',...extra})).toString('base64url');

@@ -1,4 +1,4 @@
-import type { AuthStatus, SiteSummary, StudioApi, UploadResult } from "./types";
+import type { AuthStatus, SiteSummary, StudioApi, StudioWorkspace, UploadResult } from "./types";
 
 export class StudioApiError extends Error {
   constructor(
@@ -45,6 +45,7 @@ export function createStudioApi(
     return request<UploadResult>(path, { method, body });
   }
   return {
+    workspace: () => request<StudioWorkspace>("/workspace"),
     auth: () => request<AuthStatus>("/auth"),
     listSites: async () =>
       (await request<{ sites: SiteSummary[] }>("/sites")).sites,
