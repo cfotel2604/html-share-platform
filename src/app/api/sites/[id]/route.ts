@@ -14,7 +14,7 @@ export async function PUT(request: Request, context: Context) {
     if (!ID.test(id)) throw new UploadError("ID không hợp lệ", 400);
     await assertSiteOwner(actor, id);
     const { upload, name } = await readUpload(request);
-    return NextResponse.json(await uploadVersion(actor, upload, name, id));
+    return NextResponse.json(await uploadVersion(actor, upload, name, id, request.signal));
   } catch (error) { return apiError(error, "Update thất bại. Vui lòng thử lại."); }
 }
 export async function PATCH(request: Request, context: Context) {

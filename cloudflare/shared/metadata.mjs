@@ -136,7 +136,7 @@ export async function abort(env,actor,key,id) {
   if(await receipt(env.DB,actor,key)) return mutate(env,actor,key,action,input,{sql:'1',args:[]},[],{},id);
   const intent=await uploadIntent(env,actor,id);
   return mutate(env,actor,key,action,input,{sql:"EXISTS(SELECT 1 FROM upload_intents WHERE id=? AND actor_id=? AND state IN ('open','aborted'))",args:[id,actor.id]},[
-    {sql:"UPDATE upload_intents SET state='aborted' WHERE id=?",args:[id]},
+    {sql:"UPDATE upload_intents SET state='aborted',cleanup_after=? WHERE id=?",args:[now(),id]},
   ],{id,state:'aborted',storagePrefix:`${intent.site_id}/${intent.version_id}`},intent.site_id);
 }
 export async function cleanup(env,actor,id) {
@@ -153,6 +153,11 @@ export async function cleanup(env,actor,id) {
     if(page.objects.length) await env.ASSETS.delete(page.objects.map(o=>o.key));
     count+=page.objects.length;cursor=page.truncated?page.cursor:undefined;
   } while(cursor);
-  await stmt(env.DB,"UPDATE upload_intents SET cleanup_at=? WHERE id=? AND state='aborted'",[now(),id]).run();
+  // A cancelled Node request is not a provider-side write fence. Retain this
+  // tombstone and resweep after 5 minutes, daily once its expiry is >24h old.
+  // No terminal scan count or age cutoff can strand a late in-flight PUT.
+  const timestamp=now(),settled=Date.now()-Date.parse(intent.expires_at)>24*60*60_000;
+  const after=new Date(Date.now()+(settled?24*60*60_000:5*60_000)).toISOString();
+  await stmt(env.DB,"UPDATE upload_intents SET cleanup_at=?,cleanup_after=? WHERE id=? AND state='aborted'",[timestamp,after,id]).run();
   return {removed:count};
 }

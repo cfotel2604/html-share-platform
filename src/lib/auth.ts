@@ -7,6 +7,7 @@ import { AuthError, resolveClerkActor, type Actor } from "./auth-policy";
 import { metadataBackend } from "./metadata-backend";
 import { cloudflareClient,type PilotIdentity } from "./cloudflare-rpc";
 import { UploadError } from "./upload-error";
+import { clerkTokenProvider } from "./cloudflare-token";
 export { sameOrigin } from "./auth-config";
 export { AuthError } from "./auth-policy";
 
@@ -47,9 +48,12 @@ export async function currentActor(request?: Request): Promise<Actor | null> {
     if(metadataBackend()==='cloudflare') {
       const token=await identity.getToken();
       if(!token) return null;
-      const actor=await cloudflareClient(token)<PilotIdentity>('/v1/actor');
+      const origin=trustedOrigins().find(value=>new URL(value).host===host);
+      if(!origin) throw new AuthError(404,"Not found");
+      const getSessionToken=clerkTokenProvider({userId:identity.userId,sessionId:identity.sessionId,origin,token});
+      const actor=await cloudflareClient(getSessionToken)<PilotIdentity>('/v1/actor');
       if(typeof actor.id!=='string'||!['employee','admin'].includes(actor.role)) throw new AuthError(503);
-      return {...actor,mode:'clerk',sessionToken:token};
+      return {...actor,mode:'clerk',getSessionToken};
     }
     const client = await clerkClient();
     // Online session check makes revoke effective immediately, not at JWT expiry.

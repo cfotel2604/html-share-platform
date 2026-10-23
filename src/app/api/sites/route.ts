@@ -13,6 +13,6 @@ export async function POST(request: Request) {
   try {
     const actor = await requireActor(request);
     const { upload, name } = await readUpload(request);
-    return NextResponse.json(await uploadVersion(actor, upload, name), { status: 201 });
+    return NextResponse.json(await uploadVersion(actor, upload, name, undefined, request.signal), { status: 201 });
   } catch (error) { return apiError(error, "Upload thất bại. Vui lòng thử lại."); }
 }

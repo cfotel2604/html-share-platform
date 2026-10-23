@@ -4,7 +4,7 @@ import { mkdtemp,readFile,readdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join,resolve } from 'node:path';
 import { createHash } from 'node:crypto';
-export async function harness() {
+export async function harness({migrationsThrough}={}) {
   const folder=await mkdtemp(join(tmpdir(),'hsp-pilot-'));
   const entries={api:'tests/cloudflare/test-api.mjs',public:'cloudflare/public.mjs',preview:'cloudflare/preview.mjs'};
   const vars={PUBLIC_ORIGIN:'https://hsp.odsusercontent.workers.dev',PREVIEW_ORIGIN:'https://hsp-preview.odsusercontent.workers.dev',
@@ -19,7 +19,7 @@ export async function harness() {
   }
   const mf=new Miniflare(convertV4MiniflareOptions({workers,log:new Log(LogLevel.NONE),inspectorPort:0}));
   const db=await mf.getD1Database('DB','api'),bucket=await mf.getR2Bucket('ASSETS','api');
-  for(const name of (await readdir(resolve('cloudflare/migrations'))).filter(n=>n.endsWith('.sql')).sort()) {
+  for(const name of (await readdir(resolve('cloudflare/migrations'))).filter(n=>n.endsWith('.sql')&&(!migrationsThrough||n<=migrationsThrough)).sort()) {
     const sql=await readFile(resolve('cloudflare/migrations',name),'utf8');
     for(const part of sql.replace(/^--.*$/gm,'').split(';').filter(s=>s.trim())) await db.prepare(part).run();
   }
