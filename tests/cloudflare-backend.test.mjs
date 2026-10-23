@@ -33,7 +33,7 @@ test('pilot actor retains a server token provider scoped to the authenticated id
   const identity={userId:'clerk-user',sessionId:'clerk-session',getToken:async()=> 'original-synthetic'};
   const {currentActor}=tsLoader({
     '@clerk/nextjs/server':{clerkClient:async()=>({authenticateRequest:async()=>({toAuth:()=>identity})})},
-    './cloudflare-token':{clerkTokenProvider:scope=>{captured=scope;return provider;}},
+    './cloudflare-token':{clerkRefreshCookie:async()=>undefined,clerkTokenProvider:scope=>{captured=scope;return provider;}},
     './cloudflare-rpc':{cloudflareClient:getToken=>{assert.equal(getToken,provider);return async()=>({id:'d1-user',role:'employee'});}},
     './db':{db:()=>{throw new Error('PG forbidden');}},
   })(new URL('../src/lib/auth.ts',import.meta.url));

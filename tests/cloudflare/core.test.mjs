@@ -108,14 +108,43 @@ test('concurrent rotation keeps one active mapping; provider failures are bounde
 });
 test('policy revoked after preflight but during R2 verification fails the in-batch guard',async()=>{
   const f=await h.publish(),pending=await h.upload(f.site.id);let changed=false;
-  const env={...h.vars,DB:h.db,ASSETS:{head:async key=>{
-    const obj=await h.bucket.head(key);
+  const env={...h.vars,DB:h.db,ASSETS:{list:async options=>{
+    const obj=await h.bucket.list(options);
     if(!changed) {changed=true;await h.db.prepare("UPDATE auth_allowlist SET status='disabled' WHERE email='a@example.test'").run();}
     return obj;
   }}};
   await assert.rejects(()=>finalize(env,{id:'a'},crypto.randomUUID(),pending.intent.id,{assets:pending.assets}),e=>e.status===409);
   assert.equal(await h.db.prepare('SELECT id FROM site_versions WHERE id=?').bind(pending.intent.versionId).first(),null);
   await h.db.prepare("UPDATE auth_allowlist SET status='active' WHERE email='a@example.test'").run();
+});
+
+test('500-file finalize verifies a complete immutable object set in one provider metadata call',async()=>{
+  const files={'index.html':'<p>synthetic quota</p>',...Object.fromEntries(Array.from({length:499},(_,i)=>['assets/'+i+'.js','/* synthetic */']))};
+  const pending=await h.upload(undefined,'a',files);let calls=0;
+  const env={...h.vars,DB:h.db,ASSETS:{list:async options=>{
+    calls++;assert.equal(options.prefix,pending.intent.storagePrefix+'/');return h.bucket.list(options);
+  },head:async()=>{throw new Error('Sequential HEAD path forbidden');}}};
+  const result=await finalize(env,{id:'a'},crypto.randomUUID(),pending.intent.id,{assets:pending.assets});
+  assert.equal(result.fileCount,500);assert.equal(calls,1);
+  assert.equal((await h.db.prepare('SELECT count(*) AS n FROM version_assets WHERE version_id=?').bind(pending.intent.versionId).first()).n,500);
+});
+
+test('incomplete, extra, duplicated or changed metadata never commits a version',async()=>{
+  const original=await h.publish();
+  for(const defect of ['truncated','missing','extra','duplicate','size','etag']) {
+    const pending=await h.upload(original.site.id);
+    const env={...h.vars,DB:h.db,ASSETS:{list:async options=>{
+      const page=await h.bucket.list(options);
+      if(defect==='truncated') return {...page,truncated:true,cursor:'synthetic'};
+      if(defect==='missing') return {...page,objects:page.objects.slice(1)};
+      if(defect==='extra') return {...page,objects:[...page.objects,{key:options.prefix+'unknown.js',size:0,etag:'extra'}]};
+      if(defect==='duplicate') return {...page,objects:[page.objects[0],page.objects[0],...page.objects.slice(2)]};
+      return {...page,objects:page.objects.map((obj,index)=>index?obj:{...obj,[defect]:defect==='size'?obj.size+1:'wrong'})};
+    }}};
+    await assert.rejects(()=>finalize(env,{id:'a'},crypto.randomUUID(),pending.intent.id,{assets:pending.assets}),e=>e.status===409,defect);
+    assert.equal((await h.db.prepare('SELECT active_version_id FROM sites WHERE id=?').bind(original.site.id).first()).active_version_id,original.site.active_version_id);
+    assert.equal(await h.db.prepare('SELECT id FROM site_versions WHERE id=?').bind(pending.intent.versionId).first(),null);
+  }
 });
 test('serving returns a stream without buffering bytes; DB outage fails closed',async()=>{
   let reads=0;

@@ -7,7 +7,7 @@ import { AuthError, resolveClerkActor, type Actor } from "./auth-policy";
 import { metadataBackend } from "./metadata-backend";
 import { cloudflareClient,type PilotIdentity } from "./cloudflare-rpc";
 import { UploadError } from "./upload-error";
-import { clerkTokenProvider } from "./cloudflare-token";
+import { clerkTokenProvider, clerkRefreshCookie } from "./cloudflare-token";
 export { sameOrigin } from "./auth-config";
 export { AuthError } from "./auth-policy";
 
@@ -50,7 +50,8 @@ export async function currentActor(request?: Request): Promise<Actor | null> {
       if(!token) return null;
       const origin=trustedOrigins().find(value=>new URL(value).host===host);
       if(!origin) throw new AuthError(404,"Not found");
-      const getSessionToken=clerkTokenProvider({userId:identity.userId,sessionId:identity.sessionId,origin,token});
+      const refreshToken=request ? await clerkRefreshCookie(request.headers.get('cookie'),process.env.CLERK_PUBLISHABLE_KEY) : undefined;
+      const getSessionToken=clerkTokenProvider({userId:identity.userId,sessionId:identity.sessionId,origin,token,...(refreshToken?{refreshToken}:{})});
       const actor=await cloudflareClient(getSessionToken)<PilotIdentity>('/v1/actor');
       if(typeof actor.id!=='string'||!['employee','admin'].includes(actor.role)) throw new AuthError(503);
       return {...actor,mode:'clerk',getSessionToken};

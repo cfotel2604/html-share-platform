@@ -1,5 +1,9 @@
 # Project status — HTML Share Platform
 
+## Real provider findings — 2026-10-23
+
+Owner đã điền R2 credential và Google login. [Findings/fixes/evidence](validation/2026-10-23-provider-fixes.md), #25/#26, branch `codex/clerk-session-refresh` từ #24. Real R2 conditional write/readback PASS. Clerk BAPI mint thiếu azp nên chuyển sang documented session refresh với cookie đúng instance, giữ exact sub/sid/azp/expiry và online checks. Package A đã publish qua Studio thật; first500-file finalize chưa xác nhận, D1 draft/no version/no receipt, giữ objects. Thay tuần tự HEAD bằng exact metadata listing của immutable prefix, fail closed nếu thiếu/thừa/truncated/mismatch.102unit/33Cloudflare groups/lint/typecheck/Dockerbuild/3dry-run PASS; remote lượt500 mới/lifecycle/review còn pending. Không coi code/local re-review cũ là provider acceptance; lab và ADR status giữ nguyên.
+
 ## Remote Desktop pilot preflight — 2026-10-23
 
 Operations implementation `0620344`, [Draft PR #24](https://github.com/cfotel2604/html-share-platform/pull/24) base #23; không đổi application code của #23. Handoff follow-up theo sau, current head/CI kiểm GitHub.

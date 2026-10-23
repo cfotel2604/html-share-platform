@@ -1,0 +1,25 @@
+# Provider findings and pilot follow-up
+
+2026-10-23; Refs #20/#10, findings #25/#26. Branch `codex/clerk-session-refresh`, stacked on operations PR #24. ADRs remain Proposed; no source merge, VM/lab/DNS/UFW/production change.
+
+## Verified findings
+
+Owner supplied the scoped R2 credentials privately and logged in with Google on Desktop. R2 real create-only PUT/readback/size/ETag, duplicate PUT412 and wrong ETag412 passed; the synthetic transport probe was deleted. This is not a full IAM scope audit.
+
+Real `sessions.getToken(sid)` returns a JWT without azp; the actual SDK authorizedParties check rejects it. Sending Origin to that BAPI endpoint did not add azp. The previously accepted local R1 fixture assumed a provider behavior that is not true here; real provider gate was not passed by that re-review. No validation was relaxed.
+
+Use the documented `sessions.refreshSession` protocol with the already verified JWT/session and request-local refresh cookie for the configured Clerk instance. Cookie suffix comes from pinned `@clerk/shared/keys`, with duplicate/wrong-instance/malformed values refused. Only the verified Studio origin supplies request_origin. Format token, no TTL/template override, no refresh credential sent to Worker/responses/logs/shared cache. Reverify signature, exact sub/sid/azp, expiry and20second remaining lifetime; online session and Worker policy checks remain. Missing refresh credential fails closed when refresh is needed. Bearer-only requests do not supply the browser refresh credential and cannot establish long-upload compatibility.
+
+Local regression evidence:102unit/33Cloudflare groups, lint/typecheck, Docker production build and3Worker dry-run bundles PASS. Updated regressions cover exact refresh params, repeated refresh, absent/ambiguous/cross-instance cookie, wrong/tampered/missing-party tokens, revoke/disable and lost ACK/receipt recovery. Real refreshed-token events are recorded as the fixed string `pilot.session_refreshed`, with no identifiers.
+
+Package A (4files) published through real Studio/Clerk/R2/D1. Direct/nested browser probes confirm opaque origin and denied cookie/storage/IndexedDB/worker/service worker/popup; relative fetch works. Nested module works. The first synthetic index used a bare module specifier; the fixture was corrected to `./assets/...` before the next upload. This was a fixture error, not a sandbox relaxation.
+
+First500-file attempt staged private assets, refreshed the session successfully, but finalize returned an uncertain result. Subsequent read-only D1 inspection found draft/open intent, no active version or finalize receipt. No speculative cleanup/re-upload of that intent occurred. Root cause CPU vs latency is not established by provider tracing; sequential500HEAD is a likely budget risk under15second RPC attempts. The old intent/objects remain for reference-checked reconciliation.
+
+The Worker change verifies one complete strongly consistent listing of the new immutable intent-owned prefix against the exact manifest key set, pinned size and ETag. Truncated/incomplete/extra/duplicate/mismatched listings deny; memory bounded by the500-file contract. Node SHA256 streamed readback, D1 CAS/policy/audit/receipt and per-read serving integrity remain. No quota, sandbox, IAM, cache or subscription change. New tests prove500-file bounded verification and rollback on bad listings/policy revocation.
+
+## Remote continuation
+
+Desktop uses isolated image `html-share-studio:cf-clerk-refresh`; prior `cf-pilot-desktop` image retained. Private `.env.generated` pins it. Only the pilot API Worker needs the bounded-verification update; public/preview Workers and schema stay unchanged. Recheck deployed versions privately. Actual second500-file publish, lifecycle/preview/Node-offline checks and independent source review are pending at this checkpoint. Never mark the full pilot accepted from these local results. Source review, operational acceptance and production release are separate.
+
+References: [Clerk session claims](https://clerk.com/docs/guides/sessions/session-tokens), [official RefreshSession schema](https://github.com/clerk/openapi-specs/blob/main/bapi/2025-11-10.yml), [R2 list consistency](https://developers.cloudflare.com/r2/reference/consistency/), [Workers R2 list limits](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/). Native binding is still not read-only IAM; Cron remains off. Real Clerk revoke, mobile/Safari/Zalo, full log pipeline/cost/concurrency/security and compatible rollback remain release gates. Owner's logout reminder stays at final project handoff.

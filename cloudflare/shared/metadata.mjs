@@ -78,8 +78,14 @@ export async function finalize(env,actor,key,intentId,input) {
   const intent=await uploadIntent(env,actor,intentId),site=await owned(env.DB,actor,intent.site_id);
   if(intent.state!=='open'||intent.expires_at<=now()) throw new HttpError(409,'Upload intent closed');
   const assets=manifest(input.assets),prefix=`${site.id}/${intent.version_id}`;
+  // One strongly consistent metadata listing replaces up to 500 sequential HEADs.
+  // A new immutable prefix is owned by one intent; require the complete exact
+  // object set and pinned size/ETag. No byte buffering or permission cache.
+  const listing=await env.ASSETS.list({prefix:prefix+'/',limit:1000});
+  const objects=new Map(listing.objects.map(object=>[object.key,object]));
+  if(listing.truncated||listing.objects.length!==assets.length||objects.size!==assets.length) throw new HttpError(409,'Unverified object set');
   for(const asset of assets) {
-    const obj=await env.ASSETS.head(`${prefix}/${asset.path}`);
+    const obj=objects.get(`${prefix}/${asset.path}`);
     if(!obj||obj.size!==asset.size||obj.etag!==asset.etag) throw new HttpError(409,'Unverified object');
   }
   const code=await stmt(env.DB,'SELECT code FROM site_share_links WHERE site_id=? AND revoked_at IS NULL',[site.id]).first();

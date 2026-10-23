@@ -32,11 +32,17 @@ async function authenticated(t) {
     externalAccounts:[{provider:'oauth_google',emailAddress:'a@example.test'}]};
   const api={sessions:{
     getSession:async id=>{assert.equal(id,'session_a');return {userId:'a',status:state.active?'active':'revoked',expireAt:Date.now()+3600_000};},
-    getToken:async(...args)=>{assert.deepEqual(args,['session_a']);const token=jwt(h.vars.STUDIO_ORIGIN);state.minted.push(token);return {jwt:token};},
+    getToken:async()=>{throw new Error('Unscoped BAPI mint forbidden');},
+    refreshSession:async(id,params)=>{
+      assert.equal(id,'session_a');assert.equal(params.refresh_token,'synthetic-refresh');
+      assert.equal(params.request_origin,h.vars.STUDIO_ORIGIN);assert.equal(params.format,'token');
+      assert.deepEqual(Object.keys(params).sort(),['expired_token','format','refresh_token','request_origin']);
+      const token=jwt(h.vars.STUDIO_ORIGIN);state.minted.push(token);return {jwt:token};
+    },
   },users:{getUser:async()=>user}};
   const authenticate=createActor({verify,client:()=>api});
   const original=jwt(h.vars.STUDIO_ORIGIN);
-  const provider=clerkTokenProvider({userId:'a',sessionId:'session_a',origin:h.vars.STUDIO_ORIGIN,token:original},{verify,client:()=>api});
+  const provider=clerkTokenProvider({userId:'a',sessionId:'session_a',origin:h.vars.STUDIO_ORIGIN,token:original,refreshToken:'synthetic-refresh'},{verify,client:()=>api});
   const rpc=cloudflareClient(provider,async(url,options)=>{
     const path=new URL(url).pathname,token=options.headers.Authorization.slice(7);
     state.events.push({path,token,key:options.headers['Idempotency-Key']});

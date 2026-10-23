@@ -1,5 +1,11 @@
 # AI Agent handoff — HTML Share Platform
 
+## Provider follow-up đang kiểm — 2026-10-23
+
+Owner hoàn tất R2 credentials/Google login. Branch `codex/clerk-session-refresh` từ #24; [đọc findings #25/#26 và evidence](validation/2026-10-23-provider-fixes.md). R2 conditional PUT/readback/size/ETag/412 PASS. Real getToken(sid) không có azp; dùng refreshSession với JWT đã verified + request-local cookie đúng instance + trusted origin, không TTL/template override hoặc nới checks. Cookie suffix dùng pinned @clerk/shared4.41.0; không log/persist/forward refresh credential.102unit/33Cloudflare groups/lint/typecheck/Dockerbuild/3dry-run PASS.
+
+Desktop image `html-share-studio:cf-clerk-refresh` pin trong private .env.generated, image cũ retained. A4files đã publish thật. First B500files giữ draft/open/no version/no receipt; có successful refresh events nhưng finalize unknown, không xóa objects. Worker đổi500HEAD tuần tự thành complete exact R2 listing/size/ETag, truncated/missing/extra/duplicate/mismatch deny và D1 guards giữ nguyên. Chưa chứng minh CPU vs latency là root cause. Remote API-only deploy/lượt500 mới/lifecycle/preview/Node-offline/source review tiếp sau; không blind replay/cleanup old intent. Lab/source/env/SQL/DNS/UFW/volumes nguyên trạng, Cron off, ADR Proposed, chưa merge/production.
+
 ## Remote pilot đã được giao riêng — 2026-10-23
 
 Implementation ops `0620344`, [Draft PR #24](https://github.com/cfotel2604/html-share-platform/pull/24) stacked trên #23; docs follow-up theo sau. Không sửa application implementation của #23. Kiểm current head/CI trước review/merge.
