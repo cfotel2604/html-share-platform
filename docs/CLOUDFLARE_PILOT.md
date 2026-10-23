@@ -37,7 +37,7 @@ Additive D1 migration0003introduces cleanup_after and recovers aborted rows prev
 
 ## Acceptance and release boundary
 
-Implementation23/10: stacked Draft #21 → #22 → #23, R1/R2 implementation0ad5152; [runbook](CLOUDFLARE_PILOT_RUNBOOK.md), [fix evidence95unit/31D1-R2 groups](validation/2026-10-23-cloudflare-upload-fixes.md) and [prior browser evidence](validation/2026-10-23-cloudflare-pilot.md). Fixes await independent re-review. Scheduled reconciliation is implemented with system audit/fencing but no Cron configured; full remote quotas/cost must be reviewed before provisioning.
+Implementation23/10: stacked Draft #21 → #22 → #23, R1/R2 implementation0ad5152; [runbook](CLOUDFLARE_PILOT_RUNBOOK.md), [fix evidence95unit/31D1-R2 groups](validation/2026-10-23-cloudflare-upload-fixes.md) and [prior browser evidence](validation/2026-10-23-cloudflare-pilot.md). [Independent re-review](reviews/2026-10-23-cloudflare-rereview.md) accepts R1/R2 at code/local level at headc581ccb; real Clerk token issuance/azp and operational approvals remain separate gates. Scheduled reconciliation is implemented with system audit/fencing but no Cron configured; full remote quotas/cost must be reviewed before provisioning.
 
 Local checks must cover A/B HTML/direct/nested/preview; CSP/opaque origin/CORS; modules and relative assets; invalid paths/active formats; ownership/policy/revision races; audit rollback and lost acknowledgements; tombstones; private preview expiry/revoke; tampered/missing objects; streaming; no PostgreSQL fallback or VM serving dependency. Record synthetic evidence without codes/grants/PII.
 

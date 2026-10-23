@@ -2,6 +2,8 @@
 
 Refs #20/#10, Draft [PR #23](https://github.com/cfotel2604/html-share-platform/pull/23), stacked on #22/#21. Owner authorized implementation after accepting the [independent review response](../reviews/2026-10-23-cloudflare-upload-review.md). Baseline `326d3b4`; implementation **`0ad5152a82b594708d50f3eabbb729c83791f190`**. A following docs commit records this evidence; fetch current PR head/CI separately. Both P2 findings await independent re-review, not automatic closure.
 
+**Subsequent re-review received:** [R1/R2 accepted for code/local regressions](../reviews/2026-10-23-cloudflare-rereview.md) at headc581ccb;37selected tests/groups PASS according to the supplied reviewer evidence. Agent separately verified all4CIjobs PASS at that head. The initial pending status above is historical; real-provider/operational gates below still apply.
+
 ## R1: refresh a verified session, retain authorization
 
 Studio authenticates with Clerk before multipart ingest. Its server-only actor now carries a request-scoped token provider, capturing the verified user ID, session ID and exact trusted Studio origin. RPC asks that provider on every attempt and receipt recovery instead of closing over a JWT string.

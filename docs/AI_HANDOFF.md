@@ -1,6 +1,12 @@
 # AI Agent handoff — HTML Share Platform
 
-## R1/R2 đã implement, chờ re-review — 2026-10-23
+## R1/R2 re-review chấp nhận code/local — 2026-10-23
+
+Owner cung cấp ZIP re-review tại reviewedhead **c581ccb511fb9aaeb8f90308d865450cbb20d12d**, implementation0ad5152. [Review record và phân công bước tiếp](reviews/2026-10-23-cloudflare-rereview.md). Reviewer accepts R1/R2 code/local regressions,37selected groups PASS; không mớiP1/P2 trong upload-lifecycle delta. Không phải full95unit/build/browser/audit/provider evidence hoặc GitHub approval. Agent kiểm riêng liveCI: #21=2PASS, #22=4PASS, #23c581ccb=4PASS; tất cảDraft, main72e048e, #19giữriêng, #20/#10OPEN. Docs follow-up không đổi code; exact currenthead/CI kiểm lại trước merge.
+
+Tiếp theo ưu tiên **Clerk thật**: owner chốt Studio pilot origin và Clerk instance/test identities riêng; agent chuẩn bị probe không lộ credential. Chứng minh freshJWT đúngsub/sid/azp/lifetime và revoke/disable/lostACK trước operational pilot. Sau explicit remote approval mới inventory/provision riêng R2/D1/3Workers/NodeDocker; D1 migration0003 trước binary dùngcleanup_after. Giữ Cron tắt/tombstones, đo chi phí/backlog, kiểm logging/mobile/rollback theo #10. Source merge #21→#22→#23 là quyết định owner riêng; review ZIP không cấp quyền merge/provision/deploy. Nhắc ownerWranglerlogout ở mốc hoàn tất dự án, không phải kết thúc review. ADR0001/0003/0005Proposed, lab nguyên trạng.
+
+## R1/R2 đã implement — snapshot trước re-review, 2026-10-23
 
 Owner giao sửa sau review326d3b4. Implementation **0ad5152a82b594708d50f3eabbb729c83791f190**, branch codex/cloudflare-studio-integration/Draft #23 (base #22/#21); docs follow-up theo sau. [Evidence/acceptance/rollback](validation/2026-10-23-cloudflare-upload-fixes.md). Local95unit/31Cloudflare groups/lint/typecheck/Nextbuild/3Worker dry-run PASS. Fresh token provider gắn verified user/session/origin, mint qua BAPI không TTL/template override; SDK + exactsub/sid/azp/expiry checks, Worker online session/Google/D1 policy giữ nguyên. Actual Clerk phải chứng minh freshazp đúng; thiếu/sai thì deny, chưa có provider evidence. Stablefinalizekey/recoverytokenmới và no speculative delete được regression cover.
 

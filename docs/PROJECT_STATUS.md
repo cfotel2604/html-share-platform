@@ -1,6 +1,10 @@
 # Project status — HTML Share Platform
 
-## R1/R2 implementation chờ re-review — 2026-10-23
+## R1/R2 accepted ở code/local — 2026-10-23
+
+[Independent re-review](reviews/2026-10-23-cloudflare-rereview.md) chấp nhận bản sửa tại headc581ccb/implementation0ad5152:37selected tests/groups PASS, không thấyP1/P2 mới trong upload-lifecycle delta. Agent xác minh riêng cả4jobsCI của headc581ccb PASS; #21/#22 cũng xanh, mọi PR cònDraft. Không phải fullsecurity/provider/operational approval, không tự merge. Bước tiếp theo là Clerk thật cho đúng user/session/Studioazp, rồi remote R2/D1/pilot sau explicit approval; owner chốt origin/Clerk/budget và agent chuẩn bị preflight. #20/#10OPEN; Cron tắt, tombstones/lab giữ nguyên, ADR0001/0003/0005Proposed. Docs tiếp theo không đổi code đã review.
+
+## R1/R2 implementation — snapshot trước re-review, 2026-10-23
 
 Owner giao sửa hai P2; implementation **0ad5152** trên Draft #23 sau baseline326d3b4. Token provider server-side mint qua Clerk BAPI cho đúng user/session/azp, giữ Worker auth/policy/idempotency; Node có deadlines/cancel. D1 migration mới0003cleanup_resweeps (không sửa migration cũ hoặc SQL PostgreSQL) giữ aborted tombstones để quét lại theo cleanup_after,5phút rồi hằng ngày, reference guards giữ nguyên và Cron vẫn tắt. Local **95unit/31Cloudflare groups**, lint/typecheck, Next build và3Worker dry-run PASS. [Evidence và acceptance](validation/2026-10-23-cloudflare-upload-fixes.md). Các findings chờ independent re-review; actual Clerk mint phải có đúngazp, remote/cost/mobile gates còn #10. Docs head/CI theo GitHub; không merge/deploy/provision hoặc đổi lab.
 

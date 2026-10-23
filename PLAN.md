@@ -4,7 +4,7 @@
 
 **Pilot owner giao 2026-10-23 — #20, Refs #10:** [ADR-0005 Proposed](docs/adr/0005-path-sandbox-cloudflare-pilot.md), [implementation contract](docs/CLOUDFLARE_PILOT.md). Ba Draft PR: ADR/contracts → Cloudflare D1/R2/Workers core → Studio/Node bridge. Pilot dùng dữ liệu mới, D1-only metadata, native binding, preview Worker riêng, relative-assets/HTTP sandbox/no persistence; giữ nguyên lab cũ và SQL0001–0003. Local emulation trước remote approval; không tự merge/deploy.
 
-**Follow-up R1/R2:** owner giao sửa sau review326d3b4; implementation0ad5152 có95unit/31Cloudflare groups PASS, [evidence/deadlines/token refresh/resweeps](docs/validation/2026-10-23-cloudflare-upload-fixes.md). Chờ independent re-review; actual Clerk mintedazp và resweep cost/retention còn remote gates, Cron tắt. Merge source và operational pilot approval là hai quyết định riêng.
+**Follow-up R1/R2:** owner giao sửa sau review326d3b4; implementation0ad5152 có95unit/31Cloudflare groups PASS, [evidence/deadlines/token refresh/resweeps](docs/validation/2026-10-23-cloudflare-upload-fixes.md). [Re-review](docs/reviews/2026-10-23-cloudflare-rereview.md) tại headc581ccb chấp nhận code/local regressions,37selected groups PASS; actual Clerk mintedazp và resweep cost/retention còn remote gates, Cron tắt. Merge source và operational pilot approval là hai quyết định riêng.
 
 **Trạng thái:** Proposed cho release/security gates; domain và thiết kế mã chia sẻ đã Accepted ngày 2026-10-09 theo [ADR-0004](docs/adr/0004-domains-and-share-codes.md).
 
