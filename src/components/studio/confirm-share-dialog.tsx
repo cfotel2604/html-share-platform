@@ -28,6 +28,11 @@ export function ConfirmShareDialog({
     return () => element?.close();
   }, []);
 
+  function cancel() {
+    dialog.current?.close();
+    onCancel();
+  }
+
   return (
     <dialog
       ref={dialog}
@@ -36,7 +41,7 @@ export function ConfirmShareDialog({
       aria-describedby={descriptionId}
       onCancel={(event) => {
         event.preventDefault();
-        onCancel();
+        cancel();
       }}
     >
       <h2 id={titleId}>{rotating ? "Đổi link xem?" : "Thu hồi link xem?"}</h2>
@@ -49,10 +54,13 @@ export function ConfirmShareDialog({
             : "Link xem sẽ hết hiệu lực. Nội dung trực tiếp vẫn mở khi website đang xuất bản; dùng Tắt xuất bản để chặn nội dung."}
       </p>
       <div className="studio-confirm-actions">
-        <button className="studio-button" type="button" onClick={onCancel}>
+        <button className="studio-button" type="button" onClick={cancel}>
           Hủy
         </button>
-        <button className="studio-button studio-primary" type="button" disabled={busy} onClick={onConfirm}>
+        <button className="studio-button studio-primary" type="button" disabled={busy} onClick={() => {
+          dialog.current?.close();
+          onConfirm();
+        }}>
           {rotating ? "Xác nhận đổi link" : "Xác nhận thu hồi"}
         </button>
       </div>
