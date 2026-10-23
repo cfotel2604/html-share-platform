@@ -1,5 +1,11 @@
 # Project status — HTML Share Platform
 
+## Studio latency/request efficiency — 2026-10-23
+
+[Issue #28 / Draft PR #29](https://github.com/cfotel2604/html-share-platform/pull/29), implementation5c9e3fe stacked trên #27. [Measured evidence](validation/2026-10-23-studio-efficiency.md): Docker readiness10s gọi Worker/D1 dù idle (~8640/ngày nếu chạy liên tục), bootstrap3Worker calls và reload2calls với online Clerk lặp. Đã chuyển automatic probe sang local live30s; remote readiness vẫn explicit. Typed workspace endpoint gộp actor/sites: bootstrap/reload còn1Worker call, không cache quyền hoặc nới Clerk/azp/ownership/revoke. Baseline auth+sites4247ms, reload2343–2878ms; sau sửa workspace1696–2153ms (lượt2153 có refreshJWT), reload791ms. Đây là vài mẫu HTTP handler, không phải p95 hoặc full page-load benchmark.
+
+Desktop pin `html-share-studio:cf-efficiency-5c9e3fe`; API-only version1213ee99-cf7b-4aaf-9db7-e24b0b0eaf6f, public/preview/schema không đổi.108unit/35Cloudflare groups/lint/typecheck/3dry-run/Dockerbuild PASS; source5c9e3fe4CI PASS, current head kiểm GitHub. Owner xác nhận block user trên Clerk rồiF5 báo khóa, Safari/Zalo/v.v. loadOK: ghi đúng owner-confirmed loading/block evidence, chưa full browser/security matrix. Mọi PR giữ Draft; không merge, đổi lab/VM/DNS/UFW/production; Cron off, ADR Proposed.
+
 ## Real provider findings — 2026-10-23
 
 Owner đã điền R2 credential và Google login. [Findings/fixes/evidence](validation/2026-10-23-provider-fixes.md), #25/#26, [Draft PR #27](https://github.com/cfotel2604/html-share-platform/pull/27), branch `codex/clerk-session-refresh` từ #24. Implementation bcb89fd, SSR/UI follow-ups912f725/98d2ff4/7208ea6. Real R2 conditional write/readback PASS. Clerk BAPI mint thiếu azp nên dùng documented session refresh với cookie đúng instance, giữ exact sub/sid/azp/expiry và online checks. Second500-file upload qua Studio thật thành công trong195095ms, D1 có500manifest entries;5static refresh events đã quan sát. Finalize dùng exact immutable-prefix R2 listing, không tuần tự500HEAD.103unit/33Cloudflare groups/lint/typecheck/Dockerbuild/3dry-run PASS; current-head CI kiểm GitHub.

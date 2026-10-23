@@ -4,6 +4,8 @@
 
 ## Current Desktop pilot
 
+Latest efficiency follow-up: [Draft #29 / measured evidence](validation/2026-10-23-studio-efficiency.md), Issue #28, source5c9e3fe. Desktop image `html-share-studio:cf-efficiency-5c9e3fe`, API version `1213ee99-cf7b-4aaf-9db7-e24b0b0eaf6f`; public/preview/schema unchanged. Container healthcheck is local `/api/health/live` every30seconds, with **no remote Worker/D1 call**. `/api/health/ready` and Worker health remain explicit dependency checks; healthy container does not establish remote readiness. Do not put readiness back on a10second Docker/monitoring poll. Workspace/bootstrap and list reload each use one authenticated Worker request, without permission caching. The provider image/version paragraph below is a retained previous checkpoint.
+
 Private config: `C:\Users\admin\Documents\Codex\html-share-platform-private\cloudflare-pilot`. Owner edits `.env.desktop` (Clerk Development keys, selected pilot emails, bucket-scoped R2 S3 credentials); agent manages `.env.generated`, Wrangler configs and receipts outside Git/build context. `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` is accepted and mapped to this app's server runtime key. `.env.vm` is a future Clerk Production placeholder, not an instruction to cut over VM.
 
 Independent D1/R2 `hsp-pilot-desktop` and public/preview/API Workers are deployed; migrations0001–0003 verified. Node Studio is `http://localhost:3101`, Compose project hsp-cf-desktop, only web/no PG/MinIO/volumes.

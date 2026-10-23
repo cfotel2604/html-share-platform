@@ -1,5 +1,15 @@
 # AI Agent handoff — HTML Share Platform
 
+## Studio efficiency follow-up — 2026-10-23
+
+Branch codex/studio-request-efficiency, [Draft #29](https://github.com/cfotel2604/html-share-platform/pull/29)/Issue #28, base #27 at62e8090; implementation5c9e3fe. Đọc [số đo/cause/boundaries/owner evidence](validation/2026-10-23-studio-efficiency.md). Primary checkout/main vẫn78cb7ca cũ; origin/main72e048e kiểm fetch, không reset. SourceCI5c9e3fe4/4PASS; current docs head/CI kiểm GitHub.
+
+Root cause: Compose ready10s→remote Worker/D1 (~8640calls/ngày), UI auth→sites lặp3Worker identities, reload2. Source mới health local live30s, remote readiness chỉ explicit; combined /api/workspace→/v1/workspace xác thực1lần/request, Clerk session/user fetch song song nhưng kiểm đủ trước D1. Không cross-request auth cache/TTL hoặc giảm deny/revocation. Bootstrap APIs4247ms→1696/2153ms (2153 có refreshJWT), list2343/2878→791ms; vài mẫu, không p95/full page.108unit/35Cloudflare groups/lint/typecheck/3dry-run/Dockerbuild/Compose PASS.
+
+Runtime mới chỉ pilot: image html-share-studio:cf-efficiency-5c9e3fe private pin .env.generated, API version1213ee99-cf7b-4aaf-9db7-e24b0b0eaf6f; public/preview/schema nguyên trạng. Temporary private preload chỉ numeric/allowlist timing, tháo khỏi running service sau đo; không JWT/cookie/HTML/preview capability trong logs/Git. Không dùng readiness để auto-poll10s trở lại; healthy container không có nghĩa dependency ready, dùng explicit health trước release/incident. Giữ old images và unknown-commit prefix, không cleanup suy đoán hoặc deploy/provision lại để inspect.
+
+Owner xác nhận block Clerk user rồiF5 báo khóa và Safari/Zalo/v.v. loadOK. Chỉ ghi owner-confirmed blocked-user/loading compatibility; chưa biết device/version/case matrix, không thay full mobile/origin/security/real revoke-upload-race gates. Source review #27/#29, IAM/cost/concurrency/cleanup/logging/rollback còn gate; tất cả Draft, Cron off, ADR Proposed, lab/VM/DNS/UFW/production giữ nguyên. Nhắc owner Wrangler logout ở mốc hoàn tất dự án.
+
 ## Provider follow-up — 2026-10-23
 
 Owner hoàn tất R2 credentials/Google login. Branch `codex/clerk-session-refresh`, [Draft PR #27](https://github.com/cfotel2604/html-share-platform/pull/27) từ #24; [đọc findings #25/#26 và evidence](validation/2026-10-23-provider-fixes.md). R2 conditional PUT/readback/size/ETag/412 PASS. Real getToken(sid) không có azp; dùng refreshSession với JWT đã verified + request-local cookie đúng instance + trusted origin, không TTL/template override hoặc nới checks. Cookie suffix dùng pinned @clerk/shared4.41.0; không log/persist/forward refresh credential.103unit/33Cloudflare groups/lint/typecheck/Dockerbuild/3dry-run PASS. Implementation bcb89fd, SSR/UI follow-ups912f725/98d2ff4/7208ea6; exact current head/CI kiểm GitHub, không suy CI cũ thành CI mới.

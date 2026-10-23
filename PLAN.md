@@ -2,6 +2,8 @@
 
 **Ngày lập:** 2026-10-08
 
+**Studio efficiency23/10 — #28/Draft #29:** [cause/measured result](docs/validation/2026-10-23-studio-efficiency.md), implementation5c9e3fe, stacked #27. Loại idle readiness Worker polling, gộp workspace/read vào1authenticated RPC, giữ fresh Clerk/D1 policy và no-store.108unit/35Cloudflare groups PASS, actual latency/call count cải thiện; không thay subscription/cache/revoke hoặc lab. Owner-confirmed Clerk block/F5 và Safari/Zalo loadOK bổ sung evidence với đúng scope, không đóng full security/mobile gates.
+
 **Pilot owner giao 2026-10-23 — #20, Refs #10:** [ADR-0005 Proposed](docs/adr/0005-path-sandbox-cloudflare-pilot.md), [implementation contract](docs/CLOUDFLARE_PILOT.md). Ba Draft PR: ADR/contracts → Cloudflare D1/R2/Workers core → Studio/Node bridge. Pilot dùng dữ liệu mới, D1-only metadata, native binding, preview Worker riêng, relative-assets/HTTP sandbox/no persistence; giữ nguyên lab cũ và SQL0001–0003. Local emulation trước remote approval; không tự merge/deploy.
 
 **Follow-up R1/R2:** owner giao sửa sau review326d3b4; implementation0ad5152 có95unit/31Cloudflare groups PASS, [evidence/deadlines/token refresh/resweeps](docs/validation/2026-10-23-cloudflare-upload-fixes.md). [Re-review](docs/reviews/2026-10-23-cloudflare-rereview.md) tại headc581ccb chấp nhận code/local regressions,37selected groups PASS; actual Clerk mintedazp và resweep cost/retention còn remote gates, Cron tắt. Merge source và operational pilot approval là hai quyết định riêng.
