@@ -1,5 +1,11 @@
 # AI Agent handoff — HTML Share Platform
 
+## Independent review được đối chiếu — 2026-10-23
+
+Reviewed implementation head0a3c9d0 của Draft #23, base #22/#21. [Review response](reviews/2026-10-23-cloudflare-upload-review.md): cả R1JWT hết hạn trong upload và R2PUT đến sau terminal cleanup đều tái hiện, P2/request changes trước operational pilot. Existing19groups PASS, supplied2probes assert bug PASS; defaultJWTclockskew5000ms cũng tái hiện. Authenticated manual cleanup dọn được orphan; automatic resweep thì bỏ qua cleanup_at. Chưa sửa code. Tiếp theo sửa fresh-token provider đúng user/session + upload/request deadlines + cleanup late-write convergence, giữ idempotency/unknown-commit/reference protection và Cron tắt. Gọi lại getToken() không tham số vẫn trả captured token. Không kết luận500R2HEAD bắt buộc Paid; phân biệt internal-service limit, kiểm CPU/tổngcalls/account thật. Đọc toàn review trước sửa.
+
+Owner xác nhận đã `npx wrangler login` vào account dự kiến; phiên này không dùng credential để gọi remote hoặc xác minh namespace/resources/plan. **Khi hoàn tất dự án/bàn giao cuối phải nhắc owner chạy `npx wrangler logout` trên máy này và kiểm đã logout.** Không ghi token/credential vào docs/log/Git, không tự logout giữa các mốc triển khai. Docs review theo sau implementation0a3c9d0; exact docs head/CI kiểm GitHub. Giữ #19 riêng, #20/#10 OPEN, ADR0001/0003/0005 Proposed và lab nguyên trạng.
+
 ## Pilot path Workers/D1/R2 — 2026-10-23
 
 Mốc implementation **dcdfd0b**, branch codex/cloudflare-studio-integration, Draft #23 stacked trên #22(core3b74981) và #21(ADR77ae10a); handoff docs-only sau mốc này. [Local evidence](validation/2026-10-23-cloudflare-pilot.md), [runbook/config/failure/rollback](CLOUDFLARE_PILOT_RUNBOOK.md).90unit/19Miniflare D1-R2/identity/bridge/reconcile groups, lint/typecheck, Next16.4.2build và3Worker dry-run PASS; Chrome156/Firefox156 mỗi7groups synthetic PASS. Prod npm audit0;5dev-only inherited ESLint-chain advisories, không dùng force downgrade. Current PR head/CI kiểm GitHub; không suy3b74981 thành final head.

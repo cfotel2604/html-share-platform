@@ -1,5 +1,9 @@
 # Project status — HTML Share Platform
 
+## Review bổ sung — 2026-10-23
+
+Đối chiếu ZIP review với implementation head0a3c9d0 của Draft #23: **R1 captured-JWT expiry và R2 late-writer orphan đều xác nhận P2, cần sửa trước operational pilot**. Rerun19Cloudflare groups PASS;2supplied bug probes PASS và kiểm lại JWT với SDK default5000ms vẫn tái hiện; manual cleanup dọn được orphan nhưng automatic reconciler bỏ sót. Đây là review/docs, chưa sửa implementation; CI xanh tại reviewed heads không phủ hai race này. [Kết luận/phản biện/acceptance](reviews/2026-10-23-cloudflare-upload-review.md). #21/#22/#23 vẫn Draft, #20/#10 OPEN, không merge/provision/deploy hoặc đổi lab. Owner xác nhận Wrangler login thành công; nhắc logout tại mốc hoàn tất dự án trong handoff/runbook.
+
 ## Pilot kiến trúc mới — 2026-10-23
 
 Implementation source dcdfd0b trên Draft #23 (base #22/core3b74981, base #21/ADR77ae10a); docs-only handoff theo sau, current head/CI kiểm live. Đã có Node/Studio D1-only metadata, create-only R2/readback/guarded finalize, preview tab không iframe sau CSRF POST, đúng UI revoke-content/unsupported features, Worker health và chặn pg trong pilot. Local90unit/19D1-R2-identity-bridge groups/lint/typecheck/Next16.4.2build/3Worker dry-run PASS; Chrome156/Firefox156 mỗi7probe groups PASS; prod audit0, còn5dev-only ESLint-chain advisories. [Evidence](validation/2026-10-23-cloudflare-pilot.md), [runbook](CLOUDFLARE_PILOT_RUNBOOK.md). Reconciler dry-run/fenced retry/system audit sẵn nhưng chưa bật Cron. Không remote provisioning/deploy, không đổi lab/DNS/UFW/SQL/env. #20 còn review, #10 OPEN; ADR0001/0003/0005 Proposed.

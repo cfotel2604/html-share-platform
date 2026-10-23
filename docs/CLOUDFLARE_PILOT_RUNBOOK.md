@@ -38,7 +38,7 @@ Repeat in a separate CLI session with `--browser firefox`; install that browser 
 
 ## Real pilot configuration — separate approval required
 
-Account namespace `odsusercontent.workers.dev` has not been registered/verified in this task. Operator must first approve provisioning of independent D1/private R2/Clerk resources and choose Workers budget/limits. Full500-file finalize performs up to500R2 HEAD operations: verify the chosen paid limits or redesign verification into bounded batches before claiming full quotas on Free. Local timings cannot establish edge latency or billing cost.
+Account namespace `odsusercontent.workers.dev` has not been registered/verified in this task. Operator must first approve provisioning of independent D1/private R2/Clerk resources and choose Workers budget/limits. Full500-file finalize performs up to500R2 HEAD operations. Count native internal-service calls separately from external fetch: [current Workers limits](https://developers.cloudflare.com/workers/platform/limits/#subrequests) list1000internal-service subrequests on Free, so500R2HEAD alone does not establish a Paid requirement. Verify total R2/D1/external calls, CPU, duration and account limits; use bounded verification or a lower quota if required before claiming full500-file support on the chosen plan. Local timings cannot establish edge latency or billing cost.
 
 Create private R2 with public r2.dev/custom-bucket-domain access disabled. Scope Node S3 credentials to the pilot bucket with object access, never account Admin. No presigned GET or storage-prefix route. Native Worker bindings remain broader than GET-only code; read-only IAM gate is not satisfied by this design choice.
 
@@ -68,6 +68,8 @@ Node preflights before multipart ingest, creates an intent, validates ZIP, write
 
 `reconcileExpired(env)` defaults to **dry-run** and returns counts only. A scheduled API Worker entrypoint can invoke it with `dryRun:false`, but no Cron is configured in templates. Operator must review/approve enabling a schedule. It fences expired open/aborted intents in a guarded batch, checks absence of version/grant references, audits as disabled `system:cleanup` identity, then deletes only that intent prefix. Failure leaves an aborted intent for retry; `cleanup_at` prevents completed work from being scanned forever. Finalized/active/version-referenced/grant-referenced objects are excluded. Never replace this with a blanket R2 lifecycle rule over published prefixes.
 
+**Review hold at implementation0a3c9d0:** [R1/R2 independently reproduced](reviews/2026-10-23-cloudflare-upload-review.md). A captured Clerk JWT can expire before finalize/receipt recovery. An in-flight PUT can also finish after a sweep sets cleanup_at; subsequent automatic sweeps skip the private orphan. Authenticated manual cleanup can remove it, but automatic convergence is not implemented. Keep Cron disabled and fix fresh-session token acquisition, bounded writer/stream lifetime and safe late-write resweeps before operational pilot approval. Preserve unknown-commit objects and committed-version/preview protections.
+
 To stop the pilot, disable new Node mutations and public/preview routing after operator approval; keep D1 schema/receipts/tombstones/R2 objects. Roll back only to a tested compatible Worker/D1 version. Never redirect pilot metadata to PostgreSQL or revive old aliases. Existing lab remains independently available. Already-loaded content/in-flight requests cannot be recalled.
 
 ## Gates before any production claim
@@ -75,3 +77,7 @@ To stop the pilot, disable new Node mutations and public/preview routing after o
 Real namespace/resource/IAM/public-bypass checks; actual Clerk/OAuth/revoke/quota/outage; remote maxquota/load/concurrency/cost; real-domain Safari/iOS/Android/Zalo/crawler; complete access/error/DNS/SNI/analytics/collector redaction of preview paths; abuse/takedown and security review; rollback and limited pilot acceptance. Production uses a dedicated content domain separate from Studio's registrable domain. HTTP sandbox and relative-assets/no-persistence support restrictions are not negotiable compatibility switches.
 
 [Local evidence](validation/2026-10-23-cloudflare-pilot.md) distinguishes emulator/SDK fixtures from provider and owner evidence. #10 stays OPEN; ADR-0001/0003/0005 remain Proposed. No remote provisioning, migration or deployment was performed.
+
+## Final project handoff — local Cloudflare login
+
+Owner reported successful `npx wrangler login` on this machine on2026-10-23. Do not record or print its credentials. At project completion/final handoff, remind the owner to run `npx wrangler logout` from the project environment and verify sign-out. Review completion alone is not project completion.
