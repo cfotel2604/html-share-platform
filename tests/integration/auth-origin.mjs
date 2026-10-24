@@ -24,7 +24,7 @@ async function actor(label,role) {
   const user={id:tag+label,primaryEmailAddressId:"e",banned:false,locked:false,emailAddresses:[{id:"e",emailAddress:email,verification:{status:"verified"}}],externalAccounts:[{provider:"oauth_google",emailAddress:email}]};
   return {actor:await policy.resolveClerkActor(user),user,email};
 }
-const config={mode:"hostname",domain:"matbao.test",scheme:"https",port:"4443",viewerOrigin:"https://view.ods.test:4443",reserved:["f".repeat(32)]};
+const config={mode:"hostname",domain:"matbao.test",scheme:"https",port:"4443",previewOrigin:"https://studio.ods.test:4443",reserved:["f".repeat(32)]};
 const server=createServer(createGateway({db:pool,s3,bucket:process.env.STORAGE_BUCKET,config}));
 await new Promise(resolve=>server.listen(0,"0.0.0.0",resolve));
 const gateway=`http://127.0.0.1:${server.address().port}`;
@@ -66,14 +66,17 @@ try {
   try {await rival.query("SET lock_timeout='100ms'");await assert.rejects(rival.query("UPDATE auth_allowlist SET status='disabled' WHERE email=$1",[a.email]),error=>error.code==="55P03");}finally{rival.release();}
   await upload;await pool.query("DROP TRIGGER auth_test_pause ON site_versions");raceTrigger=false;
   passed.push("policy revocation cannot pass the mutation row lock");
-  assert.equal((await read(siteA.id)).status,200);
+  assert.equal((await read(siteA.id)).status,404,'Node is never a public reader');
+  process.env.GATEWAY_MODE="hostname";process.env.PUBLIC_SITE_DOMAIN="matbao.test";process.env.PUBLIC_SITE_SCHEME="https";process.env.PUBLIC_SITE_PORT="4443";
+  const publishedGrant=await createPreview(a.actor,siteA.id),publishedToken=new URL(publishedGrant.url).hostname.split('.')[0].split('--')[1];
+  assert.equal((await read(siteA.id,'/',publishedToken)).status,200);
   const active=(await pool.query("SELECT active_version_id FROM sites WHERE id=$1",[siteA.id])).rows[0].active_version_id;
   const objectKey=`${siteA.id}/${active}/hidden.html`;
   await s3.send(new PutObjectCommand({Bucket:process.env.STORAGE_BUCKET,Key:objectKey,Body:"private unlisted object",ContentType:"text/html"}));
-  assert.equal((await read(siteA.id,"/hidden.html")).status,404);
-  for(const path of ["/test.svg","/test.xhtml","/test.xml","/test.pdf"])assert.equal((await read(siteA.id,path)).status,404);
+  assert.equal((await read(siteA.id,"/hidden.html",publishedToken)).status,404);
+  for(const path of ["/test.svg","/test.xhtml","/test.xml","/test.pdf"])assert.equal((await read(siteA.id,path,publishedToken)).status,404);
   assert.equal((await virtualFetch(gateway+"/",{headers:headers("f".repeat(32)+".matbao.test:4443")})).status,404);
-  passed.push("hostname root serving; reserved host and active formats/unlisted objects fail closed");
+  passed.push("Node public denial; authorized preview root serving and reserved host/active formats/unlisted denial");
   await ops.setPublished(a.actor,siteA.id,false);assert.equal((await read(siteA.id)).status,404);
   process.env.GATEWAY_MODE="hostname";process.env.PUBLIC_SITE_DOMAIN="matbao.test";process.env.PUBLIC_SITE_SCHEME="https";process.env.PUBLIC_SITE_PORT="4443";
   const grant=await createPreview(a.actor,siteA.id),token=new URL(grant.url).hostname.split(".")[0].split("--")[1];
@@ -87,7 +90,9 @@ try {
   await pool.query("UPDATE site_versions SET asset_manifest=NULL WHERE id=$1",[cVersion]);assert.equal((await read(siteC.id)).status,404);
   // Restrict the fixture backfill query so deliberately unlisted objects elsewhere are untouched.
   const scoped={query:(sql,values)=>pool.query(sql.startsWith("SELECT id,site_id")?sql.replace("WHERE asset_manifest IS NULL","WHERE asset_manifest IS NULL AND id='"+cVersion+"'"):sql,values)};
-  assert.equal(await backfill(scoped,s3,process.env.STORAGE_BUCKET),1);assert.equal((await read(siteC.id)).status,200);
+  assert.equal(await backfill(scoped,s3,process.env.STORAGE_BUCKET),1);
+  const cGrant=await createPreview(b.actor,siteC.id),cToken=new URL(cGrant.url).hostname.split('.')[0].split('--')[1];
+  assert.equal((await read(siteC.id,'/',cToken)).status,200);assert.equal((await read(siteC.id)).status,404);
   await pool.query("UPDATE sites SET status='deleted' WHERE id=$1",[siteC.id]);assert.equal((await read(siteC.id)).status,404);
   passed.push("legacy manifest fingerprint verified without asset/pointer writes; deleted 404");
   console.log(JSON.stringify({result:"PASS",passed},null,2));

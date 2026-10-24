@@ -28,6 +28,7 @@ services:
       - ./tests:/app/tests:ro
     environment: &test_env
       UPLOAD_TEST_GUARD: isolated-upload-test
+      PUBLIC_CONTENT_ORIGIN: https://content.example.test
       PGHOST: db
       PGPORT: "5432"
       PGUSER: ${POSTGRES_USER:?Set POSTGRES_USER}

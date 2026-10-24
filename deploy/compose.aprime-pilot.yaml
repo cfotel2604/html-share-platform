@@ -1,0 +1,110 @@
+# Standalone A' PILOT candidate. Never overlay the existing hsp-lab project.
+# Requires owner VM-write approval and operator-provided Node secret-store env.
+name: hsp-aprime-pilot
+services:
+  db:
+    image: postgres:17-alpine
+    command: [postgres, -c, track_commit_timestamp=on]
+    environment:
+      POSTGRES_USER: ${APRIME_PG_USER:?Node secret-store PG user required}
+      POSTGRES_PASSWORD: ${APRIME_PG_PASSWORD:?Node secret-store PG password required}
+      POSTGRES_DB: hsp_aprime_pilot
+    volumes:
+      - aprime_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+  migrate:
+    image: ${APRIME_IMAGE:?Pin the reviewed candidate image}
+    pull_policy: never
+    command: [node, scripts/migrate.mjs]
+    environment: &pg
+      METADATA_BACKEND: postgres
+      PGHOST: db
+      PGPORT: "5432"
+      PGDATABASE: hsp_aprime_pilot
+      PGUSER: ${APRIME_PG_USER:?Node secret-store PG user required}
+      PGPASSWORD: ${APRIME_PG_PASSWORD:?Node secret-store PG password required}
+    depends_on:
+      db: {condition: service_healthy}
+    restart: "no"
+  web:
+    image: ${APRIME_IMAGE:?Pin the reviewed candidate image}
+    pull_policy: never
+    environment:
+      <<: *pg
+      NODE_ENV: production
+      AUTH_MODE: clerk
+      LOCAL_DEMO_MODE: "0"
+      AUTH_TRUSTED_ORIGINS: https://studio-lab.ods.vn
+      CLERK_SECRET_KEY: ${APRIME_CLERK_SECRET_KEY:?Node secret-store Clerk key required}
+      CLERK_PUBLISHABLE_KEY: ${APRIME_CLERK_PUBLISHABLE_KEY:?Clerk publishable key required}
+      PUBLIC_CONTENT_ORIGIN: https://hsp-pilot.odsusercontent.workers.dev
+      GATEWAY_MODE: hostname
+      PUBLIC_SITE_DOMAIN: lab-space-ods.cfvn.cloud
+      PUBLIC_SITE_SCHEME: https
+      PUBLIC_SITE_PORT: ""
+      SHARE_LINK_MUTATIONS_ENABLED: "true"
+      STORAGE_ENDPOINT: ${APRIME_R2_ENDPOINT:?Pin the pilot R2 endpoint}
+      STORAGE_REGION: auto
+      STORAGE_BUCKET: hsp-pilot-desktop
+      STORAGE_ACCESS_KEY: ${APRIME_R2_WRITER_ACCESS_KEY:?Node secret-store pilot bucket writer required}
+      STORAGE_SECRET_KEY: ${APRIME_R2_WRITER_SECRET_KEY:?Node secret-store pilot bucket writer required}
+    ports: ["127.0.0.1:3110:3000"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3000/api/health/live').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+    restart: unless-stopped
+  preview:
+    image: ${APRIME_IMAGE:?Pin the reviewed candidate image}
+    pull_policy: never
+    command: [node, scripts/gateway.mjs]
+    environment:
+      <<: *pg
+      GATEWAY_MODE: hostname
+      GATEWAY_INTERNAL_PORT: "4000"
+      AUTH_TRUSTED_ORIGINS: https://studio-lab.ods.vn
+      GATEWAY_PREVIEW_ORIGIN: https://studio-lab.ods.vn
+      PUBLIC_SITE_DOMAIN: lab-space-ods.cfvn.cloud
+      PUBLIC_SITE_SCHEME: https
+      PUBLIC_SITE_PORT: ""
+      STORAGE_ENDPOINT: ${APRIME_R2_ENDPOINT:?Pin the pilot R2 endpoint}
+      STORAGE_REGION: auto
+      STORAGE_BUCKET: hsp-pilot-desktop
+      STORAGE_ACCESS_KEY: ${APRIME_R2_READER_ACCESS_KEY:?Node secret-store pilot bucket reader required}
+      STORAGE_SECRET_KEY: ${APRIME_R2_READER_SECRET_KEY:?Node secret-store pilot bucket reader required}
+    ports: ["127.0.0.1:4110:4000"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:4000/health/live').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 6
+    restart: unless-stopped
+  projector:
+    image: ${APRIME_IMAGE:?Pin the reviewed candidate image}
+    pull_policy: never
+    command: [node, scripts/project-public-outbox.mjs]
+    environment:
+      <<: *pg
+      PROJECTOR_ENABLED: "1"
+      PROJECTOR_REMOTE_APPROVED: "1"
+      PROJECTOR_INTERVAL_MS: "5000"
+      PROJECTOR_REVOKE_ALERT_MS: "60000"
+      D1_PROJECTOR_ACCOUNT_ID: ${D1_PROJECTOR_ACCOUNT_ID:?Pin approved pilot account}
+      D1_PROJECTOR_DATABASE_ID: ${D1_PROJECTOR_DATABASE_ID:?Pin approved pilot database}
+      D1_PROJECTOR_API_TOKEN: ${D1_PROJECTOR_API_TOKEN:?Node secret-store D1 token required}
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    stop_grace_period: 30s
+    restart: unless-stopped
+volumes:
+  aprime_postgres:

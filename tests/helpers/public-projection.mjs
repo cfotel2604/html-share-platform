@@ -84,7 +84,12 @@ export function nodeServices(pool) {
   const links=load(new URL('../../src/lib/share-links.ts',import.meta.url));
   const run=async callback=>{
     const old=globalThis.__htmlShareS3;globalThis.__htmlShareS3=s3;
-    try{return await callback();}finally{if(old)globalThis.__htmlShareS3=old;else delete globalThis.__htmlShareS3;}
+    const priorOrigin=process.env.PUBLIC_CONTENT_ORIGIN;process.env.PUBLIC_CONTENT_ORIGIN='https://content.example.test';
+    try{return await callback();}finally{
+      if(old)globalThis.__htmlShareS3=old;else delete globalThis.__htmlShareS3;
+      if(priorOrigin===undefined)delete process.env.PUBLIC_CONTENT_ORIGIN;else process.env.PUBLIC_CONTENT_ORIGIN=priorOrigin;
+    }
   };
-  return {ops,links,run,objects};
+  const configuredOps=Object.fromEntries(Object.entries(ops).map(([name,value])=>[name,typeof value==='function'?(...args)=>run(()=>value(...args)):value]));
+  return {ops:configuredOps,links:{...links,changeShareLink:(...args)=>run(()=>links.changeShareLink(...args))},run,objects};
 }

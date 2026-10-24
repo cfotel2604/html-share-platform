@@ -14,7 +14,7 @@ const host = "127.0.0.1:3700", origin = "http://" + host;
 const s3 = new S3Client({ region: "us-east-1", endpoint: process.env.STORAGE_ENDPOINT, forcePathStyle: true,
   credentials: { accessKeyId: process.env.STORAGE_ACCESS_KEY, secretAccessKey: process.env.STORAGE_SECRET_KEY } });
 const load = tsLoader({ "./db": { db: () => pool } });
-const { changeShareLink, resolveViewerSite } = load(new URL("../../src/lib/share-links.ts", import.meta.url));
+const { changeShareLink } = load(new URL("../../src/lib/share-links.ts", import.meta.url));
 const { resolveClerkActor } = load(new URL("../../src/lib/auth-policy.ts", import.meta.url));
 const passed = [], tag = randomBytes(6).toString("hex");
 let trigger = false;
@@ -45,31 +45,32 @@ try {
   const created = await send(html()); assert.equal(created.status, 201);
   const { id } = await created.json();
   let site = (await list()).find(item => item.id === id), original = site.share_code;
-  assert.match(original, /^[A-Za-z0-9]{10}$/); assert.equal(site.share_url, "/view/" + original);
+  assert.match(original, /^[A-Za-z0-9]{10}$/); assert.equal(site.share_url, process.env.PUBLIC_CONTENT_ORIGIN+'/'+original+'/');
   const before = await snapshot(id), stored = await objects();
-  const viewer = await read(site.share_url);
-  assert.equal(viewer.status, 200); assert.match(await viewer.text(), /sandbox="allow-scripts"/);
+  const viewer = await read('/view/'+original);
+  assert.equal(viewer.status, 404);
   assert.match(viewer.headers.get("cache-control"), /no-store/);
   assert.equal(viewer.headers.get("referrer-policy"), "no-referrer"); assert.equal(viewer.headers.get("set-cookie"), null);
-  assert.equal((await read("/" + original)).status, 200);
+  assert.equal((await read("/" + original)).status, 404);
   for (const path of ["/view/" + id, "/" + id, "/view/invalid"])
     assert.equal((await read(path)).status, 404);
   const flipped = original.replace(/[A-Za-z]/, char => char === char.toLowerCase() ? char.toUpperCase() : char.toLowerCase());
   if (flipped !== original) assert.equal((await read("/view/" + flipped)).status, 404);
   assert.equal((await send(html(), id)).status, 200);
   assert.equal((await list()).find(item => item.id === id).share_code, original);
-  passed.push("HTTP canonical short viewer, exact case/no cookie/no-store/sandbox, old ID aliases 404, version update keeps code");
+  passed.push("direct Worker share URL; Node viewer/code/ID aliases404/noCookie/noStore, update keeps code");
 
   const activeBeforeRotation = await snapshot(id), keysBeforeRotation = await objects();
   const rotated = await share(id); assert.equal(rotated.status, 200);
   let current = await rotated.json();
   assert.notEqual(current.share_code, original); assert.equal((await read("/view/" + original)).status, 404);
-  assert.equal((await read(current.share_url)).status, 200);
+  assert.equal(current.share_url,process.env.PUBLIC_CONTENT_ORIGIN+'/'+current.share_code+'/');
+  assert.equal((await pool.query('SELECT code FROM site_share_links WHERE site_id=$1 AND revoked_at IS NULL',[id])).rows[0].code,current.share_code);
   assert.deepEqual(await snapshot(id), activeBeforeRotation); assert.deepEqual(await objects(), keysBeforeRotation);
   const direct = await fetch(gateway + "/s/" + id + "/", { headers: { Host: "127.0.0.1:4700" } });
-  assert.equal(direct.status, 200);
+  assert.equal(direct.status, 404);
   assert.equal((await share(id, "DELETE")).status, 200);
-  assert.equal((await read(current.share_url)).status, 404);
+  assert.equal((await pool.query('SELECT 1 FROM site_share_links WHERE site_id=$1 AND revoked_at IS NULL',[id])).rowCount,0);
   assert.equal((await send(html(), id)).status, 200);
   assert.equal((await list()).find(item => item.id === id).share_url, null);
   for (const published of [false, true]) {
@@ -77,11 +78,11 @@ try {
     assert.equal((await list()).find(item => item.id === id).share_code, null);
   }
   current = await (await share(id)).json();
-  assert.notEqual(current.share_code, original); assert.equal((await read(current.share_url)).status, 200);
+  assert.notEqual(current.share_code, original); assert.equal(current.share_url,process.env.PUBLIC_CONTENT_ORIGIN+'/'+current.share_code+'/');
   assert.equal((await share(id, "POST", { ...headers, Origin: "https://attacker.invalid" })).status, 403);
   assert.equal((await share(id, "DELETE", { Host: host, Origin: origin })).status, 401);
   assert.equal((await share("invalid")).status, 400);
-  passed.push("rotate/revoke/reissue atomic; host/storage/pointer unchanged; direct content stays public; update/republish do not resurrect links; CSRF/guest denied");
+  passed.push("rotate/revoke/reissue atomic in PostgreSQL; Worker URL/no Node public fallback; storage/pointer unchanged; no resurrection/CSRF/guest");
 
   const foreignEmail = tag + ".foreign@example.test";
   await pool.query("INSERT INTO auth_allowlist(email,role) VALUES($1,'employee')", [foreignEmail]);
@@ -109,7 +110,7 @@ try {
     assert.equal(await allocateShareCode(client, foreign, () => ++attempts === 1 ? foreignCode : fresh), fresh);
     assert.equal(attempts, 2); await client.query("COMMIT");
   } finally { client.release(); }
-  assert.equal(await resolveViewerSite(foreignCode), null);
+  assert.equal((await read('/view/'+foreignCode)).status,404);
   await assert.rejects(changeShareLink(actor, id, "rotate"), error => error.status === 404);
   await pool.query("UPDATE auth_allowlist SET status='disabled' WHERE email=$1", [foreignEmail]);
   await assert.rejects(changeShareLink(actor, foreign, "revoke"), error => error.status === 403);
@@ -125,13 +126,17 @@ try {
   await pool.query("CREATE OR REPLACE FUNCTION share_test_fail_audit() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.action='site.share.rotate' THEN RAISE EXCEPTION 'synthetic audit failure'; END IF; RETURN NEW; END $$");
   await pool.query("CREATE TRIGGER share_test_fail_audit BEFORE INSERT ON audit_events FOR EACH ROW EXECUTE FUNCTION share_test_fail_audit()"); trigger = true;
   const failed = await share(id); assert.equal(failed.status, 500); assert.ok(!(await failed.text()).includes("synthetic audit failure"));
-  assert.equal((await read("/view/" + original)).status, 200);
+  assert.equal((await pool.query('SELECT code FROM site_share_links WHERE site_id=$1 AND revoked_at IS NULL',[id])).rows[0].code,original);
   await pool.query("DROP TRIGGER share_test_fail_audit ON audit_events"); trigger = false;
   const raced = await Promise.all([share(id), share(id)]);
   const results = await Promise.all(raced.map(async response => { assert.equal(response.status, 200); return response.json(); }));
   const live = (await pool.query("SELECT code FROM site_share_links WHERE site_id=$1 AND revoked_at IS NULL", [id])).rows;
   assert.equal(live.length, 1);
-  for (const result of results) assert.equal((await read(result.share_url)).status, result.share_code === live[0].code ? 200 : 404);
+  for (const result of results){
+    assert.equal(result.share_url,process.env.PUBLIC_CONTENT_ORIGIN+'/'+result.share_code+'/');
+    const storedLink=(await pool.query('SELECT revoked_at FROM site_share_links WHERE code=$1',[result.share_code])).rows[0];
+    assert.equal(storedLink.revoked_at===null,result.share_code===live[0].code);
+  }
   passed.push("audit failure rollback preserves old link; competing rotations serialize to exactly one active code");
 
   const wrapper = { connect: async () => {

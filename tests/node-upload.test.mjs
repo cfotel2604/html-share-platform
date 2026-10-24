@@ -6,6 +6,8 @@ import { tsLoader } from './helpers/load-ts.mjs';
 import { zipBytes } from './helpers/zip.mjs';
 
 test('Node validates and reads back all 500 ZIP files before PostgreSQL activation/commit with no Workers', async t => {
+  const priorOrigin=process.env.PUBLIC_CONTENT_ORIGIN;process.env.PUBLIC_CONTENT_ORIGIN='https://content.example.test';
+  t.after(()=>{if(priorOrigin===undefined)delete process.env.PUBLIC_CONTENT_ORIGIN;else process.env.PUBLIC_CONTENT_ORIGIN=priorOrigin;});
   t.mock.method(globalThis, 'fetch', () => assert.fail('unexpected Worker/D1 request'));
   const old = globalThis.__htmlShareS3;
   t.after(() => { if (old) globalThis.__htmlShareS3 = old; else delete globalThis.__htmlShareS3; });
@@ -39,4 +41,21 @@ test('Node validates and reads back all 500 ZIP files before PostgreSQL activati
   assert.equal(result.fileCount, 500); assert.equal(puts, 500); assert.equal(gets, 500);
   assert.equal(queries.at(-1), 'COMMIT');
   for (const asset of manifest) { assert.match(asset.sha256, /^[a-f0-9]{64}$/); assert.match(asset.etag, /^[a-f0-9]{32}$/); }
+});
+
+test('missing public origin rolls back before object writes; emergency unpublish still commits',async t=>{
+  const priorOrigin=process.env.PUBLIC_CONTENT_ORIGIN;delete process.env.PUBLIC_CONTENT_ORIGIN;
+  t.after(()=>{if(priorOrigin===undefined)delete process.env.PUBLIC_CONTENT_ORIGIN;else process.env.PUBLIC_CONTENT_ORIGIN=priorOrigin;});
+  t.mock.method(globalThis,'fetch',()=>assert.fail('Unexpected provider request'));
+  const old=globalThis.__htmlShareS3;globalThis.__htmlShareS3={send:()=>assert.fail('Storage before configuration validation')};
+  t.after(()=>{if(old)globalThis.__htmlShareS3=old;else delete globalThis.__htmlShareS3;});
+  const queries=[];let actorChecks=0;
+  const client={query:async sql=>{queries.push(sql);return {rowCount:1,rows:[]};},release(){}};
+  const ops=tsLoader({'./db':{db:()=>({connect:async()=>client})},'./auth-policy':{lockActor:async(_client,actor)=>{actorChecks++;return actor;}}})(new URL('../src/lib/site-ops.ts',import.meta.url));
+  const actor={id:'synthetic',role:'employee',mode:'clerk'},id='a'.repeat(32);
+  await assert.rejects(ops.uploadVersion(actor,new File(['<p>synthetic</p>'],'index.html'),'Synthetic',id),/PUBLIC_CONTENT_ORIGIN/);
+  assert.equal(queries.at(-1),'ROLLBACK');assert.ok(!queries.includes('COMMIT'));
+  await ops.setPublished(actor,id,false);assert.equal(queries.at(-1),'COMMIT');
+  await assert.rejects(ops.setPublished(actor,id,true),/PUBLIC_CONTENT_ORIGIN/);assert.equal(queries.at(-1),'ROLLBACK');
+  assert.equal(actorChecks,3);
 });

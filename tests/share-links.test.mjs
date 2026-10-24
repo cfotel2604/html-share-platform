@@ -17,31 +17,31 @@ test("CSPRNG codes have the exact public format; allocation retries reserved cod
   assert.equal(attempts, 10);
 });
 
-test("canonical viewer links use only short codes and never fall back to host IDs", t => {
-  const prior = process.env.VIEWER_PUBLIC_ORIGIN;
-  t.after(() => { if (prior === undefined) delete process.env.VIEWER_PUBLIC_ORIGIN; else process.env.VIEWER_PUBLIC_ORIGIN = prior; });
+test("canonical public links require an HTTPS Worker origin without Node fallback", t => {
+  const keys=['PUBLIC_CONTENT_ORIGIN','AUTH_TRUSTED_ORIGINS'],prior=Object.fromEntries(keys.map(k=>[k,process.env[k]]));
+  t.after(()=>{for(const key of keys){if(prior[key]===undefined)delete process.env[key];else process.env[key]=prior[key];}});
   const { shareUrl } = tsLoader()(new URL("../src/lib/public-url.ts", import.meta.url));
-  delete process.env.VIEWER_PUBLIC_ORIGIN;
-  assert.equal(shareUrl("AbC123xYz9"), "/view/AbC123xYz9");
+  delete process.env.PUBLIC_CONTENT_ORIGIN;
+  assert.throws(()=>shareUrl('AbC123xYz9'),/PUBLIC_CONTENT_ORIGIN is required/);
   assert.equal(shareUrl(null), null);
-  assert.throws(() => shareUrl("a".repeat(32)), /Invalid viewer/);
-  process.env.VIEWER_PUBLIC_ORIGIN = "https://view-lab.ods.vn";
-  assert.equal(shareUrl("AbC123xYz9"), "https://view-lab.ods.vn/AbC123xYz9");
+  assert.throws(() => shareUrl("a".repeat(32)), /Invalid share/);
+  process.env.PUBLIC_CONTENT_ORIGIN='https://content.example.test';
+  assert.equal(shareUrl('AbC123xYz9'),'https://content.example.test/AbC123xYz9/');
 });
 
-test("invalid viewer aliases are rejected without a database lookup", async () => {
-  const { resolveViewerSite } = tsLoader({ "./db": { db: () => assert.fail("Invalid alias reached DB") } })(new URL("../src/lib/share-links.ts", import.meta.url));
-  for (const code of ["a".repeat(32), "", "short", "a".repeat(11), "ABC123_/..", "áBC123xYz9"])
-    assert.equal(await resolveViewerSite(code), null);
+test('public origin rejects HTTP, credentials, paths and shared registrable/private-suffix domains',t=>{
+  const keys=['PUBLIC_CONTENT_ORIGIN','AUTH_TRUSTED_ORIGINS'],prior=Object.fromEntries(keys.map(k=>[k,process.env[k]]));
+  t.after(()=>{for(const key of keys){if(prior[key]===undefined)delete process.env[key];else process.env[key]=prior[key];}});
+  const {shareUrl}=tsLoader()(new URL('../src/lib/public-url.ts',import.meta.url));
+  process.env.AUTH_TRUSTED_ORIGINS='https://studio.ods.test,https://studio.tenant.github.io';
+  for(const origin of ['http://content.example.test','https://content.example.test/path','https://u:p@content.example.test','https://content.ods.test','https://files.tenant.github.io']){
+    process.env.PUBLIC_CONTENT_ORIGIN=origin;assert.throws(()=>shareUrl('AbC123xYz9'),/Unsafe/);
+  }
 });
 
-test("viewer request budget returns a retry interval and recovers next window", () => {
-  const { createViewerLimiter } = tsLoader()(new URL("../src/lib/viewer-limit.ts", import.meta.url));
-  let time = 0;
-  const check = createViewerLimiter(2, 60_000, () => time);
-  assert.equal(check(), 0); assert.equal(check(), 0); assert.equal(check(), 60);
-  time = 59_500; assert.equal(check(), 1);
-  time = 60_000; assert.equal(check(), 0);
+test('Node URL formatter cannot emit a public gateway URL without a preview grant',()=>{
+  const {previewSiteUrl}=tsLoader()(new URL('../src/lib/public-url.ts',import.meta.url));
+  assert.throws(()=>previewSiteUrl('a'.repeat(32)),/Invalid preview/);
 });
 
 test("share API rejects guest, CSRF and invalid ID before any share mutation", async t => {

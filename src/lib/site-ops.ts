@@ -5,7 +5,7 @@ import { fingerprint, parseSite } from "./upload";
 import { UploadError } from "./upload-error";
 import { lockActor, type Actor } from "./auth-policy";
 import { createHash } from "node:crypto";
-import { shareUrl } from "./public-url";
+import { shareUrl, publicContentOrigin } from "./public-url";
 import { allocateShareCode } from "../../scripts/share-codes.mjs";
 
 export async function assertSiteOwner(actor: Actor, id: string) {
@@ -42,6 +42,7 @@ export async function uploadVersion(actor: Actor, file: File, name: string, exis
       );
       await allocateShareCode(client, id);
     }
+    publicContentOrigin(); // Fail bad public configuration before any object side effect.
     // Existing-site ownership is locked before ZIP ingest and every storage side effect.
     let assets;
     try { assets = await parseSite(file); } catch (error) {
@@ -138,6 +139,7 @@ export async function setPublished(actor: Actor, id: string, published: boolean)
       [id, current.id, status, current.role],
     );
     if (!result.rowCount) throw new UploadError("Không tìm thấy website", 404);
+    if (published) publicContentOrigin(); // Revoke/unpublish remain available during config failure.
     await client.query(`INSERT INTO audit_events(actor_id,action,target_type,target_id) VALUES($1,$2,'site',$3)`,
       [current.id, published ? "site.publish" : "site.unpublish", id]);
     await client.query("COMMIT");

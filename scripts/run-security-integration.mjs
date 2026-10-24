@@ -7,7 +7,7 @@ const root=fileURLToPath(new URL("..",import.meta.url));
 const envFile=resolve(root,"tmp/security-check.env");mkdirSync(resolve(root,"tmp"),{recursive:true});
 if(!existsSync(envFile)) {
   const random=()=>randomBytes(32).toString("hex");
-  writeFileSync(envFile,`# Isolated security tests only\nPOSTGRES_USER=upload_test\nPOSTGRES_DB=upload_test\nPOSTGRES_PASSWORD=${random()}\nMINIO_ROOT_USER=security_test\nMINIO_ROOT_PASSWORD=${random()}\nLOCAL_DEMO_MODE=1\nLOCAL_DEMO_PASSWORD=${random()}\nLOCAL_DEMO_SESSION_SECRET=${random()}\nAPP_PORT=3700\nGATEWAY_PORT=4700\n`,{mode:0o600});
+  writeFileSync(envFile,`# Isolated security tests only\nPOSTGRES_USER=upload_test\nPOSTGRES_DB=upload_test\nPOSTGRES_PASSWORD=${random()}\nMINIO_ROOT_USER=security_test\nMINIO_ROOT_PASSWORD=${random()}\nLOCAL_DEMO_MODE=1\nLOCAL_DEMO_PASSWORD=${random()}\nLOCAL_DEMO_SESSION_SECRET=${random()}\nAPP_PORT=3700\nGATEWAY_PORT=4700\nPUBLIC_CONTENT_ORIGIN=https://content.example.test\n`,{mode:0o600});
 }
 if(!/^POSTGRES_DB=upload_test$/m.test(readFileSync(envFile,"utf8"))) throw new Error("Refuse non-test database config");
 const env={...process.env,UPLOAD_TEST_IMAGE:process.env.UPLOAD_TEST_IMAGE??"html-share-security:ci"};
