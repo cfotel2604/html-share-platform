@@ -44,17 +44,44 @@ Requests: `GET /accounts/{account}/d1/database/{database}`, then two read-only D
 
 This is direct evidence of the current pilot replication setting and primary metadata read. It does not prove that migration 0004 is remotely applied or that the future #36 Worker reads primary. [Cloudflare's replication documentation](https://developers.cloudflare.com/d1/best-practices/read-replication/) confirms that base-binding queries without Sessions use primary. [Database-details API](https://developers.cloudflare.com/api/resources/d1/subresources/database/methods/get/) defines `disabled` as no replicas. Recheck both configuration and the deployed query path at #36/#38.
 
+## Owner-authorized remote application — 14:19 Asia/Saigon
+
+Owner explicitly approved only migration 0004 and read-only verification for Issue #32 / PR #39. Authorization excluded source merge, Worker deployment, VM/Docker changes and legacy provisioning scripts. The applied SQL and migration-only configuration came from the reviewed branch at `9f27104bd7575624f15ae17f45c7b20e23fb1bb8`; application/schema implementation remains `b18d2a2`.
+
+All required preconditions were rechecked immediately before the single apply command:
+
+- Authenticated account, database ID/name and private migration-only config matched the existing private ownership receipt for `hsp-pilot-desktop`.
+- Live `read_replication.mode` was `disabled`.
+- SQL SHA-256 was exactly `346782e2083574601b709a1b2e254e5e250d39bb5f4b5e9f39458980f7992aed`.
+- The migration directory contained only `0004_public_read_model.sql`; `d1 migrations list --remote` listed only that file as pending. The file hash, private config, database identity/policy and pending list were checked again after capturing the legacy baseline.
+
+The one authorized write used Wrangler 4.152.0: `d1 migrations apply hsp-pilot-desktop --remote --config <private-migration-only-config>`. Output/credentials and private IDs were suppressed. An initial invocation from a worktree without the Wrangler CLI stopped before checks/writes; the corrected tooling-directory invocation performed all guards successfully. No failed condition was bypassed and no apply retry was made.
+
+Readback completed at **2026-10-24 14:19:04 Asia/Saigon** (`2026-10-24T07:19:04.966Z`):
+
+| Read-only verification | Result |
+| --- | --- |
+| Apply acknowledgment | Successful |
+| `public_read_model` | Exists, exactly seven expected columns, **0 rows** |
+| `d1_migrations` | 0001/0002/0003 unchanged; exactly one new entry `0004_public_read_model.sql` |
+| Legacy schema and data | **11 legacy tables**, complete before/after row counts and SHA-256 fingerprints identical; old schema fingerprint identical |
+| Replication / pending migrations | `disabled` / none |
+
+Legacy values were read only in memory to compute deterministic fingerprints, never printed or persisted as raw rows. The private receipt stores only identity/config references, schema/data fingerprints, counts, timestamps and migration verification metadata outside Git; no credentials or uploaded bytes are included. D1 bookkeeping internals were excluded from the legacy comparison; all pre-existing migration-ledger rows were compared separately and unchanged.
+
+No Worker/VM/Docker/provision/deploy/merge command ran. The new read model remains empty, with no projector or serving cutover. Legacy management tables remain intentionally retained; this operation does not satisfy the later whole-database minimization or pilot-release gates.
+
 ## Acceptance and open gates
 
 | Issue #32 acceptance | Evidence/state |
 | --- | --- |
-| Empty D1 and existing pilot additive migration | Local D1 both PASS; real remote 0004 application/readback **not yet verified**, pending owner authorization |
+| Empty D1 and existing pilot additive migration | Local D1 both PASS; owner-authorized real pilot 0004 application/readback PASS at 14:19:04 |
 | Only ADR-0006 public fields in the new schema | PASS; seven columns and four closed asset fields; old management schema is a fixture/retained legacy data only |
 | Primary/no-replica configuration evidence | Live pilot `disabled` and `served_by_primary: true`, read-only; future Worker execution remains #36/#38 |
 | Lookup and stale-event tombstone protection | PASS in both local D1 variants |
 
-No owner acceptance is claimed. Keep Issue #32 open and the PR Draft until the remote migration gate is resolved. Projector/lag/revoke propagation #33, rebuild #34, Node changes #35, single public Worker #36, old PR disposition #37 and pilot approval #38 remain separate. #10 remains open for release/security gates and production approval.
+All technical acceptance checks for #32 now have evidence. Keep Issue #32 open and PR #39 Draft for owner source review/merge decision; the remote approval did not authorize either changing the PR to Ready or merging it. Projector/lag/revoke propagation #33, rebuild #34, Node changes #35, single public Worker #36, old PR disposition #37 and pilot approval #38 remain separate. #10 remains open for release/security gates and production approval. Existing three CI checks at `9f27104` were successful; this follow-up changes documentation only and its latest-head checks are recorded on PR #39.
 
 Build surfaced inherited Next.js `16.4.0` advisories in `npm audit`; Next and transitive Zod `4.6.5` both match `main`. The final audit reports two affected packages (Next critical, Zod high); no Miniflare/Undici finding remains after the scoped test-dependency override. A successful build retry does not resolve the application risk. [Issue #40](https://github.com/cfotel2604/html-share-platform/issues/40) tracks remediation separately. No unsafe audit fix or framework upgrade was run. CI at the latest PR head must be checked independently from these local implementation checks.
 
-Rollback for this PR keeps the additive table and its migration ledger entry and leaves serving unchanged. Do not delete tombstones/data, replay legacy migrations, run old provisioning scripts or merge the superseded PR stack. [Remote preflight and rollout steps](../D1_PUBLIC_READ_MODEL.md) are ready for owner review before applying 0004.
+Rollback for this PR keeps the additive table and its migration ledger entry and leaves serving unchanged. Do not delete tombstones/data, replay legacy migrations, run old provisioning scripts or merge the superseded PR stack. The [remote preflight/application procedure](../D1_PUBLIC_READ_MODEL.md) has now been executed once for pilot 0004; do not reapply it on a resumed session.
