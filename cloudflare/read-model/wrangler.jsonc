@@ -1,0 +1,14 @@
+// Migration-only local template. This defines no Worker or deployment entry point.
+// For a remote run, use a private config with the verified account/database IDs.
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "d1_databases": [
+    {
+      "binding": "PUBLIC_READ_MODEL",
+      "database_name": "hsp-read-model-local",
+      "database_id": "00000000-0000-0000-0000-000000000032",
+      "migrations_dir": "migrations",
+      "migrations_table": "d1_migrations"
+    }
+  ]
+}
