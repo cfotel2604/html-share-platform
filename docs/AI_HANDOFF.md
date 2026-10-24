@@ -1,5 +1,22 @@
 # AI Agent handoff — HTML Share Platform
 
+> Phiên **2026-10-24 (Asia/Saigon)** — Issue #32 / [Draft PR #39](https://github.com/cfotel2604/html-share-platform/pull/39), implementation `b18d2a23d5ee9de4b55b195daf1d96fbb8215ea4`, branch `feat/32-d1-public-read-model` từ `origin/main` `8ce25b1` (PR #30 MERGED). [Validation](validation/2026-10-24-d1-read-model.md), [contract/migration](D1_PUBLIC_READ_MODEL.md). Mục22/10 bên dưới là bằng chứng lịch sử; không suy ra runtime hoặc GitHub hiện tại.
+
+## Tiếp tục Issue #32 / kiến trúc A'
+
+1. Đọc `AGENTS.md`, [ADR-0006](adr/0006-postgresql-source-of-truth-d1-public-read-model.md), [Agent Guide](D1_READ_MODEL_AGENT_GUIDE.md), [plan](D1_READ_MODEL_PLAN.md) và các ADR/bối cảnh theo thứ tự hướng dẫn. Kiểm live refs/PR/Issues. ADR-0005 chưa ở main; đã đọc phần serving từ PR #21 `77ae10a`, ghi provenance trong PR39/validation. PostgreSQL là nguồn sự thật; không dùng lại đường API Worker/D1-primary/preview Worker của stack cũ.
+2. Worktree phiên này: `C:\Users\admin\.codex\worktrees\32-d1-read-model\html-share-platform`. Primary owner checkout vẫn main78cb7ca, chậm55 commit so `origin/main` tại startup; không reset/clean/switch nó. Các worktree owner, untracked/private env và Docker volumes được giữ nguyên. Chưa thay lab VM/Desktop runtime, provider resources hoặc deploy bất kỳ Worker nào.
+3. Đã làm đúng phạm vi #32: D1 read model7trường, additive0004 độc lập từ legacy0001–0003, manifest4trường/asset, exact-case indexed lookup và projection UPSERT có guard. Revoked là tombstone vĩnh viễn; SQL/triggers chặn replay ghi lùi, reassignment và DELETE. Empty read model không import dữ liệu quản trị legacy; projector/rebuild thuộc #33/#34.
+4. **Agent-checked local ở b18d2a2:** 94/94unit (8D1/workerd) PASS; lint/typecheck/docs/YAML/diff PASS; Wrangler4.152.0 local apply0004 PASS, lần2 không còn migration pending. D1 tests áp schema trống và legacy fixture có dữ liệu tổng hợp, đối chiếu giữ nguyên tất cả bảng/dòng cũ. Build retry/standalone packaging PASS nhưng Next16.4.0 vẫn cảnh báo security; [Issue #40](https://github.com/cfotel2604/html-share-platform/issues/40) theo dõi Next/Zod kế thừa main. Không chạy upgrade ngoài phạm vi.
+5. **Agent-checked live chỉ đọc13:41:50 ngày24/10:** private receipt/account/database khớp; D1 `hsp-pilot-desktop` replication disabled; SELECTmetadata `served_by_primary=true`, `changed_db=false`; ledger0001/0002/0003, chưa áp0004. Không in credentials, IDs riêng, identities, codes hoặc bytesupload. Đây là setting hiện tại của pilot, chưa phải bằng chứng futureWorker#36.
+6. **Còn mở:** PR39 Draft/#32 OPEN. Cần owner duyệt áp0004 remote và readback trước khi hoàn tất acceptance; migration-only config/runbook có sẵn trong contract. Không chạy `cloudflare-pilot.mjs --provision` hoặc deploy từ PR21–29. CI ở head mới xem PR Checks; local results của b18d2a2 không tự thành CI evidence cho head sau.
+
+Quy trình remote đã chuẩn bị: xác minh account/database từ private receipt, dùng private Wrangler config trỏ tuyệt đối tới `cloudflare/read-model/migrations` của PR39, giữ ledger `d1_migrations`, list phải chỉ có0004 pending. Chỉ apply `--remote` sau chỉ dẫn owner. Migration additive không thay dữ liệu cũ và bắt đầu bảng mới rỗng; source of truth vẫn PostgreSQL. Rollback giữ table/ledger/tombstones và serving hiện tại; không xóa/replaylegacy hoặc bật D1-primary writers. Dữ liệu quản trị cũ còn trên pilot chưa đáp ứng data-minimization gate, cần quyết định retirement/cutover ở#35/#37/#38.
+
+GitHub đã kiểm: PR30 MERGED; PR19/21/22/23/24/27/29 vẫn Draft; Issues10/20/25/26/28 và31–38 OPEN tại startup; security40 tạo từ audit trong phiên. Không đóng/sửa disposition các PR/Issues cũ. Sau #32 đạt gate và merge: #33 transactional outbox/projector; #34 rebuild; #35 Node quản trị; #36 một Worker public; #37 disposition/tài liệu; #38 pilot acceptance. #10 vẫn giữ release/production decision. Không tự mở rộng #32 hoặc triển khai runtime để bù acceptance chưa được giao quyền.
+
+## Bàn giao lab/merge lịch sử — 2026-10-22
+
 > Bàn giao **2026-10-22 (Asia/Saigon)** sau merge theo owner giao. Chuỗi #5 → UI#17 → #13 → #15 đã vào main; mốc tích hợp code `0c17a09b68960d785f8b67b2a1585b0f3af919b8`. Lab đã nghiệm thu, giữ source/web dc7560e và gateway security-417c50d; không deploy/migrate/backfill trong mốc merge. [Status](PROJECT_STATUS.md), [lab](LAB_HANDOFF.md), [merge record](MERGE_PLAN.md), [review/CI](reviews/2026-10-22-stack-merged.md).
 
 ## Bắt đầu phiên tiếp theo

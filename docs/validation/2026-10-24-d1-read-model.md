@@ -1,6 +1,6 @@
 # Issue #32 — D1 public read model validation
 
-2026-10-24 (Asia/Saigon), Issue #32 / Epic #31. Base `origin/main` is PR #30 merge `8ce25b1eacb69ee6b9d938b80a04033920f8c71f`; branch `feat/32-d1-public-read-model`. [Contract/migration](../D1_PUBLIC_READ_MODEL.md), [ADR-0006](../adr/0006-postgresql-source-of-truth-d1-public-read-model.md).
+2026-10-24 (Asia/Saigon), Issue #32 / Epic #31 / [Draft PR #39](https://github.com/cfotel2604/html-share-platform/pull/39). Base `origin/main` is PR #30 merge `8ce25b1eacb69ee6b9d938b80a04033920f8c71f`; branch `feat/32-d1-public-read-model`, implementation `b18d2a23d5ee9de4b55b195daf1d96fbb8215ea4`. [Contract/migration](../D1_PUBLIC_READ_MODEL.md), [ADR-0006](../adr/0006-postgresql-source-of-truth-d1-public-read-model.md).
 
 ## Sources and scope
 
@@ -20,7 +20,7 @@ Runtime: Windows, Node `v24.20.0`, Python `3.12.10`, Miniflare `5.20261019.2-bet
 | `npm test` | 94/94 PASS (86 existing + 8 D1 tests) |
 | `npm run lint` / `npm run typecheck` | PASS |
 | `npm run build` | Compiles/types/pages PASS; first run stopped on inherited Next security advisory; retry and standalone packaging PASS with the advisory still present |
-| Wrangler `d1 migrations apply … --local` | 0004 applied on a new empty local database; 7 SQL commands PASS |
+| Wrangler `d1 migrations apply … --local` | 0004 applied on a new empty local database; 7 SQL commands PASS; repeat reports no migrations pending |
 
 D1 cases cover: exact seven-column schema, binary indexed code lookup, empty database migration, additive upgrade preserving all old schema/rows, wrong-case/unknown/host-ID denial, publish/update/unpublish/re-publish, equal/older replay, terminal revoke even against newer publish, rotation to a new code, identity reassignment/DELETE denial, closed manifest shape/types, 500 vs 501 assets and total size cap. Invalid updates leave the prior snapshot intact. These are SQL-contract tests, not a Worker serving or projector propagation measurement.
 
@@ -55,6 +55,6 @@ This is direct evidence of the current pilot replication setting and primary met
 
 No owner acceptance is claimed. Keep Issue #32 open and the PR Draft until the remote migration gate is resolved. Projector/lag/revoke propagation #33, rebuild #34, Node changes #35, single public Worker #36, old PR disposition #37 and pilot approval #38 remain separate. #10 remains open for release/security gates and production approval.
 
-Build surfaced inherited Next.js `16.4.0` advisories in `npm audit`; it is unchanged from `main`. A successful retry does not resolve that risk. Track remediation separately rather than changing application dependencies in this schema PR. No unsafe audit fix or framework upgrade was run.
+Build surfaced inherited Next.js `16.4.0` advisories in `npm audit`; Next and transitive Zod `4.6.5` both match `main`. The final audit reports two affected packages (Next critical, Zod high); no Miniflare/Undici finding remains after the scoped test-dependency override. A successful build retry does not resolve the application risk. [Issue #40](https://github.com/cfotel2604/html-share-platform/issues/40) tracks remediation separately. No unsafe audit fix or framework upgrade was run. CI at the latest PR head must be checked independently from these local implementation checks.
 
 Rollback for this PR keeps the additive table and its migration ledger entry and leaves serving unchanged. Do not delete tombstones/data, replay legacy migrations, run old provisioning scripts or merge the superseded PR stack. [Remote preflight and rollout steps](../D1_PUBLIC_READ_MODEL.md) are ready for owner review before applying 0004.
