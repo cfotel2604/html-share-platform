@@ -1,14 +1,14 @@
 # Project status — HTML Share Platform
 
-> **2026-10-24 — Issue #34 / [Draft PR #43](https://github.com/cfotel2604/html-share-platform/pull/43)**. Base main `a98a1d62e9a2a51b841e548792979e712190774d`; live PR42 MERGED sau owner báo, #33 vẫn OPEN cho pilot. Source `413a8137747210122999ec2f03cef17090c464dc`. Snapshot Draft42/heartbeat bên dưới là lịch sử, đã bị thay thế.
+> **2026-10-24 — Issue #34 / [Draft PR #43](https://github.com/cfotel2604/html-share-platform/pull/43)**. Base main `a98a1d62e9a2a51b841e548792979e712190774d`; live PR42 MERGED sau owner báo, #33 vẫn OPEN cho pilot. Source `78fcb63dac63e34f92aae156ba868a2a9a00cd18`. Snapshot Draft42/heartbeat bên dưới là lịch sử, đã bị thay thế.
 
 ## A'-3 — Rebuild / reconciliation
 
 CLI Node operator-only có dry-run diff redacted/fingerprint; apply bắt buộc plan đã review và Admin/allowlist hợp lệ. Rebuild toàn bộ code/tombstones hoặc reconcile phần lệch bằng outbox mới có audit rồi dùng lại projector guarded/throttle. Read và write chia sẻ slot5giây; paging20rows,100codes/event, giới hạn bộ nhớ và chặn invariant conflicts/source race. Không alternate D1 SQL writer, không sửa applied migration/contract, không thay UI/Worker. [Runbook](READ_MODEL_RECOVERY.md), [validation](validation/2026-10-24-read-model-recovery.md).
 
-**Agent-checked `413a813`:** cả4CI SUCCESS,142unit/lint/typecheck/build,5nhóm real PostgreSQL/outbox/recovery và security integration kế thừa500file/RBAC/ownership/audit/preview/origin. Local12recovery tests PASS gồm D1trống/driftrepair/legacy101tombstones/paging/source races/quyền/throttle. Standalone disabled/SQL packaging và docs/YAML/diff PASS. #40 Next security nudge kế thừa giữ riêng; dependency versions không đổi.
+**Agent-checked `78fcb63`:** cả4CI SUCCESS,142unit/lint/typecheck/build,5nhóm real PostgreSQL/outbox/recovery và security integration kế thừa500file/RBAC/ownership/audit/preview/origin. Local12recovery tests PASS gồm D1trống/driftrepair/legacy101tombstones/paging/source races/quyền/throttle. Owner cho phép1agent độc lập đọc/thực thi runbook; reader đạt12/12local tại đúng head này, không ambiguity cản chạy, receipt/giới hạn ở validation. Standalone disabled/SQL packaging và docs/YAML/diff PASS. #40 Next security nudge kế thừa giữ riêng; dependency versions không đổi.
 
-**Còn mở:** người/agent thứ hai thực thi runbook chưa có bằng chứng; actual pilot rebuild/reconcile/R2live/Worker404 và60giây chưa được coi là acceptance. Không ghi/đọc D1remote trong34, không VM/localDocker/ownerprivatefiles/worktrees/deploy. Recovery có thể dừng sau những chunk đã commit/audit khi có race/lỗi; giữ queue và replan, không xóa. Conflicts identity/tombstone/target-ahead/unknown-code cần owner recovery plan riêng.
+**Còn mở:** actual pilot rebuild/reconcile/R2live/Worker404 và60giây chưa được coi là acceptance. Independent-reader local gate đã đạt, không thay remote acceptance. Không ghi/đọc D1remote trong34, không VM/localDocker/ownerprivatefiles/worktrees/deploy. Recovery có thể dừng sau những chunk đã commit/audit khi có race/lỗi; giữ queue và replan, không xóa. Conflicts identity/tombstone/target-ahead/unknown-code cần owner recovery plan riêng.
 
 **Nhịp owner mới:** đã xóa automation theo dõi merge; không cài lại/poll. PR43 giữ Draft cho owner review; **chờ owner báo merge43** rồi kiểm main và làm36, tiếp37, chuẩn bị38. Source merge không cấp quyền remote.
 
