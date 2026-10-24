@@ -49,13 +49,15 @@ Trước khi viết code, hãy nêu ngắn gọn trong PR (hoặc báo owner n�
 
 ## 5. Các câu hỏi phải hỏi owner — không tự đoán
 
+**Owner đã chốt #38 ngày2026-10-24:** p95 commit revoke PostgreSQL→public404≤60giây khi projector/REST khỏe; cảnh báo bất kỳ revoke pending>60giây, Admin hiện chưa đồng bộ. Hai ngưỡng không bảo đảm khi projector/REST dừng: báo riêng độ trễ thực tế/outbox/recovery/containment, không trộn hoặc giấu các khoảng sự cố trong p95 khỏe. [Hồ sơ chuẩn bị](PILOT_APRIME_ACCEPTANCE.md) ghi measurement/serial approval packets. Không hỏi lại quyết định ngưỡng này; đây không phải remote approval. Các snapshot33–37 ghi "proposal" là lịch sử trước quyết định38.
+
 **Cập nhật owner sau merge PR42, ngày2026-10-24:** chỉ tiếp issue phụ thuộc khi owner báo đã merge trong chat rồi kiểm chứng GitHub/main. Không cài hoặc giữ lịch theo dõi/poll merge; heartbeat cũ đã xóa. Chuỗi34→36→37→chuẩn bị38, mỗi issue branch/Draft riêng và không tự merge/deploy, vẫn giữ nguyên.
 
-**Owner đã trả lời ngày2026-10-24 cho #33:** giữ account pilot hiện tại; token riêng `hsp-projector-pilot`, D1 Read/Write only, chỉ secret store Node/VM; rotate90ngày hoặc ngay khi nghi rò rỉ/đổi quản trị/VM bị nghi xâm nhập. Trình tự và revoke khẩn cấp ở [PUBLIC_PROJECTOR](PUBLIC_PROJECTOR.md). Không yêu cầu lại quyết định này hoặc giá trị token. Remote projector vẫn cần duyệt riêng; ngưỡng60giây chưa được owner chốt. Fast-track Draft #33→#34→#36→#37 rồi chuẩn bị#38: chỉ chuyển issue kế sau khi owner merge PR phụ thuộc, mỗi issue branch/Draft riêng, không tự merge/deploy. CLI chỉ đọc/D1 local/chuẩn bị config private mới được phép; không suy ra quyền ghi D1/VM/Docker.
+**Owner đã trả lời ngày2026-10-24 cho #33:** giữ account pilot hiện tại; token riêng `hsp-projector-pilot`, D1 Read/Write only, chỉ secret store Node/VM; rotate90ngày hoặc ngay khi nghi rò rỉ/đổi quản trị/VM bị nghi xâm nhập. Trình tự và revoke khẩn cấp ở [PUBLIC_PROJECTOR](PUBLIC_PROJECTOR.md). Không yêu cầu lại quyết định này hoặc giá trị token. Remote projector vẫn cần duyệt riêng; ở thời điểm #33 ngưỡng60giây chưa chốt, sau đó owner đã chốt có điều kiện cho #38 như mục cập nhật trên. Fast-track Draft #33→#34→#36→#37 rồi chuẩn bị#38: chỉ chuyển issue kế sau khi owner merge PR phụ thuộc, mỗi issue branch/Draft riêng, không tự merge/deploy. CLI chỉ đọc/D1 local/chuẩn bị config private mới được phép; không suy ra quyền ghi D1/VM/Docker.
 
 Dừng và hỏi owner (ghi câu hỏi trong PR/Issue) khi gặp các điểm sau, thay vì tự chọn:
 
-- Ngưỡng revoke propagation chính thức (kế hoạch đang đề xuất p95 ≤ 60 giây) và mức cảnh báo vận hành.
+- Thay đổi ngưỡng khỏe/cảnh báo đã chốt #38 hoặc yêu cầu bảo đảm tức thời trong sự cố; không tự nới acceptance hoặc gọi60giây là bảo đảm khi projector/REST dừng.
 - Thay đổi account/scope/storage/rotation đã chốt ở trên (không hỏi lại quyết định hiện hành, không yêu cầu giá trị token).
 - Hostname public chính thức của `hsp-pilot` ngoài môi trường pilot (thuộc gate domain của #10/ADR-0004, không tự chọn domain).
 - Quyết định đóng/thu hẹp từng PR trong nhóm #19/#21–#24/#27/#29 và Issues10/20/25/26/28 (Issue6 chỉ chuẩn bị [bảng đề xuất và ghi chú](ADR0006_TRANSITION.md); không tự đóng, retarget, merge hoặc retire runtime).
