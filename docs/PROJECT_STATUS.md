@@ -1,5 +1,21 @@
 # Project status — HTML Share Platform
 
+> Snapshot **2026-10-24 (Asia/Saigon)** — Issue #32 / [Draft PR #39](https://github.com/cfotel2604/html-share-platform/pull/39), implementation `b18d2a23d5ee9de4b55b195daf1d96fbb8215ea4`. Đã fetch/kiểm GitHub: `origin/main` là `8ce25b1` sau PR #30; primary checkout vẫn `main` `78cb7ca`, chậm 55 commit và được giữ nguyên. Bản ghi 22/10 bên dưới là lịch sử, không đại diện trạng thái pilot/GitHub ngày24/10.
+
+## Mốc A' — Issue #32
+
+- **Đã kiểm chứng GitHub:** PR #30 MERGED, ADR-0006 Accepted: PostgreSQL là nguồn sự thật; D1 chỉ public read model; quản trị Node/VM, một Worker public. Epic #31 và Issues #32–#38 OPEN. Các PR #19, #21–#24, #27, #29 vẫn Draft; không merge stack cũ theo kiến trúc đã bị thay thế.
+- **Đã triển khai local:** migration D1 additive `0004_public_read_model.sql`, schema đúng 7 trường public, manifest chỉ path/R2 key/size/ETag, SQL lookup theo code exact-case và UPSERT chỉ nhận revision mới. Tombstone revoked giữ vĩnh viễn; old replay không hồi sinh mã. [Contract/rollout](D1_PUBLIC_READ_MODEL.md), [validation](validation/2026-10-24-d1-read-model.md).
+- **Agent đã kiểm:** 94/94 tests (86 cũ + 8 D1/workerd) PASS, lint/typecheck/docs/YAML/diff PASS; migration trên D1 local trống và legacy schema có dữ liệu tổng hợp PASS, giữ mọi bảng/dòng cũ; Wrangler local apply/re-apply PASS. Build/standalone packaging PASS sau retry, còn cảnh báo bảo mật dependency kế thừa.
+- **Agent đã kiểm live chỉ đọc lúc13:41:50:** D1 pilot `hsp-pilot-desktop` có `read_replication.mode=disabled`, metadata query `served_by_primary=true`, `changed_db=false`; ledger có 0001–0003, chưa có 0004. Không đọc identities/codes/HTML thật, không thay provider config/data.
+- **Remote đã kiểm sau owner duyệt riêng:** lúc14:19:04 ngày24/10, đã recheck account/database theo private receipt, replication disabled, SQL SHA-256 `346782e2083574601b709a1b2e254e5e250d39bb5f4b5e9f39458980f7992aed`, list chỉ0004 pending; sau đó áp duy nhất0004. Readback bảng mới0rows/đúng7columns, ledger thêm0004/entries cũ nguyên vẹn, toàn bộ11bảng/schema legacy có fingerprint trước/sau khớp; pending0, replication disabled. Private receipt lưu ngoài Git, không log dữ liệu legacy.
+- **Gate còn mở:** technical acceptance #32 đã có bằng chứng; PR #39 giữ Draft/#32 OPEN chờ owner review/merge riêng. Cả3CI ở source `9f27104` PASS; follow-up này chỉ docs, xem Checks của head mới. Pilot còn bảng quản trị legacy: additive migration giữ dữ liệu, chưa đạt whole-database minimization gate.
+- **Rủi ro riêng:** [Issue #40](https://github.com/cfotel2604/html-share-platform/issues/40) ghi Next16.4.0/Zod4.6.5 có cảnh báo audit, đều bằng main; không sửa dependencies ứng dụng trong #32. Miniflare dev-only dùng Undici7.30.1 đã vá.
+
+Bước tiếp theo: owner review/merge PR #39 theo quyết định riêng; migration remote0004 đã xong, không chạy lại. Sau #32 merge mới bắt đầu projector #33. Rebuild #34, Node #35, Worker #36, disposition tài liệu/PR #37 và pilot acceptance #38 là các phạm vi riêng theo [D1_READ_MODEL_PLAN](D1_READ_MODEL_PLAN.md). #10 giữ release/security gates. Quyền remote này không cho phép merge/deployWorker/chạmVM hoặc Docker/provisionlegacy; không thao tác nào như vậy đã chạy. Lab runtime, DNS, env, Docker volumes và các PR khác giữ nguyên.
+
+## Snapshot lab/merge lịch sử — 2026-10-22
+
 > Snapshot **2026-10-22 (Asia/Saigon)** sau owner giao Ready/merge #13 → #15 và chốt handoff. Chuỗi code đã vào main tại `0c17a09b68960d785f8b67b2a1585b0f3af919b8`; lab giữ runtime dc7560e đã nghiệm thu, không deploy hoặc chạy lại migration/backfill trong mốc merge. [Lab handoff](LAB_HANDOFF.md), [merge record](MERGE_PLAN.md), [review sau merge](reviews/2026-10-22-stack-merged.md), [AI_HANDOFF](AI_HANDOFF.md). Markdown không thay kiểm GitHub/VM hiện tại.
 
 ## Trạng thái đã kiểm
