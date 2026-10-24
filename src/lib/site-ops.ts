@@ -1,6 +1,6 @@
 import { randomBytes, randomUUID } from "node:crypto";
 import { db } from "./db";
-import { ensureBucket, removeFiles, storeFile } from "./storage";
+import { ensureBucket, readbackFile, removeFiles, storeFile } from "./storage";
 import { fingerprint, parseSite } from "./upload";
 import { UploadError } from "./upload-error";
 import { lockActor, type Actor } from "./auth-policy";
@@ -58,12 +58,23 @@ export async function uploadVersion(actor: Actor, file: File, name: string, exis
       })))],
     );
     await ensureBucket();
+    const verifiedManifest = [];
     for (const asset of assets) {
       const key = `${prefix}/${asset.path}`;
-      // Include the failing PUT: a lost response does not prove the object was not stored.
+      // Only a successful conditional PUT proves we created this object. A failed/lost
+      // acknowledgment could be a collision: never delete that key speculatively.
+      let etag;
+      try { etag = await storeFile(key, asset.body, asset.type); }
+      catch (error) {
+        console.warn("upload.put_outcome_unconfirmed", { version, confirmedObjectCount: attempted.length });
+        throw error;
+      }
       attempted.push(key);
-      await storeFile(key, asset.body, asset.type);
+      const sha256 = createHash("sha256").update(asset.body).digest("hex");
+      const verifiedEtag = await readbackFile(key, { size: asset.body.length, sha256, etag });
+      verifiedManifest.push({ path: asset.path, type: asset.type, size: asset.body.length, sha256, etag: verifiedEtag });
     }
+    await client.query("UPDATE site_versions SET asset_manifest=$2::jsonb WHERE id=$1", [version, JSON.stringify(verifiedManifest)]);
     await client.query(
       `UPDATE sites SET active_version_id = $2, display_name = $3, status = 'published',
        updated_at = now() WHERE id = $1`,

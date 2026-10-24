@@ -1,9 +1,11 @@
 import pg from "pg";
+import { assertPostgresBackend } from "./metadata-backend.mjs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { allocateShareCode } from "./share-codes.mjs";
 
 export async function backfillShareLinks(pool) {
+  assertPostgresBackend();
   const sites = await pool.query(
     "SELECT id FROM sites WHERE status<>'deleted' AND NOT EXISTS(SELECT 1 FROM site_share_links l WHERE l.site_id=sites.id) ORDER BY id",
   );

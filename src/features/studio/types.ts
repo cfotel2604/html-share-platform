@@ -11,7 +11,9 @@ export type SiteSummary = {
 };
 export type AuthStatus = { signedIn: boolean; demoAvailable: boolean; available?: boolean; provider?: "clerk" | "local-demo" | "disabled"; role?: "employee" | "admin" | null; denied?: boolean };
 export type UploadResult = { id: string; fileCount: number };
+export type StudioWorkspace = { auth: AuthStatus; sites: SiteSummary[] };
 export interface StudioApi {
+  workspace(): Promise<StudioWorkspace>;
   auth(): Promise<AuthStatus>;
   listSites(): Promise<SiteSummary[]>;
   login(password: string): Promise<void>;
