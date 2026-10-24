@@ -1,5 +1,7 @@
 # Project status — HTML Share Platform
 
+> **2026-10-25 — Issue40 / [DraftPR49](https://github.com/cfotel2604/html-share-platform/pull/49)**. Independent dependency patch from main `9010dc5`; implementation `e9bd24f` passed4/4CI. Next/eslint-config-next16.4.3, dev-only Zod4.6.7. Clean install, lint/typecheck,162 unit tests, public bundle and production build PASS; full/production npm audit both0; registry signatures438/438 verified,119 attestations verified. [Commands and limits](validation/2026-10-25-security-dependencies.md); final exact-head CI in PR49. Owner merges; no runtime, secret, VM/Docker or Cloudflare change. Draft48 source/runtime acceptance and10 remain separate. Older snapshots below are historical.
+
 > **2026-10-24 — Issue #38 preparation / [Draft PR #46](https://github.com/cfotel2604/html-share-platform/pull/46)**. Owner báo merge45; fetch/GitHub xác nhận main `76b38faf169477af480690f222123214f4d8c3c5`, PR45 MERGED13:58:40UTC, head `eecf6cc` ba checks SUCCESS. Branch `docs/38-pilot-acceptance-prep`, early scope `1549b17`; exact final head/CI trong PR46. Snapshot Draft45/đợi merge45/ngưỡng còn proposal bên dưới là lịch sử trước quyết định38.
 
 ## A'-7 — đã chuẩn bị, chưa nghiệm thu pilot
