@@ -15,7 +15,7 @@ Nền tảng nội bộ để nhân viên tải lên HTML/CSS/JavaScript hoặc 
 - [Node/PostgreSQL administration, workspace và upload readback (#35)](docs/NODE_POSTGRES_ADMIN.md)
 - [Transactional outbox / Node projector, token policy và remote gate (#33)](docs/PUBLIC_PROJECTOR.md)
 - [Read-model rebuild/reconciliation, local rehearsal và incident runbook (#34)](docs/READ_MODEL_RECOVERY.md)
-- [Public read-model Worker, serving core và binding gate (#36)](docs/PUBLIC_READ_MODEL_WORKER.md)
+- [Worker public: code chỉ đọc, sandbox và kiểm thử local/CI (#36)](docs/PUBLIC_READ_MODEL_WORKER.md)
 - [Hướng dẫn cho coding agents](AGENTS.md)
 - [Tiến độ dự án và các hạng mục còn mở](docs/PROJECT_STATUS.md)
 - [Bàn giao công việc giữa các phiên AI Agent](docs/AI_HANDOFF.md)

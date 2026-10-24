@@ -24,6 +24,8 @@ Theo [ADR-0006](adr/0006-postgresql-source-of-truth-d1-public-read-model.md), Po
 
 Theo [ADR-0002](adr/0002-replaceable-studio-ui.md), Studio dùng component presentation → workflow hook → typed HTTP adapter → `/api/*` Route Handlers → server services. Components/features không import database, storage hoặc server auth; ESLint enforce ranh giới này. Vì vậy có thể thay giao diện hoặc client mà không viết lại ingest/publish/storage. Backend vẫn cùng container Next.js ở lab; tách process/service về sau là quyết định deployment riêng, giữ session/CSRF và origin isolation.
 
+Issue36/PR44 bổ sung source Worker public đọc exactresolve.sql ở D1 primary và R2get/head theo manifest pin size/ETag, HTTPsandbox cho HTML, không callback Node/VM/Clerk. Owner làm rõ read-only được kiểm soát ở code/test/review/deploygate, native bindings vẫn có khả năng ghi và không là IAM-read-only. [Contract/local-CI evidence](PUBLIC_READ_MODEL_WORKER.md); chưa deploy hoặc thay runtime lab. Preview vẫn ở Node/VM theo ADR0003.
+
 ## Data model dự kiến
 
 - `users`: id, external_identity, email, role, status, created_at; identity từ Clerk Google nhưng quyền từ DB.

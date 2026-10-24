@@ -1,12 +1,16 @@
 # Project status — HTML Share Platform
 
-> **2026-10-24 — Issue #36 / [Draft PR #44](https://github.com/cfotel2604/html-share-platform/pull/44)**. Base main `f6c78340983060687b969d7aae0e2f7e80ebd381`; live PR43 MERGED sau owner báo. #33/#34 vẫn OPEN cho pilot gates. Serving core `336dc748795a5a2b187e124d098c3323c61e4d2f`. Các trạng thái Draft43/đợi merge bên dưới là lịch sử.
+> **2026-10-24 — Issue #36 / [Draft PR #44](https://github.com/cfotel2604/html-share-platform/pull/44)**. Base main `f6c78340983060687b969d7aae0e2f7e80ebd381`; live PR43 MERGED sau owner báo. #33/#34 vẫn OPEN cho pilot gates. Source/test head `3601b0b222e720934ac32adea8dbf7bbb8eda35e`. Các trạng thái Draft43/đợi merge bên dưới là lịch sử.
 
-## A'-5 — Public serving core; binding decision pending
+## A'-5 — Worker public: local/CI đạt, pilot chờ duyệt riêng
 
-Đã có policy/serve core độc lập provider: manifest closed/prefix pin, path/origin/PSL, canonical redirect, GET/HEAD, size/ETag metadata, controlled sandbox/no-store headers, no logs/outbound fetch. Local153unit/lint/typecheck/build retry PASS,11test mới dùng reader giả lập. [Scope/decision](PUBLIC_READ_MODEL_WORKER.md), [validation/giới hạn](validation/2026-10-24-public-read-model-worker.md). Core chưa có production Worker entrypoint/binding/config; chưa claim primary-D1/Miniflare end-to-end/deployed VM-offline acceptance.
+Worker native adapter dùng đúng SELECT tham số hóa từ resolve.sql, không Sessions, tối đa1query/request; R2get/head theo manifest pin path/size/ETag. Canonical/root/nested/direct HTML giữ HTTPsandbox/no-store/nosniff/no-referrer; không route quản trị/preview/token/Nodefetch. AST guard quét source và bundle, chặn API/SQL ghi, native escape, dynamicSQL và egress/logging; test phủ định status/path/injection đạt. Có build ESM/local template, không deployment. [Contract/runbook](PUBLIC_READ_MODEL_WORKER.md), [validation/giới hạn](validation/2026-10-24-public-read-model-worker.md).
 
-**Cần owner chốt:** plan/Agent Guide ghi không write binding nhưng native D1/R2 APIs có khả năng ghi. Đề xuất code fixed-SELECT/get/head-only + tests và ghi rõ không IAM-read-only; hoặc nếu bắt buộc IAM-read-only thì dừng để thiết kế lại. Adapter/config phụ thuộc chưa làm, không tự ngoại lệ ADR0006. Không deploy/ghiD1/VM/localDocker/privatefiles, không sửa applied migrations/SQL/dependencies. #40 security nudge giữ riêng. PR44 giữ Draft; không làm37 trước owner báo merge, không lịch/poll merge.
+**Owner đã chốt:** read-only ở code/test/review/gate deploy, native D1/R2 vẫn có capability ghi; không IAM-read-only, không ngoại lệ ADR0006, không duyệt deploy. ADR/Guide/plan đã ghi rõ, không còn câu hỏi binding pending.
+
+**Agent-checked `3601b0b`:** cả4CI SUCCESS;162unit/lint/typecheck/appbuild + Workerbundle,5nhóm realPG/outbox/recovery và security integration kế thừa500file/RBAC/ownership/audit/preview/origin.20Worker cases gồm actual workerd/localD1/R2, Node500→outbox→projector→Worker, source local đóng/mở lại vẫn200 không thêm projection, revoke/rotate/version/unpublish/replay, egress0. Wrangler4.152types local PASS sau sửa custombuildcwd. Dev-only esbuild0.28.2 được thêm; runtime dependency versions/applied migrations/read-model SQL không đổi. #40 inheritedNextwarning giữ riêng.
+
+**Chưa xác minh:** actual deployed single Worker/binding-secret inventory, live primary/replication/R2/VMoffline/logs hai phía/browser/mobile/pilotrevoke404.60giây vẫn proposal. Không deploy/D1remote/VM/localDocker/ownerprivatefiles, không tự Ready/merge hoặc đóng36 từ source checks. PR44 giữ Draft chờ owner review; chỉ sau owner báo merge mới làm37, rồi chuẩn bị38; không lịch/poll merge.
 
 ## Snapshot Issue #34 trước merge — lịch sử
 
