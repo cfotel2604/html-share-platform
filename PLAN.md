@@ -6,6 +6,8 @@
 
 **Mô hình truy cập:** A — nhân viên có tài khoản được upload/quản lý; người có link xem công khai, không cần đăng nhập.
 
+**Kiến trúc đích hiện hành (2026-10-24):** [ADR-0006](docs/adr/0006-postgresql-source-of-truth-d1-public-read-model.md) Accepted; Node/PostgreSQL là nguồn quản trị duy nhất, outbox/projector/recovery chiếu D1 public read model, một public Worker chỉ đọc ở code/test và private R2. Preview chưa publish ở Node/VM grant. PR39/41/42/43/44 đã merge source; pilot A' chưa cutover/nghiệm thu. [Plan A'](docs/D1_READ_MODEL_PLAN.md), [bảng đề xuất xử lý PR/Issue #37](docs/ADR0006_TRANSITION.md) và [status](docs/PROJECT_STATUS.md) là hướng tiếp tục. Phần roadmap/domain/lab bên dưới ghi nền MVP/VM, không phải quyết định tiếp tục D1-primary/API/preview Worker cũ.
+
 ## 1. Mục tiêu
 
 Biến một tệp HTML hoặc một website tĩnh đóng gói ZIP thành URL HTTPS ổn định để chia sẻ qua Zalo, Messenger, email và trình duyệt mobile. Nhân viên có thể xem trước, cập nhật phiên bản nhưng giữ nguyên URL, hoặc vô hiệu hóa nội dung. JavaScript do người upload tạo được chạy trong trình duyệt người xem, vì vậy cô lập origin là yêu cầu thiết kế cốt lõi.
@@ -35,7 +37,9 @@ Mọi đường dẫn public được coi là **công khai với bất kỳ ai c
 
 Chạy backend tùy ý của website upload (PHP, Node, Python), xử lý form server-side, xây dựng trang bằng AI, domain tùy chọn của từng nhân viên, phân tích truy cập nâng cao, mật khẩu/TTL cho link và CDN đa vùng. Các khả năng này có thể là phase 2.
 
-## 3. Kiến trúc đề xuất
+## 3. Kiến trúc nền MVP / lab hostname
+
+Mô tả dưới đây giữ bối cảnh lab và production domain theo ADR-0004, chưa phải topology A' đã triển khai. Với A', đường public là Worker→D1/R2 và không về PostgreSQL/VM; không chạy raw HTML cùng origin Studio. Native D1/R2 binding có khả năng ghi; read-only của Worker là fixed SELECT/get/head được kiểm ở code/test/review/deploy gate, không IAM. Production vẫn cần #10; không tự chọn domain production từ pilot path serving.
 
 - **Dashboard/API:** Next.js + TypeScript (Route Handlers `/api/*` cùng ứng dụng tại `studio.ods.vn`), UI với Tailwind CSS. Nội bộ Docker dùng service name, chưa cần `api.ods.vn`.
 - **Auth P2:** Clerk Development + Google login để lab; email allowlist do owner cấp/thu hồi, server kiểm tra quyền/role Employee/Admin. Trước production cần Clerk production instance + Google OAuth credentials riêng.

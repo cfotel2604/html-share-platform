@@ -102,19 +102,21 @@ Tài liệu này chia việc thành một Epic và 7 Issue con. Mỗi Issue con 
 
 **Phụ thuộc:** ADR-0006 đã merge (PR của bộ tài liệu này). Có thể làm song song với Issue 1–5 nhưng kết luận từng PR chỉ chốt khi phần thay thế tương ứng đã rõ.
 
-**Phạm vi — lập bảng xử lý và thực thi cho từng mục:**
+**Phạm vi — lập bảng đề xuất để owner quyết trên từng mục; không tự đóng/merge:**
+
+Live [Issue #37](https://github.com/cfotel2604/html-share-platform/issues/37) giới hạn phạm vi là đề xuất; cập nhật này thay wording cũ "thực thi". [Bảng xử lý](ADR0006_TRANSITION.md) và ghi chú kiến trúc trên từng mô tả PR/Issue giữ nguyên trạng thái/base/head gốc; đóng/thu hẹp hay thay runtime cần owner quyết riêng.
 - PR #21 (ADR-0005): sửa trạng thái/tham chiếu để ghi nhận ADR-0006 supersede một phần, hoặc đóng kèm liên kết ADR-0006 — theo quyết định owner trên PR.
 - PR #22: tách phần serving dùng lại cho Issue 5; phần API Worker/preview Worker bị thay thế — đóng hoặc thu hẹp, không merge nguyên trạng.
 - PR #23: đóng/thay thế (đường D1-primary bị loại bỏ bởi Issue 4); giữ lại bằng chứng test còn giá trị vào tài liệu validation.
-- PR #24: hạ tầng pilot đã provision (R2/D1/Workers) được đối chiếu với kiến trúc đích: read model dùng lại D1/R2, Worker quản trị bị gỡ khỏi môi trường pilot; cập nhật handoff.
+- PR #24: đối chiếu hạ tầng đã provision (R2/D1/Workers) với đích tái sử dụng D1/R2 và bỏ Worker quản trị/preview. Ghi rõ lịch sử, metadata chỉ đọc hiện tại và cutover/retirement chưa làm; cập nhật handoff. Không tự gỡ tài nguyên trong Issue6.
 - PR #27: đóng/thay thế — #25 hết hiệu lực khi không còn API Worker; phần finalize bằng listing của #26 đã chuyển thành yêu cầu phía Node trong Issue 4.
 - PR #29: phần tối ưu workspace/healthcheck được tiếp nhận trong Issue 4; phần gộp request qua Worker API bị thay thế.
 - PR #19 và Issue #10: giữ mở; cập nhật tham chiếu để #10 phản ánh kiến trúc đích mới khi đánh giá gate.
-- Issue #20: cập nhật trạng thái — phần serving giữ, phần D1-primary/API Worker ghi "superseded by ADR-0006"; Issue #25, #26, #28: đóng kèm lý do và liên kết Issue con tương ứng ở trên.
+- Issue #20: phần serving giữ, D1-primary/API/preview Worker ghi "superseded by ADR-0006"; Issue #25, #26, #28: đề xuất đóng/thay thế kèm lý do, liên kết Issue con và phân biệt source với runtime. Owner quyết đóng riêng; không tự đóng.
 - Đồng bộ `PLAN.md`, `docs/ARCHITECTURE.md`, `docs/PROJECT_STATUS.md`, `docs/AI_HANDOFF.md` và `AGENTS.md` (mục pilot) theo ADR-0006 trong các PR tương ứng — ghi rõ phần nào mô tả lab cũ, phần nào mô tả kiến trúc đích.
 
 **Acceptance:**
-- [ ] Bảng xử lý có quyết định + liên kết cho đủ #19, #21–#24, #27, #29 và #20, #25, #26, #28; không PR nào bị bỏ quên ở trạng thái Draft mâu thuẫn với ADR-0006 mà không có ghi chú.
+- [ ] Bảng xử lý có đề xuất, trạng thái quyết định owner + liên kết cho đủ PR #19, #21–#24, #27, #29 và Issues #10, #20, #25, #26, #28; không Draft PR mâu thuẫn ADR-0006 mà thiếu ghi chú kiến trúc. Không cần tự đóng/merge để đạt gate tài liệu này.
 - [ ] Tài liệu trạng thái/handoff phản ánh đúng kiến trúc đích và việc còn mở.
 
 ## Issue 7 — Gate bảo mật, vận hành và nghiệm thu pilot A'
@@ -122,7 +124,7 @@ Tài liệu này chia việc thành một Epic và 7 Issue con. Mỗi Issue con 
 **Phụ thuộc:** Issue 1–5.
 
 **Phạm vi:**
-- Kiểm chứng bảo mật đường mới: token REST (phạm vi account, lưu trữ, rotate/revoke thử), D1 không chứa dữ liệu quản trị (quét thực tế), Worker không binding ghi/không secret quản trị, revoke propagation đo thực tế (kịch bản revoke khi projector khỏe và khi projector chết rồi hồi phục).
+- Kiểm chứng bảo mật đường mới: token REST (phạm vi account, lưu trữ, rotate/revoke thử), D1 không chứa dữ liệu quản trị (quét thực tế), Worker không code path ghi/không secret quản trị, revoke propagation đo thực tế (projector khỏe và chết rồi hồi phục). Theo owner #36, native D1/R2 bindings vẫn có khả năng ghi; fixed SELECT/get/head + code/test/review/deploy gate bảo đảm read-only, không IAM. Phải kiểm cả legacy khi đánh giá gate dữ liệu D1, không chỉ bảng model mới. Quét dữ liệu/retirement/deploy là bước remote cần duyệt riêng; không suy quyền từ chuẩn bị #38 hoặc tự xóa legacy.
 - Kịch bản sự cố: REST API lỗi/429 kéo dài; projector crash giữa chừng; D1 lệch; R2 object thiếu/lệch ETag — mỗi kịch bản có kết quả mong đợi fail-closed ở phía quản trị và không phục vụ sai nội dung ở phía public.
 - Nghiệm thu pilot đầu-cuối: upload → publish → xem public (desktop + mobile/Zalo ở mức khả thi) → update giữ code → unpublish → revoke → rotate; VM tắt/bật; rebuild drill (Issue 3).
 - Cập nhật runbook và ghi bằng chứng validation; liệt kê rõ gate nào của #10 còn mở sau pilot này (dự kiến: production Clerk/OAuth, domain/DNS production, cookie/browser matrix đầy đủ — không tự đóng #10).

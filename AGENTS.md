@@ -28,6 +28,14 @@ Khi kết thúc một mốc công việc (merge PR, đổi base, giải quyết 
 - Lưu trữ asset theo version bất biến; đổi bản publish một cách atomic; unpublish thực sự chặn nội dung theo cache policy được công bố.
 - Kiểm thử quyền sở hữu site, API authorization, upload validation và origin boundary khi thay đổi các lớp đó.
 
+## Pilot A' — kiến trúc đích và lịch sử cần giữ riêng
+
+- [ADR-0006](docs/adr/0006-postgresql-source-of-truth-d1-public-read-model.md) **Accepted**: quản trị chỉ Node/PostgreSQL; outbox cùng transaction, projector/recovery Node là đường ghi D1 duy nhất. D1 chỉ public read model; không bật `METADATA_BACKEND=cloudflare`, API Worker hoặc preview Worker. Đọc [Agent Guide](docs/D1_READ_MODEL_AGENT_GUIDE.md) rồi [plan A'](docs/D1_READ_MODEL_PLAN.md) trước Issue con.
+- Public A' chỉ một Worker `hsp-pilot`, fixed SELECT tham số hóa từ resolve.sql + R2 get/head theo manifest pin. Owner làm rõ #36: native bindings vẫn có API ghi; chỉ đọc được bảo đảm ở code/test/review/gate deploy, không IAM read-only, không ngoại lệ ADR-0006. Không secret quản trị/Clerk/service token, route quản trị/preview hoặc callback VM trên đường public. Preview chưa publish ở Node/VM theo ADR-0003.
+- PR39/41/42/43/44 đã merge source. Điều này không chứng minh cutover runtime. Mô tả hostname/VM lab bên trên và runbook 22/10 là lịch sử môi trường khác; path serving A' theo ADR-0006 không thay domain production hoặc giảm sandbox. Metadata chỉ đọc ngày24/10 vẫn thấy ba Worker cũ; chưa được tự tắt/deploy/đổi secret. [Bảng đề xuất #37](docs/ADR0006_TRANSITION.md) tách rõ nguồn bằng chứng và gate #38/#10.
+- PR19/21–24/27/29 và Issues10/20/25/26/28 có ghi chú chuyển kiến trúc; quyết định đóng/thu hẹp từng mục chờ owner. Không merge stack cũ nguyên trạng, chạy legacy provision/cleanup hoặc sửa migration đã áp dụng (đặc biệt D1 0004 đã áp một lần theo #32).
+- Fast-track: mỗi Issue một branch/Draft, Refs đúng Issue; sau owner **báo merge trong chat** mới xác minh main và tiếp Issue phụ thuộc. Không cài lịch/poll theo dõi merge. Sau #37 chỉ chuẩn bị #38; không auto Ready/merge/deploy. CLI chỉ đọc/D1 local/config private mới không cấp quyền ghi D1 pilot, VM/Docker hoặc đọc private files owner. Ngưỡng revoke60giây vẫn đề xuất; token policy đã chốt ở [projector runbook](docs/PUBLIC_PROJECTOR.md), không hỏi/ghi giá trị token.
+
 ## Quy trình thay đổi
 
 1. Xác định Issue và acceptance criteria, tạo branch theo `docs/WORKFLOW.md`.

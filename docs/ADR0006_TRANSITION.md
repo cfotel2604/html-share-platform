@@ -1,0 +1,66 @@
+# ADR-0006 transition / PR and Issue disposition — Issue #37
+
+Refs #37 / Epic #31. Base freshly fetched main `85f39e21f2dfda8f50239ecfa172369cc98f5845` after owner reported PR44 merged. PostgreSQL/Node is the sole administration source; D1 is a public read model through outbox/projector/recovery; one public Worker, preview remains Node/VM. Native bindings are application-read-only by code/test/review/deploy gate, not IAM read-only.
+
+## Scope and authority
+
+This is a documentation/metadata task. Prepare an itemized proposal for PR19/21/22/23/24/27/29 and Issues10/20/25/26/28, preserve useful old validation, mark architecture changes visibly, and synchronize current docs. Legacy descriptions remain historical evidence; neutral additive architecture notes do not decide closure. No PR/Issue will be closed, merged, retargeted or rewritten at its source branch without the owner's per-item decision.
+
+The live Issue37 says **proposals for owner decision, no automatic close/merge**. Its narrower scope takes precedence over older plan wording that said to execute closures. No remote provisioning/Worker deployment/retirement, D1 write/reapply0004, VM/local Docker or owner private files/worktrees belong here. Read-only approved Cloudflare CLI metadata may be compared with committed pilot records; no token values or uploaded content are retrieved/printed. Source merge is not runtime cutover.
+
+Owner reports each merge in chat. No scheduled merge monitoring/polling; next only prepares #38 after owner reports this PR merged. SLO60seconds remains a proposal. Token account/storage/90day rotation decisions are already recorded; do not ask for token values or repeat resolved decisions.
+
+## Verified source and GitHub state — 2026-10-24
+
+PR44 is MERGED at `85f39e21f2dfda8f50239ecfa172369cc98f5845` (2026-10-24 13:23:09 UTC); its head `60f1f74682a93a1626eac862c7059c42161c4f72` has four SUCCESS checks. PR39/41/42/43 are also merged. Issues32/35 are CLOSED; Issues33/34/36 remain OPEN for pilot acceptance. Source merge does not close their remote gates. This branch is `docs/37-architecture-disposition`, [Draft PR45](https://github.com/cfotel2604/html-share-platform/pull/45), Refs37/31.
+
+All PRs in the following table remain **OPEN/Draft**. The owner-decision column is **PENDING**, including proposals to keep open. No source branch, base, head, title, Draft flag or state was changed. Additive notes were prepended to descriptions, preserving the original descriptions exactly. Current GitHub checks below belong to each listed old head; they do not validate A' or approve a merge.
+
+## PR disposition proposals
+
+| Item / exact head / base / checks | Proposal for owner | Retain / replacement | Owner decision |
+| --- | --- | --- | --- |
+| [PR19](https://github.com/cfotel2604/html-share-platform/pull/19) `94d44ffef73035e71aac9a042397d3311958b298`; `main`; 2 SUCCESS | Keep open with #10; update architecture references when reviewing audit | Historical release-gate matrix, ingress/R2/logging/browser gaps. A' pilot still needs #38; no release clearance | PENDING |
+| [PR21](https://github.com/cfotel2604/html-share-platform/pull/21) `77ae10a3fdafe2a0f5b5818ad1ea5e826b886606`; `main`; 2 SUCCESS | Close/archive Proposed ADR stack after owner review; record partial supersession | ADR-0005 path-serving/sandbox rationale retained by [ADR-0006](adr/0006-postgresql-source-of-truth-d1-public-read-model.md) and [Worker contract](PUBLIC_READ_MODEL_WORKER.md). D1-primary/API/preview superseded; ADR-0005 is not promoted to Accepted | PENDING |
+| [PR22](https://github.com/cfotel2604/html-share-platform/pull/22) `3b74981698d9d3090fa11e430d4ba912ebbf8bc1`; `codex/cloudflare-path-adr`; 4 SUCCESS | Close as replaced; do not merge old stack unchanged | Serving/manifest/security requirements incorporated in #36/[PR44](https://github.com/cfotel2604/html-share-platform/pull/44). Drop API/preview Worker architecture; retain historical 11-group local evidence, not new pilot proof | PENDING |
+| [PR23](https://github.com/cfotel2604/html-share-platform/pull/23) `187f4f5cf5b7dd7c74a77f89125d5b63fc09141c`; `codex/cloudflare-path-core`; 4 SUCCESS | Close as replaced by #35/[PR41](https://github.com/cfotel2604/html-share-platform/pull/41) | Keep scoped R1/R2 immutable upload/readback, deadlines, lost-ACK, late PUT/resweep/reference-protection regressions as historical evidence; new [Node contract](NODE_POSTGRES_ADMIN.md) has independent validation. Next16.4.2 on old branch is not on main; [#40](https://github.com/cfotel2604/html-share-platform/issues/40) is separate | PENDING |
+| [PR24](https://github.com/cfotel2604/html-share-platform/pull/24) `bb0327d267e38a6149bf90b6b286293f2e02e934`; `codex/cloudflare-studio-integration`; 3 SUCCESS | Preserve provisioning/runbook evidence, then close after owner review | Compare resource metadata below. Reuse/retire only via separately approved #38 plan; never rerun legacy provisioning. Keep historical private-R2/denial evidence, not cutover acceptance | PENDING |
+| [PR27](https://github.com/cfotel2604/html-share-platform/pull/27) `62e80906d0f59a8a7dd69ccd976b06192e665db4`; `codex/cloudflare-pilot-operations`; 4 SUCCESS | Close as replaced; old deployed bridge is not removed by closing source PR | #25 Worker token refresh no longer needed by target Node management. #26 finalize/readback belongs to #35/PR41. Retain real-provider 500-small-file 195095ms and sandbox/lifecycle evidence at its historical scope | PENDING |
+| [PR29](https://github.com/cfotel2604/html-share-platform/pull/29) `618226222e50a7e25cc1c3da93455a1ce5c7dece`; `codex/clerk-session-refresh`; 4 SUCCESS | Close as replaced after owner review | Node workspace + local liveness retained in #35/PR41; Worker API coalescing superseded. Historical bootstrap/reload samples and nine local probes do not establish current p95/full-page performance | PENDING |
+
+## Issue disposition proposals
+
+All five Issues remain **OPEN**, with additive architecture notes and original text preserved.
+
+| Item | Proposal / remaining acceptance | Replacement / owner decision |
+| --- | --- | --- |
+| [#10](https://github.com/cfotel2604/html-share-platform/issues/10) | Keep open: security/release gate; PR19 remains independent audit. Production Clerk/OAuth, domain/DNS, cookie/browser/mobile/logging/release gates remain | #38 must state which gates remain. **PENDING**; no automatic closure |
+| [#20](https://github.com/cfotel2604/html-share-platform/issues/20) | Mark partially superseded: preserve sandboxed path serving; replace D1-primary, management/preview Workers. Keep historical tracker pending owner decision and pilot evidence | Epic31, #35/41, #33/42, #36/44; **PENDING** |
+| [#25](https://github.com/cfotel2604/html-share-platform/issues/25) | Propose close as superseded on target management path, after owner review. Do not weaken Clerk azp/session/Google/RBAC checks or claim legacy runtime fixed | #35/PR41 removes mint/refresh-to-Worker path. Actual pilot auth/session checks and API Worker retirement remain #38/#10; **PENDING** |
+| [#26](https://github.com/cfotel2604/html-share-platform/issues/26) | Propose close as replaced by Node finalize. Keep uncertain old intent objects/receipts until reference-checked reconciliation; no blind replay/cleanup | #35/PR41 500-file PostgreSQL/R2-readback local/CI, #33/42 projector and #36/44 serving. Real A' provider 500-file/p50/p95 still #38; **PENDING** |
+| [#28](https://github.com/cfotel2604/html-share-platform/issues/28) | Propose close as replaced: local bootstrap/liveness retained, Worker coalescing superseded. No cross-request permission cache | #35/PR41; actual A' latency/call-count measurement #38. Historical owner block/Safari/Zalo loading reports remain scoped; **PENDING** |
+
+## Resource comparison — history, current metadata, target
+
+Historical records are read from Git objects, not private receipts or running containers: PR24 `bb0327d:docs/validation/2026-10-23-cloudflare-desktop.md`, PR27 `62e8090:docs/validation/2026-10-23-provider-fixes.md`, PR29 `6182262:docs/validation/2026-10-23-studio-efficiency.md`. These files are still accessible through the old PR refs. Retaining a record does not authorize executing its scripts or rollback commands; old instructions prohibiting PostgreSQL fallback describe that old D1-primary pilot, not the A' target.
+
+| Resource | Verified / historical observation | Target / remaining gate |
+| --- | --- | --- |
+| Public `hsp-pilot` | Read-only Wrangler deployment/version metadata: latest 2026-10-23 12:25:40 UTC, one version at100%; `DB` D1 + `ASSETS` R2, plus API/preview/public/Studio origin variable names. R2 bucket-name match to `hsp-pilot-desktop`; no secret-text bindings listed | PR44 source uses `PUBLIC_READ_MODEL` + `ASSETS`, only two origin variables, no API/preview callbacks. No new deploy happened. Native binding capability is still broader than application read-only |
+| Preview `hsp-pilot-preview` | Metadata: latest 2026-10-23 12:25:52 UTC, one version at100%, D1/R2 + origin vars still present | Unpublished preview moves to Node/VM grant. Retire old Worker/routes only after approved cutover and regressions; not done here |
+| API `hsp-pilot-api` | Metadata: latest 2026-10-23 14:31:35 UTC, one version at100%; D1/R2 + origin vars and **two secret-text binding names** (Clerk/service) still present. No secret values read | Target has no management Worker/secret or parallel writer. Drain/fence legacy management and separately approve retirement; no secret deletion/revoke or deployment here |
+| D1 `hsp-pilot-desktop` | PR24 historically applied0001–0003. #32/[PR39](https://github.com/cfotel2604/html-share-platform/pull/39) records separately approved0004 applied once and empty-table/legacy readback | Reuse only additive public model after approval; no reapply0004, legacy table deletion, pilot query/projector/rebuild in #37. Replication/data rows/account-ID match not rechecked by this metadata inventory |
+| R2 `hsp-pilot-desktop` | Three active Worker metadata sets name the expected bucket. Private/r2.dev-off/no custom bucket domain was verified in historical provider records, not rechecked here | Private immutable assets, Node upload/readback, Worker get/head. Old object/prefix references must be reconciled before new publishing/cleanup. No content, bucket privacy, credential scope or live ETag readback inspected here |
+| Desktop Studio | PR29 historical image `html-share-studio:cf-efficiency-5c9e3fe`, old Cloudflare backend, local liveness. No local Docker inspection in #37 | Node/PostgreSQL target config must reject backendcloudflare; separate approved runtime/secret-store setup. Current image/env/health not verified |
+| VM lab | Last-known 22/10 web `share-dc7560ea1c34`, gateway `security-417c50d`, legacy internal storage | Historical lab remains distinct from A' pilot and production. No VM/SSH/Docker/env/volume inspection or mutation here |
+
+Wrangler4.152.0 `deployments list` + `versions view` ran only against the three named Workers (six read-only calls, no SQL/data/content/secret-value request). Results in [validation receipt](validation/2026-10-24-adr0006-transition.md). Names/types/timestamps were retained; resource/account/version IDs, author metadata, plaintext variable values and credentials were not printed or committed. Metadata proves the old deployment topology still exists, not availability or behavior of public content.
+
+## Handoff and owner review
+
+- Owner may decide each disposition independently. Closing a source PR/Issue does not authorize destroying resources, deleting old D1 tables/objects/receipts, disabling a service, or deploying new code. Keep refs/evidence reachable if closing old PRs; any source salvage should be a separate reviewed change.
+- After owner reports PR45 merged, verify fresh main and **prepare** #38 in its own branch/Draft. Remote projector/rebuild, migration/data scan, Worker deployment, legacy writer freeze/retirement, Node runtime/secret installation and VM-off drills all need explicit scoped approval before execution. A no-write inventory does not clear those gates.
+- #38 needs an explicit cutover plan that prevents concurrent legacy D1-primary writers, identifies asset/source compatibility and preservation, secures Node secrets and rollback, measures actual projection/revoke latency (including 500 files), checks Node auth/ownership/audit/preview, public independence, binding/secret inventory, privacy/logging, incident drills and remaining #10 gates. No rollback to dual administration sources.
+- Owner must still choose official revoke propagation/alert thresholds;60seconds is only proposed. Existing token account/storage/rotation decisions stay binding, with real rotation/revoke drill still unrun. Do not request or disclose token values.
+
+PR45 remains Draft; exact final head, commands/check results and pending gates are recorded in its description and [validation](validation/2026-10-24-adr0006-transition.md). Rollback for this docs/metadata change: revert documentation and remove only the marked architecture-note blocks after checking for intervening owner edits; do not reset complete descriptions or change item states/runtime.

@@ -1,5 +1,17 @@
 # Project status — HTML Share Platform
 
+> **2026-10-24 — Issue #37 / [Draft PR #45](https://github.com/cfotel2604/html-share-platform/pull/45)**. Owner báo merge44; đã fetch/kiểm GitHub: main `85f39e21f2dfda8f50239ecfa172369cc98f5845`, PR44 MERGED13:23:09UTC, head `60f1f74` bốn checks SUCCESS. Branch riêng `docs/37-architecture-disposition`, scope mở Draft tại `65207aa`. Exact final head/CI ở PR45; [validation](validation/2026-10-24-adr0006-transition.md). Mọi trạng thái đợi merge44/Draft44 bên dưới là lịch sử.
+
+## A'-6 — đề xuất disposition và đồng bộ kiến trúc
+
+- [Bảng xử lý](ADR0006_TRANSITION.md) có đủ PR19/21/22/23/24/27/29 và Issues10/20/25/26/28: đề xuất giữ audit19/10 mở, giữ20 làm historical tracker, đóng/thay thế21/22/23/24/27/29 và25/26/28 sau owner review. **Tất cả quyết định owner vẫn PENDING**; không close/merge/retarget/Ready/source rewrite. Ghi chú kiến trúc additive đã hiển thị trên cả12mô tả, mô tả gốc giữ nguyên byte nội dung; state/Draft/base/head/title giữ nguyên. Bảy PR vẫn OPEN/Draft, năm Issue vẫn OPEN.
+- **Đã kiểm chứng:** PR39/41/42/43/44 merged source; #32/#35 CLOSED, #33/#34/#36 OPEN cho pilot. Wrangler4.152 deployments list/versions view chỉ đọc vẫn thấy3Worker legacy; public/preview23/10 12:25UTC, API14:31UTC, DB/ASSETS và API có2secret binding names. Không đọc secret values/upload/data rows. Metadata không chứng minh public behavior, bucket privacy hay readiness.
+- **Theo hồ sơ cũ:** private R2/r2.dev-off, real Clerk/R2/500smallfiles, browser sandbox/owner reports, Desktop image và VM lab pins giữ provenance ở PR24/27/29 và lab22/10. Không dùng chúng làm A' acceptance. Runtime VM/Desktop/rows D1/replication/currentIAM/currentR2privacy chưa kiểm phiên37.
+- Đã đồng bộ AGENTS/PLAN/README/ARCHITECTURE/Agent Guide/plan A': Node/PostgreSQL quản trị duy nhất, D1 qua outbox/projector/recovery, một Worker chỉ đọc ở code/test/review/deploy gate (native capability không IAM read-only), preview Node/VM. Plan37 sửa wording thực thi đóng thành đề xuất theo liveIssue37;60giây vẫn proposal. Token account/storage/rotation đã chốt, không hỏi giá trị.
+- **Còn lại:** owner review PR45 và quyết từng legacy item. Chỉ sau owner báo merge45 mới chuẩn bị #38 trong branch/Draft riêng. Remote projector/rebuild/Worker deploy/legacy writer freeze+retirement/Node runtime+secret/VM-off drills đều cần duyệt scoped riêng. #38 phải kiểm D1 data gate gồm legacy, không tự xóa;500file provider/p50/p95, revoke/incident/auth/ownership/audit/preview/logging/VM independence còn mở. #10 security/release và #40 dependency issue giữ riêng. Không auto Ready/merge/deploy/poll/cài lịch.
+
+## Snapshot Issue #36 trước merge — lịch sử
+
 > **2026-10-24 — Issue #36 / [Draft PR #44](https://github.com/cfotel2604/html-share-platform/pull/44)**. Base main `f6c78340983060687b969d7aae0e2f7e80ebd381`; live PR43 MERGED sau owner báo. #33/#34 vẫn OPEN cho pilot gates. Source/test head `3601b0b222e720934ac32adea8dbf7bbb8eda35e`. Các trạng thái Draft43/đợi merge bên dưới là lịch sử.
 
 ## A'-5 — Worker public: local/CI đạt, pilot chờ duyệt riêng
