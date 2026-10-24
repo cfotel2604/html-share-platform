@@ -47,6 +47,6 @@ test('administration source has no Worker bridge, D1 REST writer or session mint
   const paths = await files(new URL('../src/', import.meta.url));
   for (const path of paths.filter(path => /\.[cm]?[jt]sx?$/.test(path.pathname))) {
     const source = await readFile(path, 'utf8');
-    assert.doesNotMatch(source, /CLOUDFLARE_(?:API|SERVICE|D1)|workers\.dev|api\.cloudflare\.com|\.withSession\(|refreshSession\(|getToken\(|createSessionToken\(/, path.pathname);
+    assert.doesNotMatch(source, /CLOUDFLARE_(?:API|SERVICE|D1)|D1_PROJECTOR|public[-_]projector|project-public-outbox|public_read_model|workers\.dev|api\.cloudflare\.com|\.withSession\(|refreshSession\(|getToken\(|createSessionToken\(/, path.pathname);
   }
 });

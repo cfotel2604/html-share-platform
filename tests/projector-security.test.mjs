@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { test } from 'node:test';
 import { createD1Writer,validateEvent,ProjectionError,MIN_INTERVAL_MS } from '../scripts/lib/public-projector.mjs';
 import { runProjector } from '../scripts/project-public-outbox.mjs';
@@ -35,4 +35,16 @@ test('payload whitelist rejects management data before any REST request',async()
     const invalid=structuredClone(event);mutate(invalid.payload[0]);
     assert.throws(()=>validateEvent(invalid),error=>error.code==='invalid_event');
   }
+});
+
+test('only the separate projector owns D1 REST credentials/dispatch in runtime scripts',async()=>{
+  async function scan(directory) {
+    for(const entry of await readdir(directory,{withFileTypes:true})) {
+      const path=new URL(entry.name+(entry.isDirectory()?'/':''),directory);
+      if(entry.isDirectory()){await scan(path);continue;}
+      if(!path.pathname.endsWith('.mjs') || /\/(?:lib\/public-projector|project-public-outbox)\.mjs$/.test(path.pathname))continue;
+      assert.doesNotMatch(await readFile(path,'utf8'),/api\.cloudflare\.com|D1_PROJECTOR|d1\/database/,path.pathname);
+    }
+  }
+  await scan(new URL('../scripts/',import.meta.url));
 });
