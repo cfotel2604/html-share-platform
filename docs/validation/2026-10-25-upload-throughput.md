@@ -1,0 +1,11 @@
+# Issue52 — bounded upload throughput
+
+Refs #52 / #38. Main baseb8ae10f includes owner-merged51. Owner confirmed actual500fileUIcreate/publiclink success but reported slow upload. PGtransaction25312.779ms; Nodeoperator22536.593ms. Read-only R2sweeps verified all500SHA256each:6concurrent7407ms/92.4MiBRSS,12concurrent3489ms/104.8MiBRSS. These single sweeps are not a fullPUT/HTTPperformance guarantee.
+
+Prepare fixed12transfer bound while preserving authorization/quota/conditionalPUT/readback/atomicmanifest/audit/outbox, first-error scheduling stop and complete in-flight drain before cleanup. Tests and exact-headCI will be recorded. No runtime/secret/Cloudflare operation in this branch; ownermerges, then48must integrate/revalidate/newimage before live claims.
+
+The patch raises only the fixed transfer ceiling from 6 to **12** and gives it a named constant. It preserves the drain logic accepted in PR51; no configurable unbounded fan-out, quota change, provider timeout increase or skipped readback. The 500-file regression checks all PUT/readbacks complete before COMMIT and manifest order stays stable. The controlled failure case now starts 12 of 24 assets, holds peer PUTs while the first readback fails, then proves all 12 settle before rollback/cleanup. A later unconfirmed PUT remains untouched; no further tasks start and no late object reappears.
+
+Commands run locally on this branch: `npm run lint`, `npm run typecheck`, `npm test` (**163/163**), `npm run build`, documentation/YAML checks and `git diff --check` — PASS. Existing ownership, audit, collision, cleanup and uncertain-COMMIT regressions remain. Exact final head and its own CI are recorded in Draft53. No new synthetic object, token, runtime image or VM change was made by this branch.
+
+The R2 benchmark used the Node preview reader credential on the actual 500-object fixture. It performed two verified GET sweeps, one per ceiling, without writes or D1 requests. Connection warming and a single sweep per setting limit its generality. It supports a reviewed 12-transfer trial; it does **not** establish full PUT+readback or HTTP latency at 12. After owner merges53, integrate48, run exact-head checks, build/pin a new image, then repeat actual upload and retain every failure/result alongside the earlier 146.8s,22.5s and25.3s observations.
