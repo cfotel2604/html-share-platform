@@ -62,3 +62,7 @@ Nguồn: [hướng dẫn D1 chính thức](https://github.com/cloudflare/cloudfl
 Trong nano: `Ctrl+O`, `Enter`, rồi `Ctrl+X`. Mỗi giá trị nằm trên đúng một dòng sau dấu `=`. Chỉ báo **“đã điền”** sau khi lưu; không gửi giá trị hoặc nội dung file.
 
 Agent kiểm tra quyền file, required-field booleans và Compose config ở chế độ quiet; không in secret. Sau đó mới tiếp tục bước PG/migrate/web/preview/projector và target/scope/readback theo rollout plan. Việc tạo file hoặc điền đủ trường chưa phải bằng chứng token đúng scope, R2readback, public projection, SLO, preview/browser hay10PASS. Không tự thay upstream khi candidate chưa qua các kiểm tra cần thiết.
+
+## Admin ban đầu trên PostgreSQL mới
+
+Sau khi web/preview/PG đã healthy, file riêng root0600 `/opt/hsp-aprime/secrets/bootstrap-admin.json` được tạo với email trống. Owner mở `nano /opt/hsp-aprime/secrets/bootstrap-admin.json`, điền email đăng nhập Clerk lab vào trường `email`, giữ `action=allow` và `role=admin`, lưu rồi báo trạng thái. Không gửi email/nội dung file vào chat. Agent truyền file trực tiếp qua stdin vào `scripts/auth-allowlist.mjs` trong Node job có PGcredentials và audit; không đưa identity vào arguments/log/receipt/Git, không sao chép users/allowlist cũ. Đây là cấu hình initialAdmin, chưa là bằng chứng đăng nhập Clerk thành công.
