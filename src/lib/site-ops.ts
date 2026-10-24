@@ -44,7 +44,7 @@ export async function uploadVersion(actor: Actor, file: File, name: string, exis
     }
     publicContentOrigin(); // Fail bad public configuration before any object side effect.
     // Existing-site ownership is locked before ZIP ingest and every storage side effect.
-    let assets;
+    let assets: Awaited<ReturnType<typeof parseSite>>;
     try { assets = await parseSite(file); } catch (error) {
       throw new UploadError(error instanceof Error ? error.message : "File không hợp lệ", 400);
     }
@@ -59,22 +59,38 @@ export async function uploadVersion(actor: Actor, file: File, name: string, exis
       })))],
     );
     await ensureBucket();
-    const verifiedManifest = [];
-    for (const asset of assets) {
-      const key = `${prefix}/${asset.path}`;
-      // Only a successful conditional PUT proves we created this object. A failed/lost
-      // acknowledgment could be a collision: never delete that key speculatively.
-      let etag;
-      try { etag = await storeFile(key, asset.body, asset.type); }
-      catch (error) {
-        console.warn("upload.put_outcome_unconfirmed", { version, confirmedObjectCount: attempted.length });
-        throw error;
+    const verifiedManifest = new Array<{
+      path: string; type: string; size: number; sha256: string; etag: string;
+    }>(assets.length);
+    let nextAsset = 0, failed = false, failure: unknown;
+    async function transfer() {
+      while (!failed) {
+        const index = nextAsset++;
+        if (index >= assets.length) return;
+        const asset = assets[index];
+        try {
+          const key = `${prefix}/${asset.path}`;
+          // Only a successful conditional PUT proves we created this object. A failed/lost
+          // acknowledgment could be a collision: never delete that key speculatively.
+          let etag;
+          try { etag = await storeFile(key, asset.body, asset.type); }
+          catch (error) {
+            console.warn("upload.put_outcome_unconfirmed", { version, confirmedObjectCount: attempted.length });
+            throw error;
+          }
+          attempted.push(key);
+          const sha256 = createHash("sha256").update(asset.body).digest("hex");
+          const verifiedEtag = await readbackFile(key, { size: asset.body.length, sha256, etag });
+          verifiedManifest[index] = { path: asset.path, type: asset.type, size: asset.body.length, sha256, etag: verifiedEtag };
+        } catch (error) {
+          if (!failed) { failure = error; failed = true; }
+        }
       }
-      attempted.push(key);
-      const sha256 = createHash("sha256").update(asset.body).digest("hex");
-      const verifiedEtag = await readbackFile(key, { size: asset.body.length, sha256, etag });
-      verifiedManifest.push({ path: asset.path, type: asset.type, size: asset.body.length, sha256, etag: verifiedEtag });
     }
+    // Bounded I/O shortens large requests without increasing ZIP/RAM quotas.
+    // Drain every started transfer before rollback/cleanup, including late PUTs.
+    await Promise.all(Array.from({ length: Math.min(6, assets.length) }, () => transfer()));
+    if (failed) throw failure;
     await client.query("UPDATE site_versions SET asset_manifest=$2::jsonb WHERE id=$1", [version, JSON.stringify(verifiedManifest)]);
     await client.query(
       `UPDATE sites SET active_version_id = $2, display_name = $3, status = 'published',
