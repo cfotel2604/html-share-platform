@@ -20,6 +20,8 @@ flowchart TD
 
 ## Ranh giới UI có thể thay thế
 
+Theo [ADR-0006](adr/0006-postgresql-source-of-truth-d1-public-read-model.md), PostgreSQL/Node là đường quản trị duy nhất; D1 chỉ public read model qua projector tương lai. Issue35/PR41 khóa backendcloudflare, gộp workspacebootstrap ở Node, giữ VMpreviewgrant và thêm conditionalPUT/readback trước PostgreSQLcommit. Không đưa APIWorker/tokenbridge từ stack chưa merge vào main. [Contract/validation](NODE_POSTGRES_ADMIN.md); projector33 và Worker36 là phạm vi riêng, chưa có publiccutover trong thay đổi này.
+
 Theo [ADR-0002](adr/0002-replaceable-studio-ui.md), Studio dùng component presentation → workflow hook → typed HTTP adapter → `/api/*` Route Handlers → server services. Components/features không import database, storage hoặc server auth; ESLint enforce ranh giới này. Vì vậy có thể thay giao diện hoặc client mà không viết lại ingest/publish/storage. Backend vẫn cùng container Next.js ở lab; tách process/service về sau là quyết định deployment riêng, giữ session/CSRF và origin isolation.
 
 ## Data model dự kiến

@@ -1,4 +1,7 @@
+import { assertPostgresBackend } from "../../scripts/metadata-backend.mjs";
+
 export function authMode() {
+  assertPostgresBackend();
   const mode = process.env.AUTH_MODE ?? (process.env.LOCAL_DEMO_MODE === "1" ? "local-demo" : "disabled");
   return mode === "clerk" || mode === "local-demo" ? mode : "disabled";
 }

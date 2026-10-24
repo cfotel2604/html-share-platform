@@ -1,8 +1,10 @@
 import pg from "pg";
+import { assertPostgresBackend } from "./metadata-backend.mjs";
 
 // Operator-only stdin JSON. No emails or identities are printed or passed in shell arguments.
 // {"action":"allow|revoke|disable-user","email":"...","role":"employee|admin","actorId":"UUID"}
 export async function applyPolicy(client, input) {
+  assertPostgresBackend();
   const email = typeof input.email === "string" ? input.email.trim().toLowerCase() : "";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) throw new Error("Invalid email");
   if (!["allow","revoke","disable-user"].includes(input.action)) throw new Error("Invalid action");

@@ -1,5 +1,19 @@
 # Project status — HTML Share Platform
 
+> **2026-10-24 — Issue #35 / [Draft PR #41](https://github.com/cfotel2604/html-share-platform/pull/41)**. Base main `664e6c0` (PR39 MERGED/#32 CLOSED, live GitHub verified); implementation `da92385d4531d07884aafa228d7fec135c207891`. Các snapshot #32/#39 Draft bên dưới là lịch sử trước merge.
+
+## A'-4 — Node/PostgreSQL administration
+
+Đã khóa backendcloudflare/unknown ở startup/auth/DB/readiness/operator boundaries; chỉ PostgreSQL hợp lệ. Main không có APIWorker/tokenbridge của stack chưa merge và không nhập stack đó. Bootstrap một `/api/workspace`, Clerkchain một lượt, policy/listSQL local; health không gọi provider. Preview giữ VMgrant3phút/ADR0003, sandbox và UIpresentation không đổi.
+
+Node upload dùng conditionalcreate PUT và stream readback size/SHA256/ETag trước finalmanifest/pointer/audit COMMIT; ETag thêm vào JSONB, không SQLmigration. Cleanup chỉ confirmed-new keys; PUTack chưa rõ giữkey/logversion-count để tránh xóa collision. Có thể còn privateorphan cần reconciliation; COMMITunknown giữobjects/503 như cũ.
+
+**Đã kiểm:** 113unit/lint/typecheck/build/docs/YAML/diff PASS; standalone badbackend khôngready. Cả3CI tại `da92385` SUCCESS, có real PostgreSQL/MinIO500file, workspace, permissions/audit/policylocks, preview và sharelifecycle. [Validation](validation/2026-10-24-node-postgres-admin.md), [contract](NODE_POSTGRES_ADMIN.md). Follow-up chỉdocs; CIhead mới xem PRChecks.
+
+**Còn mở:** live R2/IAM/latency và runtime/pilot/production thuộc38/10; không suy MinIO thành R2live. PR41 Draft/#35 OPEN chờ owner review/merge. Không chạm D1pilot/0004/Workers/VM/localDocker/ownerworktrees/privatefiles; migrations/package/Compose/Dockerfile giữ nguyên. Không làm projector33/Worker36; dependencyrisk40 giữ riêng. Bước tiếp theo là owner source review, không tự deploy.
+
+## Snapshot Issue #32 trước merge — lịch sử
+
 > Snapshot **2026-10-24 (Asia/Saigon)** — Issue #32 / [Draft PR #39](https://github.com/cfotel2604/html-share-platform/pull/39), implementation `b18d2a23d5ee9de4b55b195daf1d96fbb8215ea4`. Đã fetch/kiểm GitHub: `origin/main` là `8ce25b1` sau PR #30; primary checkout vẫn `main` `78cb7ca`, chậm 55 commit và được giữ nguyên. Bản ghi 22/10 bên dưới là lịch sử, không đại diện trạng thái pilot/GitHub ngày24/10.
 
 ## Mốc A' — Issue #32

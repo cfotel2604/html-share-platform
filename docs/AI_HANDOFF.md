@@ -1,5 +1,18 @@
 # AI Agent handoff — HTML Share Platform
 
+> **2026-10-24 — Issue #35 / [Draft PR #41](https://github.com/cfotel2604/html-share-platform/pull/41)**. `feat/35-node-postgres-admin` từ main `664e6c0`, implementation `da92385d4531d07884aafa228d7fec135c207891`. Live GitHub: PR39 MERGED/#32 CLOSED; snapshot #32 bên dưới là lịch sử. [Validation](validation/2026-10-24-node-postgres-admin.md), [Node contract](NODE_POSTGRES_ADMIN.md).
+
+## Tiếp tục #35
+
+- Worktree riêng `C:\Users\admin\.codex\worktrees\35-node-postgres\html-share-platform`; giữ nguyên ownerworktrees/privatefiles. DraftPR mở sớm tại2ffcb26. Đọc AgentGuide/ADR0006/Issue4/ADR0003 và kiểm live refs trước khi tiếp tục.
+- Chỉ PostgreSQL: unset hoặc METADATA_BACKEND=postgres hợp lệ, cloudflare/empty/unknown bị chặn, không fallback. Không import APIWorker/tokenbridge cũ. Bootstrap một workspace request, Clerkchain một lượt và policy/listSQL local; không completed-authcache/idlepoll/providerhealth. Preview giữ VMgrant128bit/hash/site-version-actor/TTL3phút và sandbox.
+- Upload conditionalPUT + boundedstream size/SHA256/ETag readback trước JSONBmanifest/pointer/auditCOMMIT; SQL0001–0003 không sửa. Cleanup chỉ confirmed-new keys; PUTack chưa rõ giữkey/logversion-count, có thể còn privateorphan cần reconciliation. COMMITunknown giữobjects/503. Đọc runbook trước khi đổi cleanup.
+- **Agent-checked da92385:** 113/113unit/lint/typecheck/build PASS (retry còn inheritedNextwarning40); standalone unsupportedbackend guard/HTTP500 khôngready. Docs/YAML/diff PASS. Cả3CI SUCCESS tại exacthead, có PostgreSQL/S3integration500file/permissions/audit/preview/sharelifecycle. [Links/giới hạn](validation/2026-10-24-node-postgres-admin.md). Head sau chỉdocs vẫn xem Checks mới.
+- **Không làm:** D1pilot/remote0004/migrations/Worker/VM/localDocker/ownerprivateconfig/runtimecutover. Existing CI dùng runner/service disposable riêng. Không có R2live/IAM/latency/realClerkcutover acceptance; #38/#10 và risk40 còn riêng.
+- **Còn mở:** PR41 Draft/#35 OPEN chờ owner review/merge; không tự Ready/merge/deploy hoặc làm33/36. Rollback giữ PostgreSQLschema/history/manifestfields; không bật backendCloudflare. PR19/21–24/27/29 vẫn Draft, disposition thuộc37.
+
+## Bàn giao Issue #32 trước merge — lịch sử
+
 > Phiên **2026-10-24 (Asia/Saigon)** — Issue #32 / [Draft PR #39](https://github.com/cfotel2604/html-share-platform/pull/39), implementation `b18d2a23d5ee9de4b55b195daf1d96fbb8215ea4`, branch `feat/32-d1-public-read-model` từ `origin/main` `8ce25b1` (PR #30 MERGED). [Validation](validation/2026-10-24-d1-read-model.md), [contract/migration](D1_PUBLIC_READ_MODEL.md). Mục22/10 bên dưới là bằng chứng lịch sử; không suy ra runtime hoặc GitHub hiện tại.
 
 ## Tiếp tục Issue #32 / kiến trúc A'
