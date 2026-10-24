@@ -14,7 +14,7 @@ Issue36 / plan Issue5 says no write binding / read-only bindings. Cloudflare's n
 
 Owner chose application read-only: **only the fixed parameterized SELECT from resolve.sql and R2GET/HEAD pinned to manifest path/size/ETag**, enforced by code/tests/review/deploy gate. No dynamic SQL, write SQL/batch, R2put/delete, management routes or management secret. Native binding capability is broader; this is **not provider IAM read-only**. This is a clarification of ADR0006, **not an exception**, and grants no pilot deployment approval. ADR0006, the plan and Agent Guide record this decision; do not ask it again or describe a facade/type as IAM enforcement.
 
-Keep PR44 Draft for owner review. Wait for owner merge reports in chat; no merge-monitor automation or automatic Ready/merge/deploy.
+PR44 source is now MERGED; runtime cutover remains unrun. [Draft PR46 / #38 preparation](PILOT_APRIME_ACCEPTANCE.md) does not authorize deployment. Wait for owner instructions; no merge-monitor automation or automatic Ready/merge/deploy.
 
 ## Runtime contract
 
@@ -57,7 +57,7 @@ Miniflare tests execute the actual bundle with fresh local D1/R2, block/count ou
 
 Before proposing an actual deployment, owner separately approves a concrete private config/artifact/target/rollback plan and verifies account/database/bucket against the private receipt, existing read-model schema/ledger and replication-disabled/primary policy. Do not reapply D1migration0004. Check the **actual deployed** binding/secret inventory, because absence from a template does not prove old secrets/bindings have disappeared. Native capabilities remain broader even after this inventory. Existing API/preview Workers and old stack disposition/cutover belong to #37/#38; this PR has not retired or deployed any resource.
 
-Still unverified: deployed single-public-Worker state, real binding/secret inventory, real VM/Node/PostgreSQL-offline200 and logs both sides, real R2/IAM/latency, browser cookie/sandbox compatibility/mobile/Zalo and pilot revoke404 propagation. The60second target remains a proposal, not accepted SLO. Node projector secrets/rotation stay in Node's secret store; none belongs in this Worker/config/browser or PR.
+Still unverified: deployed single-public-Worker state, real binding/secret inventory, real VM/Node/PostgreSQL-offline200 and logs both sides, real R2/IAM/latency, browser cookie/sandbox compatibility/mobile/Zalo and pilot revoke404 propagation. Owner confirmed #38 healthy revoke→public404 p95≤60s and pending>60s warning/Admin pending; these are unmeasured pilot gates, not a60s guarantee during projector/REST outage. Report actual incident lag/depth/recovery/containment separately; [preparation/approval packets](PILOT_APRIME_ACCEPTANCE.md). Node projector secrets/rotation stay in Node's secret store; none belongs in this Worker/config/browser or PR.
 
 Rollback before deployment has no runtime effect: retain current source/runtime and additive schema/history. Any later rollout/rollback is separately approved and must preserve the public read-model contract, tombstones and fail-closed serving; never restore a management/preview Worker or direct R2/legacy serving bypass as a shortcut.
 

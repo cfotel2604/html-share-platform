@@ -1,5 +1,17 @@
 # Project status — HTML Share Platform
 
+> **2026-10-24 — Issue #38 preparation / [Draft PR #46](https://github.com/cfotel2604/html-share-platform/pull/46)**. Owner báo merge45; fetch/GitHub xác nhận main `76b38faf169477af480690f222123214f4d8c3c5`, PR45 MERGED13:58:40UTC, head `eecf6cc` ba checks SUCCESS. Branch `docs/38-pilot-acceptance-prep`, early scope `1549b17`; exact final head/CI trong PR46. Snapshot Draft45/đợi merge45/ngưỡng còn proposal bên dưới là lịch sử trước quyết định38.
+
+## A'-7 — đã chuẩn bị, chưa nghiệm thu pilot
+
+- Owner **đã chốt** p95 commit revoke→public404≤60giây khi projector/REST khỏe; cảnh báo bất kỳ revoke pending>60giây + Admin chưa đồng bộ. Khi projector/REST dừng, không bảo đảm chặn trong60giây: công bố riêng độ trễ thực tế/outbox/recovery/containment, không trộn hoặc giấu khoảng sự cố trong p95 khỏe. ADR/Guide/plan/runbooks cập nhật; đây là policy, chưa phải remote PASS/approval.
+- [Hồ sơ #38](PILOT_APRIME_ACCEPTANCE.md) có7approval packets A–G,12scenario rows, phương pháp đo/phân loại và containment/rollback; [validation/remote ledger](validation/2026-10-24-aprime-pilot-preparation.md) ghi rõ **mọi gate remote NOT RUN/OPEN**. D1 cần kiểm cả legacy và owner quyết phương án dữ liệu/target trước projection; không tự xóa/copy ngược D1→PG. Cần fence old writers, NodePG/secret/collector riêng, actual deployed bindings/secrets/singleWorker, readback và compatible rollback; không suy quyền từ merge45.
+- **Đã kiểm local** trên source không đổi từ76b38fa: npmci,162/162unit,12batch/12event benchmark PGlite/localD1/syntheticR2 (n6/1file và n6/500file), localWorkerbundle175478bytes. Local p50/p95 chỉ COMMIT-ack→projected-marker, không actualCOMMIT→public404/pilot. #40 audit warnings kế thừa, không sửa dependency. Docs/check/head/CI trong PR46; không code/SQL/config/lockfile thay đổi.
+- **Chưa chạy:** Cloudflare/realD1/R2/Workerdeploy/retirement/projector/rebuild/PGVMmigration/tokenrotate/VM/SSH/localDocker/ownerprivatefiles. Historical metadata3Workers ở#37 không được coi là triển khai mới hoặc readiness hiện tại. Source39/41/42/43/44/45 đã merge;33/34/36/37/38/10/40 còn OPEN tại recheck. Quyết định đóng legacy7PR/5Issues vẫn chờ owner.
+- PR46 giữ Draft; chỉ phần chuẩn bị hoàn tất. Chờ owner review và giao packet cụ thể; không tự thực thi remote, autoReady/merge/deploy hoặc cài lịch/poll. #10/production và #40 riêng; ownerworktrees/main78cb7ca/env/untracked/uploads/volumes giữ nguyên.
+
+## Snapshot Issue #37 trước merge — lịch sử
+
 > **2026-10-24 — Issue #37 / [Draft PR #45](https://github.com/cfotel2604/html-share-platform/pull/45)**. Owner báo merge44; đã fetch/kiểm GitHub: main `85f39e21f2dfda8f50239ecfa172369cc98f5845`, PR44 MERGED13:23:09UTC, head `60f1f74` bốn checks SUCCESS. Branch riêng `docs/37-architecture-disposition`, scope mở Draft tại `65207aa`. Exact final head/CI ở PR45; [validation](validation/2026-10-24-adr0006-transition.md). Mọi trạng thái đợi merge44/Draft44 bên dưới là lịch sử.
 
 ## A'-6 — đề xuất disposition và đồng bộ kiến trúc

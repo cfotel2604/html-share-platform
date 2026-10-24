@@ -1,5 +1,7 @@
 # ADR-0006 transition / PR and Issue disposition — Issue #37
 
+> Snapshot of Issue37 before PR45 merged. Owner subsequently confirmed healthy revoke p95≤60s/pending warning>60s for #38, with incidents reported separately and no outage guarantee; current policy/preparation is in [PILOT_APRIME_ACCEPTANCE](PILOT_APRIME_ACCEPTANCE.md). The proposal-only threshold and Draft45 wording below are historical. Per-item legacy dispositions remain pending; no remote cutover follows from merge45.
+
 Refs #37 / Epic #31. Base freshly fetched main `85f39e21f2dfda8f50239ecfa172369cc98f5845` after owner reported PR44 merged. PostgreSQL/Node is the sole administration source; D1 is a public read model through outbox/projector/recovery; one public Worker, preview remains Node/VM. Native bindings are application-read-only by code/test/review/deploy gate, not IAM read-only.
 
 ## Scope and authority

@@ -41,7 +41,7 @@ Tài liệu này chia việc thành một Epic và 7 Issue con. Mỗi Issue con 
 **Phạm vi:**
 - Bảng outbox trong PostgreSQL (migration PostgreSQL mới, additive): sự kiện thay đổi trạng thái public (publish, unpublish, revoke, rotate, đổi active version) được ghi **trong cùng transaction** với thay đổi trạng thái; có số thứ tự/`projection_version`, trạng thái chiếu, số lần thử, lỗi gần nhất.
 - Projector trong Node: vòng lặp/job đọc outbox chưa chiếu theo thứ tự, đẩy D1 qua Cloudflare REST API — **một batch idempotent cho mỗi sự kiện**, guard `projection_version` phía D1; retry với backoff khi REST lỗi/429; sự kiện revoke được ưu tiên trước sự kiện thường.
-- Quan sát: log/metric độ trễ chiếu (commit → projected), độ sâu outbox, cảnh báo khi revoke chưa chiếu quá ngưỡng (mặc định đề xuất 60 giây, cấu hình được).
+- Quan sát: log/metric độ trễ chiếu (commit → projected), độ sâu outbox. Owner chốt #38: cảnh báo revoke pending>60giây + Admin chưa đồng bộ; p95 commit revoke→public404≤60giây khi projector/REST khỏe. Sự cố báo riêng thực tế/outbox/recovery/containment, không bảo đảm chặn trong60giây; xem [hồ sơ #38](PILOT_APRIME_ACCEPTANCE.md). Cấu hình được nhưng không tự nới gate owner.
 - Trạng thái đồng bộ hiển thị cho Admin/API của Studio: site có đang chờ chiếu hay không.
 
 **Ngoài phạm vi:** rebuild toàn bộ (Issue 3), thay đổi Worker (Issue 5).
@@ -121,6 +121,8 @@ Live [Issue #37](https://github.com/cfotel2604/html-share-platform/issues/37) gi
 
 ## Issue 7 — Gate bảo mật, vận hành và nghiệm thu pilot A'
 
+**Chuẩn bị sau PR45 merge:** [plan và serial approval packets](PILOT_APRIME_ACCEPTANCE.md), [validation/remote ledger](validation/2026-10-24-aprime-pilot-preparation.md). Owner đã chốt hai ngưỡng ở trên; healthy p95 và incident evidence phải công bố riêng, không lựa chọn loại mẫu sau khi biết kết quả. Merge/source hoặc chốt ngưỡng không cấp quyền projector/rebuild/deploy/VM/retirement/secret/cleanup; từng bước cần duyệt riêng. Acceptance pilot vẫn mở.
+
 **Phụ thuộc:** Issue 1–5.
 
 **Phạm vi:**
@@ -130,7 +132,7 @@ Live [Issue #37](https://github.com/cfotel2604/html-share-platform/issues/37) gi
 - Cập nhật runbook và ghi bằng chứng validation; liệt kê rõ gate nào của #10 còn mở sau pilot này (dự kiến: production Clerk/OAuth, domain/DNS production, cookie/browser matrix đầy đủ — không tự đóng #10).
 
 **Acceptance:**
-- [ ] Toàn bộ kịch bản sự cố có kết quả ghi lại; không kịch bản nào dẫn tới phục vụ nội dung đã revoke quá ngưỡng đã công bố, hoặc ghi nhận thành gate mở với mức rủi ro rõ ràng.
+- [ ] Kịch bản khỏe đạt p95 commit revoke→public404≤60giây; cảnh báo pending>60giây/Admin chưa đồng bộ được kiểm. Toàn bộ sự cố công bố riêng latency/depth/recovery/containment và khoảng public có thể còn stale; không hứa60giây khi projector/REST dừng. Mọi lỗi/inconclusive/rủi ro chưa xử lý ghi gate mở, không gộp hoặc loại ngầm khỏi số liệu khỏe.
 - [ ] Số liệu revoke propagation và độ trễ chiếu được công bố trong tài liệu validation.
 - [ ] Owner nghiệm thu pilot và quyết định riêng về các bước tiếp theo; không có bước nào trong Issue này tự phê duyệt production.
 
