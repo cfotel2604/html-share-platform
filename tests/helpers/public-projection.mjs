@@ -40,17 +40,19 @@ export async function localD1() {
     }
     assert.equal(pending.trim(),'');
   } finally { parser.close(); }
-  const calls=[], history=[];
+  const calls=[], history=[], reads=[];
   let failure;
   const fetcher=async (_url,options) => {
-    const request=JSON.parse(options.body); calls.push(request);
+    const request=JSON.parse(options.body);
+    const read=request.batch.every(item=>item.sql.trimStart().startsWith('SELECT'));
+    (read?reads:calls).push(request);
     if (failure) return failure();
     const result=await db.batch(request.batch.map(item=>db.prepare(item.sql).bind(...item.params)));
-    history.push(request.batch.map(item=>({code:item.params[0],status:item.params[2],version:item.params[5]})));
+    if(!read)history.push(request.batch.map(item=>({code:item.params[0],status:item.params[2],version:item.params[5]})));
     return Response.json({success:true,result});
   };
   const send=createD1Writer({accountId:'a'.repeat(32),databaseId:'00000000-0000-0000-0000-000000000033',token:'synthetic-projector-token-only',fetcher});
-  return {db,send,calls,history,fail:handler=>{failure=handler;},close:()=>mf.dispose()};
+  return {db,send,calls,reads,history,fail:handler=>{failure=handler;},close:()=>mf.dispose()};
 }
 
 export async function seedActor(pool, suffix='one', role='employee') {

@@ -1,5 +1,18 @@
 # AI Agent handoff — HTML Share Platform
 
+> **2026-10-24 — Issue #34 / [Draft PR #43](https://github.com/cfotel2604/html-share-platform/pull/43)**. Worktree `C:\Users\admin\.codex\worktrees\34-read-model-recovery\html-share-platform`, branch `feat/34-read-model-recovery`, base main `a98a1d6` (PR42 MERGED verified sau owner báo). Source head `78fcb63dac63e34f92aae156ba868a2a9a00cd18`. [Runbook](READ_MODEL_RECOVERY.md), [validation](validation/2026-10-24-read-model-recovery.md).
+
+## Tiếp tục sau #34
+
+- Owner sửa quy trình: **chờ owner báo merge trong chat**, không tự theo dõi/poll merge. Automation `html-share-a-fast-track-draft` đã DELETE, tool confirmed deleted. Không tạo lại. Chuỗi còn36→37→chuẩn bị38; mỗi issue branch/Draft riêng, Refs, exact-head checks/handoff; không auto Ready/merge/deploy. Các đoạn heartbeat/Draft42 bên dưới là lịch sử và không còn chỉ dẫn hiện hành.
+- Rebuild/reconcile là CLI Node riêng mặc định tắt, không endpoint quản trị mới. Dry-run redacted + fingerprint; apply replan/recheck source, xác minh Admin/allowlist, audit/outbox cùng transaction/chunk, drain qua projector cũ. D1 SELECT page20 chia sẻ advisory lock/slot5giây với write;429/auth cooldown. Không đổi applied PG/D1 migrations, read-model SQL, dependency versions hoặc Studio/Worker.
+- **Agent-checked `78fcb63`:**142unit,12local recovery cases, cả4CI SUCCESS gồm5nhóm realPG outbox/recovery và security500file/RBAC/ownership/audit/preview/origin; build retry/standalone guard PASS, inheritedNextwarning40 giữ riêng. Source race từng lộ queue partial trước initial recheck, đã thêm complete-source prevalidation rồi per-chunk lock/recheck; later races vẫn có thể để lại earlier audited chunks hợp lệ. Audit link ghi planfingerprint:eventID cùng runUUID. Không hứa atomic toàn run. Validation có exact commands/URLs.
+- **Independent reader đã đạt local gate:** owner cho phép1agent, `recovery_runbook_reader` đọc runbook và chạy npmci/12tests tại78fcb63, exit0, worktree sạch, không ambiguity cản thực thi. Receipt ghi Node24/npm11, warnings kế thừa và giới hạn coreAPI/syntheticthrottle/unknowncode-detection. Không suy thành operatorremote/COMMITfailure/R2live/Worker404. Chưa remote read/write/projector/rebuild/VM/localDocker/Workerdeploy/ownerprivatefiles.60giây vẫn proposal. #33 OPEN cho pilot gates, không tự đóng từ source merge.
+- Trước real apply cần owner duyệt riêng concrete target/diff/scope; giữ tokenpolicy33, không xin/paste giá trị. Wrong identity, unknown code, D1 tombstone/live conflict hoặc target revision ahead bị block; không reset source sequence theo D1/xóa tombstone/nới SQLguard. Legacy thiếu verifiedETag cần Node verified reupload, denial còn được. Snapshot giới hạn10000codes/16MiB; quá giới hạn dừng, không partial-success. Đọc incident runbook cho RESTdown/emergency revoke/containment/audit.
+- PR43 giữ Draft chờ owner review và báo merge. Sau báo merge mới fetch/kiểm GitHub/main/đọc guide và bắt đầu36 từ main mới, không tự làm36 trước. Ownercheckout main78cb7ca/worktrees/private env/uploads/volumes giữ nguyên; không reset/clean. PR19/21–24/27/29 disposition thuộc37, #40 dependency risk riêng.
+
+## Bàn giao Issue #33 trước merge — lịch sử
+
 > **2026-10-24 — Issue #33 / [Draft PR #42](https://github.com/cfotel2604/html-share-platform/pull/42)**. Branch `feat/33-transactional-outbox`, base main `40b0dd9` sau PR41. Live PR39/41 MERGED, #32/#35 CLOSED. Implementation `9a0b1f6`, final source/regression head `004792a4c8326e6b24cbc8708cf7dc4b8ca5c352`. [Runbook](PUBLIC_PROJECTOR.md), [validation](validation/2026-10-24-public-projector.md). Snapshot #35/#32 bên dưới là lịch sử.
 
 ## Tiếp tục chuỗi A' sau #33

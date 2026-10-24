@@ -49,6 +49,8 @@ Trước khi viết code, hãy nêu ngắn gọn trong PR (hoặc báo owner n�
 
 ## 5. Các câu hỏi phải hỏi owner — không tự đoán
 
+**Cập nhật owner sau merge PR42, ngày2026-10-24:** chỉ tiếp issue phụ thuộc khi owner báo đã merge trong chat rồi kiểm chứng GitHub/main. Không cài hoặc giữ lịch theo dõi/poll merge; heartbeat cũ đã xóa. Chuỗi34→36→37→chuẩn bị38, mỗi issue branch/Draft riêng và không tự merge/deploy, vẫn giữ nguyên.
+
 **Owner đã trả lời ngày2026-10-24 cho #33:** giữ account pilot hiện tại; token riêng `hsp-projector-pilot`, D1 Read/Write only, chỉ secret store Node/VM; rotate90ngày hoặc ngay khi nghi rò rỉ/đổi quản trị/VM bị nghi xâm nhập. Trình tự và revoke khẩn cấp ở [PUBLIC_PROJECTOR](PUBLIC_PROJECTOR.md). Không yêu cầu lại quyết định này hoặc giá trị token. Remote projector vẫn cần duyệt riêng; ngưỡng60giây chưa được owner chốt. Fast-track Draft #33→#34→#36→#37 rồi chuẩn bị#38: chỉ chuyển issue kế sau khi owner merge PR phụ thuộc, mỗi issue branch/Draft riêng, không tự merge/deploy. CLI chỉ đọc/D1 local/chuẩn bị config private mới được phép; không suy ra quyền ghi D1/VM/Docker.
 
 Dừng và hỏi owner (ghi câu hỏi trong PR/Issue) khi gặp các điểm sau, thay vì tự chọn:

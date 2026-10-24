@@ -37,6 +37,8 @@ export default defineConfig([
                 "node:*",
                 "**/public-projector*",
                 "**/project-public-outbox*",
+                "**/read-model-recovery*",
+                "**/recover-public-read-model*",
               ],
               message:
                 "Studio UI uses features/studio API contracts; server services stay behind Route Handlers.",
