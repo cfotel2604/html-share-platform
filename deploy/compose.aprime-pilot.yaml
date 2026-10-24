@@ -1,9 +1,10 @@
 # Standalone A' PILOT candidate. Never overlay the existing hsp-lab project.
-# Requires owner VM-write approval and operator-provided Node secret-store env.
+# Owner approved bounded rollout25/10; refreshed-head CI and operator secrets required.
 name: hsp-aprime-pilot
 services:
   db:
-    image: postgres:17-alpine
+    image: ${APRIME_POSTGRES_IMAGE:?Pin the reviewed PostgreSQL17 image}
+    pull_policy: never
     command: [postgres, -c, track_commit_timestamp=on]
     environment:
       POSTGRES_USER: ${APRIME_PG_USER:?Node secret-store PG user required}
