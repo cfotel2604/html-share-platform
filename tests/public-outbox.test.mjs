@@ -116,6 +116,7 @@ test('Admin sees pending status; Employee DTO excludes outbox/operational metada
   const admin={...await seedActor(pg.pool,'admin','admin'),mode:'clerk'};
   const adminSites=await services.ops.listSites(admin);
   assert.ok(adminSites.some(item=>item.projection?.pending));
+  assert.ok(adminSites.some(item=>item.projection?.revoke_overdue===true));
   const employeeSites=await services.ops.listSites(actor);
   assert.ok(employeeSites.length);assert.ok(employeeSites.every(item=>!Object.hasOwn(item,'projection')));
   assert.ok(!JSON.stringify(adminSites).includes('SYNTHETIC_SECRET_BODY'));

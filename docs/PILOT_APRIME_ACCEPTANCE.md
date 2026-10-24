@@ -4,6 +4,8 @@
 
 Refs #38 / Epic #31 / release gate #10. Base freshly fetched main `76b38faf169477af480690f222123214f4d8c3c5` after owner reported PR45 merged. ADR-0006 is the accepted target; PR39/41/42/43/44/45 source is merged. This document prepares a reviewable pilot plan, not execution authority or a completed acceptance report.
 
+**Owner update25/10:** for this pilot, warnings may appear **inside Studio**; no external alert/collector setup is required now. Admin must see pending state, overdue revoke beyond60s and failure to refresh. The visible pending screen samples every15s with fresh Node authorization; the warning threshold is evaluated by PostgreSQL. It is not an alert-delivery guarantee when the tab is closed/hidden or VM/API unavailable. Earlier collector/watchdog delivery proposals below remain deferred, not evidence of outside notification. The healthy p95/outage separation and all security boundaries remain unchanged. [Current execution evidence](validation/2026-10-24-aprime-pilot-execution.md).
+
 ## Authority and present state
 
 Authorized now: repository/source review, local empty tests and documentation, read-only Cloudflare CLI metadata where needed, new task-owned private config preparation. This task does not run pilot projector/rebuild, D1 migration/data cleanup, Worker deploy/retirement, VM/SSH/Docker, token creation/rotation/revoke, or owner-private-file inspection. No state/Draft/base/head changes or closure of legacy PRs/Issues follow from merging PR45. Their owner dispositions remain pending.

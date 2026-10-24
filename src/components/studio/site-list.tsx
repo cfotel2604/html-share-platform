@@ -72,8 +72,8 @@ function SiteRow({
           <span title={site.id}>{site.id.slice(0, 8)}</span>
         </p>
         {site.projection?.pending && (
-          <p className="studio-site-meta" role="status">
-            Chờ đồng bộ public · {site.projection.pending_events} sự kiện
+          <p className="studio-site-meta" role={site.projection.revoke_overdue ? "alert" : "status"}>
+            {site.projection.revoke_overdue ? "Thu hồi link chưa đồng bộ quá 60 giây" : "Chờ đồng bộ public"} · {site.projection.pending_events} sự kiện
             {site.projection.last_error ? " · đang thử lại" : ""}
           </p>
         )}

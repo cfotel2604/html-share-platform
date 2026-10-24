@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { studioApi, StudioApiError } from "./api";
 import type { AuthStatus, SiteSummary, StudioApi } from "./types";
+import { watchProjection } from "./watch-projection";
 type Session =
   "checking" | "unavailable" | "signed-out" | "signed-in" | "error";
 
@@ -15,6 +16,8 @@ export function useStudio(client: StudioApi = studioApi) {
   const [notice, setNotice] = useState("");
   const [retry, setRetry] = useState(0);
   const [authStatus, setAuthStatus] = useState<AuthStatus | null>(null);
+  const [syncUnavailable, setSyncUnavailable] = useState(false);
+  const watchingProjection = session === "signed-in" && authStatus?.role === "admin" && sites.some(site => site.projection?.pending);
   useEffect(() => {
     let active = true;
     (async () => {
@@ -42,6 +45,14 @@ export function useStudio(client: StudioApi = studioApi) {
       active = false;
     };
   }, [client, retry]);
+  useEffect(() => {
+    if (!watchingProjection || busy) return;
+    return watchProjection(client, {
+      sites: items => { setSites(items); setSyncUnavailable(false); },
+      unavailable: () => setSyncUnavailable(true),
+      unauthorized: () => { setSites([]); setSession("signed-out"); },
+    });
+  }, [client, watchingProjection, busy]);
   async function mutate(
     key: string,
     action: () => Promise<string>,
@@ -76,6 +87,7 @@ export function useStudio(client: StudioApi = studioApi) {
     sites,
     busy,
     error,
+    syncWarning: watchingProjection && syncUnavailable ? "Chưa cập nhật được trạng thái đồng bộ. Thông tin đang hiển thị có thể đã cũ." : "",
     notice,
     retry: () => {
       setError("");
