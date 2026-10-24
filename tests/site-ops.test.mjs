@@ -26,6 +26,7 @@ function fixture({ authorized = true, failAt, rollbackFails = false, cleanupFail
     release(discard) { released = discard; calls.push("release"); },
   };
   let writes = 0;
+  const confirmedKeys = [], unconfirmedKeys = [];
   const source = tsLoader({
     "./auth-policy": {lockActor: async (_client,current) => current},
     "./db": { db: () => ({
@@ -44,7 +45,11 @@ function fixture({ authorized = true, failAt, rollbackFails = false, cleanupFail
     },
     "./storage": {
       ensureBucket: async () => { calls.push("bucket"); },
-      storeFile: async () => { calls.push("write"); if (++writes === failAt) throw new Error("fixture operation failed"); },
+      storeFile: async key => {
+        calls.push("write");
+        if (++writes === failAt) { unconfirmedKeys.push(key); throw new Error("fixture operation failed"); }
+        confirmedKeys.push(key);
+      },
       readbackFile: async () => { calls.push("readback"); if (failAt === "readback") throw new Error("fixture readback mismatch"); return "verified-etag"; },
       removeFiles: async keys => {
         calls.push("cleanup"); removed.push([...keys]);
@@ -52,7 +57,7 @@ function fixture({ authorized = true, failAt, rollbackFails = false, cleanupFail
       },
     },
   })(new URL("../src/lib/site-ops.ts", import.meta.url));
-  return { ...source, calls, removed, released: () => released };
+  return { ...source, calls, removed, confirmedKeys, unconfirmedKeys, released: () => released };
 }
 
 for (const reason of ["unknown", "foreign-owner", "deleted"]) {
@@ -66,7 +71,10 @@ for (const reason of ["unknown", "foreign-owner", "deleted"]) {
 test("locks ownership and reserves a unique version before every storage write", async () => {
   const f = fixture();
   assert.deepEqual(await f.uploadVersion(actor, new File(["probe"], "probe.html"), "Fixture", id), { id, fileCount: 2 });
-  assert.deepEqual(f.calls, ["BEGIN", "ownership-lock", "ingest", "reserve", "bucket", "write", "readback", "write", "readback", "verify-manifest", "activate", "audit", "COMMIT", "release"]);
+  assert.deepEqual(f.calls.slice(0,5), ["BEGIN", "ownership-lock", "ingest", "reserve", "bucket"]);
+  assert.equal(f.calls.filter(x=>x==='write').length,2);
+  assert.equal(f.calls.filter(x=>x==='readback').length,2);
+  assert.deepEqual(f.calls.slice(-5), ["verify-manifest", "activate", "audit", "COMMIT", "release"]);
   assert.equal(f.released(), false);
 });
 test("a reserved-prefix collision never writes over existing objects", async () => {
@@ -87,10 +95,10 @@ for (const failAt of [2, "audit"]) {
   });
 }
 
-test("readback mismatch rolls back before activation and cleans the confirmed object", async () => {
+test("readback mismatch rolls back before activation and cleans all confirmed peer objects", async () => {
   const f = fixture({ failAt: "readback" });
   await assert.rejects(f.uploadVersion(actor, new File(["probe"], "probe.html"), "Fixture", id), /readback mismatch/);
-  assert.equal(f.removed[0].length, 1);
+  assert.deepEqual(new Set(f.removed[0]),new Set(f.confirmedKeys));
   assert.ok(!f.calls.includes("activate"));
   assert.ok(!f.calls.includes("COMMIT"));
 });
@@ -98,7 +106,9 @@ test("readback mismatch rolls back before activation and cleans the confirmed ob
 test("a failed first conditional PUT never deletes a possibly pre-existing key", async () => {
   const f = fixture({ failAt: 1 });
   await assert.rejects(f.uploadVersion(actor, new File(["probe"], "probe.html"), "Fixture", id));
-  assert.equal(f.removed.length, 0);
+  assert.equal(f.unconfirmedKeys.length,1);
+  assert.deepEqual(new Set(f.removed.flat()),new Set(f.confirmedKeys));
+  assert.ok(!f.removed.flat().includes(f.unconfirmedKeys[0]));
   assert.ok(!f.calls.includes("activate"));
 });
 test("cleanup retries idempotent deletes and preserves the original failure", async () => {
