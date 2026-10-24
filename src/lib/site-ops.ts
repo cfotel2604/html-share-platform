@@ -8,6 +8,8 @@ import { createHash } from "node:crypto";
 import { shareUrl } from "./public-url";
 import { allocateShareCode } from "../../scripts/share-codes.mjs";
 
+const MAX_ASSET_TRANSFERS = 12;
+
 export async function assertSiteOwner(actor: Actor, id: string) {
   const result = await db().query(
     "SELECT id FROM sites WHERE id = $1 AND (owner_id = $2 OR $3 = 'admin') AND status <> 'deleted'",
@@ -88,7 +90,7 @@ export async function uploadVersion(actor: Actor, file: File, name: string, exis
     }
     // Bounded I/O shortens large requests without increasing ZIP/RAM quotas.
     // Drain every started transfer before rollback/cleanup, including late PUTs.
-    await Promise.all(Array.from({ length: Math.min(6, assets.length) }, () => transfer()));
+    await Promise.all(Array.from({ length: Math.min(MAX_ASSET_TRANSFERS, assets.length) }, () => transfer()));
     if (failed) throw failure;
     await client.query("UPDATE site_versions SET asset_manifest=$2::jsonb WHERE id=$1", [version, JSON.stringify(verifiedManifest)]);
     await client.query(
