@@ -1,5 +1,17 @@
 # AI Agent handoff — HTML Share Platform
 
+> **2026-10-24 — Issue #36 / [Draft PR #44](https://github.com/cfotel2604/html-share-platform/pull/44)**. Worktree `C:\Users\admin\.codex\worktrees\36-public-read-model-worker\html-share-platform`, branch `feat/36-public-read-model-worker`, base main `f6c7834` sau PR43 MERGED (owner báo + live verified). Core head `336dc748795a5a2b187e124d098c3323c61e4d2f`. [Scope](PUBLIC_READ_MODEL_WORKER.md), [validation](validation/2026-10-24-public-read-model-worker.md).
+
+## Tiếp tục #36
+
+- Native adapter/config đang chờ owner chốt nghĩa “no write binding”: native D1/R2 có write methods, facade/type không tạo IAM-read-only. Câu hỏi trong chat/PR44: code chỉ fixed SELECT/get/head + static/runtime tests và ghi giới hạn capability, hay mandatory providerIAMreadonly thì cần thiết kế mới. Không tự coi đây là exception ADR0006 hoặc claim nativebinding chỉ đọc.
+- Đã làm phần độc lập: `cloudflare/public/policy.mjs`/`serve.mjs` qua reader lookup/get/head, không native bindings/entrypoint/config.153unit local PASS (142cũ+11mới), lint/typecheck/build retry PASS. Check CI exacthead qua PR; chưa bundle Worker/workerd/primaryquery/e2e thực. Helpers mock statuses chưa chứng minh SQL published filter. Read PR22 serving từ remote branch và ADR0005 từPR21; không import management/preview/auth SQL cũ.
+- Sau quyết định hợp lệ, mới nối exact resolve.sql primary query, R2 conditionalget/head, build/localMiniflare/projector-driven serving và no-egress tests/config audit. Không thay applied PG/D1 SQL/migrations, UI/backend Node hoặc token. Deployed binding inventory/VMoffline/logs hai phía/pilot security vẫn cần owner duyệt riêng remote;60giây chưa là approvedSLO.
+- PR43 merge `f6c7834`, #33/#34 vẫn OPEN cho pilot; không tự đóng từ merge source. Ownerworktrees/main78cb7ca/private env/uploads/volumes giữ nguyên; no reset/clean. Không D1remote read/write/rebuild/projector/Worker deploy/VM/localDocker. Không thêm agent mới: quyền agent trước chỉ cho runbook34 đã hoàn tất.
+- Chờ owner báo merge44 sau review trước37, rồi chuẩn bị38; không tự theo dõi/poll/cài lịch, không autoReady/merge/deploy. #40 dependencies riêng, old stackedPR disposition thuộc37. Các snapshot34/33 bên dưới là lịch sử.
+
+## Bàn giao Issue #34 trước merge — lịch sử
+
 > **2026-10-24 — Issue #34 / [Draft PR #43](https://github.com/cfotel2604/html-share-platform/pull/43)**. Worktree `C:\Users\admin\.codex\worktrees\34-read-model-recovery\html-share-platform`, branch `feat/34-read-model-recovery`, base main `a98a1d6` (PR42 MERGED verified sau owner báo). Source head `78fcb63dac63e34f92aae156ba868a2a9a00cd18`. [Runbook](READ_MODEL_RECOVERY.md), [validation](validation/2026-10-24-read-model-recovery.md).
 
 ## Tiếp tục sau #34

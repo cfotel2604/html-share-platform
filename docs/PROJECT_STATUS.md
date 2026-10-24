@@ -1,5 +1,15 @@
 # Project status — HTML Share Platform
 
+> **2026-10-24 — Issue #36 / [Draft PR #44](https://github.com/cfotel2604/html-share-platform/pull/44)**. Base main `f6c78340983060687b969d7aae0e2f7e80ebd381`; live PR43 MERGED sau owner báo. #33/#34 vẫn OPEN cho pilot gates. Serving core `336dc748795a5a2b187e124d098c3323c61e4d2f`. Các trạng thái Draft43/đợi merge bên dưới là lịch sử.
+
+## A'-5 — Public serving core; binding decision pending
+
+Đã có policy/serve core độc lập provider: manifest closed/prefix pin, path/origin/PSL, canonical redirect, GET/HEAD, size/ETag metadata, controlled sandbox/no-store headers, no logs/outbound fetch. Local153unit/lint/typecheck/build retry PASS,11test mới dùng reader giả lập. [Scope/decision](PUBLIC_READ_MODEL_WORKER.md), [validation/giới hạn](validation/2026-10-24-public-read-model-worker.md). Core chưa có production Worker entrypoint/binding/config; chưa claim primary-D1/Miniflare end-to-end/deployed VM-offline acceptance.
+
+**Cần owner chốt:** plan/Agent Guide ghi không write binding nhưng native D1/R2 APIs có khả năng ghi. Đề xuất code fixed-SELECT/get/head-only + tests và ghi rõ không IAM-read-only; hoặc nếu bắt buộc IAM-read-only thì dừng để thiết kế lại. Adapter/config phụ thuộc chưa làm, không tự ngoại lệ ADR0006. Không deploy/ghiD1/VM/localDocker/privatefiles, không sửa applied migrations/SQL/dependencies. #40 security nudge giữ riêng. PR44 giữ Draft; không làm37 trước owner báo merge, không lịch/poll merge.
+
+## Snapshot Issue #34 trước merge — lịch sử
+
 > **2026-10-24 — Issue #34 / [Draft PR #43](https://github.com/cfotel2604/html-share-platform/pull/43)**. Base main `a98a1d62e9a2a51b841e548792979e712190774d`; live PR42 MERGED sau owner báo, #33 vẫn OPEN cho pilot. Source `78fcb63dac63e34f92aae156ba868a2a9a00cd18`. Snapshot Draft42/heartbeat bên dưới là lịch sử, đã bị thay thế.
 
 ## A'-3 — Rebuild / reconciliation
