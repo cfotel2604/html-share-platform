@@ -3,6 +3,7 @@ import { publicOrigin,requestRoute,publicSnapshot,responseHeaders } from './poli
 const deny=(request,status=404)=>new Response(request.method==='HEAD'?null:status===503?'Serving unavailable':'Not found',
   {status,headers:{...responseHeaders(),...(status===405?{Allow:'GET, HEAD'}:{})}});
 async function discard(object){try{await object?.body?.cancel();}catch{/* No provider details or content in logs. */}}
+export const servingUnavailable=request=>deny(request,503);
 
 // Reader interface contains lookup/get/head only. It is a code boundary, not a
 // claim that the underlying provider grants IAM read-only native bindings.

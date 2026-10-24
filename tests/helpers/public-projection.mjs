@@ -14,9 +14,9 @@ export async function migrateEmpty(database) {
     await database.exec(await readFile(new URL(name,directory),'utf8'));
   }
 }
-export async function localPostgres() {
-  const database = await PGlite.create();
-  await migrateEmpty(database);
+export async function localPostgres({dataDir,initialize=true}={}) {
+  const database = await PGlite.create(dataDir?{dataDir}:{});
+  if(initialize)await migrateEmpty(database);
   const query = async (sql, params) => {
     const result = await database.query(sql,params);
     return { ...result, rowCount: result.rows.length || result.affectedRows || 0 };
