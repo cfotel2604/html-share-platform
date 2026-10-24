@@ -37,7 +37,7 @@ Trước khi viết code, hãy nêu ngắn gọn trong PR (hoặc báo owner n�
 
 ## 4. Cách làm một Issue
 
-1. Đọc Issue và acceptance của nó trong [D1_READ_MODEL_PLAN](D1_READ_MODEL_PLAN.md); kiểm tra Issue phụ thuộc đã đóng/merge chưa. Nếu phụ thuộc chưa xong, dừng và báo owner thay vì làm tắt.
+1. Đọc Issue và acceptance của nó trong [D1_READ_MODEL_PLAN](D1_READ_MODEL_PLAN.md); kiểm tra source phụ thuộc đã merge và acceptance nào còn mở. Issue33/34/36 có source merged nhưng giữ OPEN cho pilot gate; Fast-track owner cho phép tiếp source sau báo merge, không coi pilot đã đạt. Nếu source phụ thuộc chưa merge hoặc cần phá bất biến, dừng báo owner.
 2. Tạo branch từ `main` mới nhất theo `WORKFLOW.md` (`feat/<issue>-<scope>`, `fix/<issue>-<scope>` hoặc `docs/<scope>`), mở Draft PR sớm, liên kết bằng `Refs #<issue>` (chỉ dùng `Closes` khi PR hoàn tất toàn bộ scope).
 3. Giữ thay đổi trong phạm vi Issue. Phát hiện việc ngoài phạm vi → tạo Issue mới hoặc ghi vào PR để owner quyết, không tự mở rộng.
 4. Viết test tương ứng với từng acceptance trước/song song với code; acceptance nào chưa kiểm được thì ghi rõ "chưa xác minh" và lý do trong PR — không đánh dấu đạt theo suy đoán, không dùng bằng chứng của môi trường khác (local ≠ pilot ≠ production).
@@ -56,9 +56,9 @@ Trước khi viết code, hãy nêu ngắn gọn trong PR (hoặc báo owner n�
 Dừng và hỏi owner (ghi câu hỏi trong PR/Issue) khi gặp các điểm sau, thay vì tự chọn:
 
 - Ngưỡng revoke propagation chính thức (kế hoạch đang đề xuất p95 ≤ 60 giây) và mức cảnh báo vận hành.
-- Account Cloudflare dùng cho token REST của projector (account riêng cho pilot hay dùng chung) và quy trình rotate.
+- Thay đổi account/scope/storage/rotation đã chốt ở trên (không hỏi lại quyết định hiện hành, không yêu cầu giá trị token).
 - Hostname public chính thức của `hsp-pilot` ngoài môi trường pilot (thuộc gate domain của #10/ADR-0004, không tự chọn domain).
-- Quyết định đóng/thu hẹp từng PR trong nhóm #21–#24, #27, #29 (Issue 6 chỉ chuẩn bị bảng đề xuất).
+- Quyết định đóng/thu hẹp từng PR trong nhóm #19/#21–#24/#27/#29 và Issues10/20/25/26/28 (Issue6 chỉ chuẩn bị [bảng đề xuất và ghi chú](ADR0006_TRANSITION.md); không tự đóng, retarget, merge hoặc retire runtime).
 - Bất kỳ nhu cầu nào đòi phá một bất biến ở mục 3 — những việc đó cần ADR mới hoặc sửa ADR-0006, không giải quyết bằng ngoại lệ trong code.
 
 ## 6. Mẫu bàn giao cuối phiên (dán vào PR hoặc AI_HANDOFF)
