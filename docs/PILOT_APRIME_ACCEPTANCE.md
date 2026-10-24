@@ -1,5 +1,7 @@
 # A' pilot acceptance preparation — Issue #38
 
+> **Execution now authorized under the consolidated owner instruction:** see [current authority](PILOT_APRIME_AUTHORITY.md) and [execution receipts](validation/2026-10-24-aprime-pilot-execution.md). Earlier preparation-only/per-Cloudflare-packet approval text below is historical and superseded for the named pilot scope. Rechecks and evidence remain mandatory; VM/runtime writes and other retained owner gates are not granted. The old blank ledger records the preparation snapshot, not current operation status.
+
 Refs #38 / Epic #31 / release gate #10. Base freshly fetched main `76b38faf169477af480690f222123214f4d8c3c5` after owner reported PR45 merged. ADR-0006 is the accepted target; PR39/41/42/43/44/45 source is merged. This document prepares a reviewable pilot plan, not execution authority or a completed acceptance report.
 
 ## Authority and present state

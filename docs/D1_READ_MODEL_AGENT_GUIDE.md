@@ -1,5 +1,7 @@
 # Hướng dẫn cho Agent — triển khai A' (PostgreSQL nguồn sự thật, D1 public read model)
 
+**Owner consolidated authority (2026-10-24):** [current scope](PILOT_APRIME_AUTHORITY.md) supersedes earlier preparation-only/per-packet Cloudflare gates and per-item legacy decisions below. Named pilot CLI projection/rebuild/deploy/retirement and tightly guarded legacy cleanup are authorized; recheck each time, no repeated approval questions. VM writes/private files/token-policy exceptions/production/merge/#10/ADR-security exceptions still need owner. Only read-only lab-b inspection was additionally approved. Keep durable Node/PostgreSQL source; no legacy import/parallel path/local ephemeral substitute. Continue independent work while Drafts await owner merge.
+
 Tài liệu này dành cho coding agent bắt đầu làm việc trên hướng kiến trúc A'. Đọc tài liệu này **sau** [ADR-0006](adr/0006-postgresql-source-of-truth-d1-public-read-model.md) và **trước** khi chạm vào bất kỳ Issue con nào trong [D1_READ_MODEL_PLAN](D1_READ_MODEL_PLAN.md). Nếu có xung đột giữa tài liệu này và ADR-0006, ADR-0006 thắng; nếu xung đột với `AGENTS.md` ở thư mục gốc về quy trình chung, `AGENTS.md` thắng và phải báo lại cho owner.
 
 ## 1. Bối cảnh trong 60 giây

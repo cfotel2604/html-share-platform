@@ -1,5 +1,7 @@
 # Transactional public outbox / Node projector — Issue #33
 
+Current operation scope: [consolidated pilot authority](PILOT_APRIME_AUTHORITY.md) grants the named D1 pilot projector/rebuild run without another Cloudflare packet approval. Rechecks, durable Node/PostgreSQL source, explicit flags and Node secret-store policy remain required. VM/runtime writes were not granted by the read-only VM inspection; no Wrangler-token extraction or ephemeral source substitution. Older per-step remote approval statements below predate this owner instruction.
+
 Refs #33 / Epic #31, [ADR-0006](adr/0006-postgresql-source-of-truth-d1-public-read-model.md), [read-model contract](D1_PUBLIC_READ_MODEL.md). Base freshly fetched main `40b0dd9f03d951ae8d98064e265f953e250b4a75` (PR39/41 merged, Issues32/35 closed). Work is on `feat/33-transactional-outbox`.
 
 ## Source transaction and ordering

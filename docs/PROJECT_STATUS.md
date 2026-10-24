@@ -1,5 +1,11 @@
 # Project status — HTML Share Platform
 
+> **2026-10-24 — Issue38 pilot execution / [DraftPR48](https://github.com/cfotel2604/html-share-platform/pull/48)**. Base main `9010dc56957a34f74d8cf7f8b4e35792b26bfcf2`, scope `c1049fb`; exact tested head/CI in PR. [Consolidated authority](PILOT_APRIME_AUTHORITY.md) supersedes prepare-only/per-Cloudflare-packet approval below; VM writes still unapproved, only read-only lab-b inspection allowed.
+
+PacketA verified named target/replicationdisabled/ledger0004,13tables (11legacy), model0rows, bucketprivate/r2.dev-off/no customdomain,509known legacy keys from metadata. Public `hsp-pilot` deployed unchanged A' artifact `a100dc4e...` at16:09UTC, active100%/tworesource bindings+twoorigins/0secrets; NodeHEAD denials3/3securityheaders, Python403 difference retained. Old API/preview Workers retired withoutforce, typed10007readback. No D1table/R2object deletion at this checkpoint. [Full schema/count/hash/local tests/readbacks](validation/2026-10-24-aprime-pilot-execution.md). New0005retirement SQL/test prepared; no applied SQL edits/0004reapply/Modelrowwrite.
+
+VM read-only: oldsource dc7560e, PGnooutbox, storageMinIO, projector target/token absent; no writes/secret values. Actual durable Node/projector/rebuild/R2/auth/500file/healthySLO/incident/VM-off gates remain OPEN. Fix Node old public links/PG-serving path to A'-only before rollout, no legacy import/fallback. Source/disposition Draft47@87566b2 CI3/3 closes old6PR/4Issues; #10/audit19 OPEN. Continue independent work, no autoMerge/production/merge scheduler; ownerworktrees/env/data/volumes intact. Older snapshots below are historical.
+
 > **2026-10-24 — Issue #38 preparation / [Draft PR #46](https://github.com/cfotel2604/html-share-platform/pull/46)**. Owner báo merge45; fetch/GitHub xác nhận main `76b38faf169477af480690f222123214f4d8c3c5`, PR45 MERGED13:58:40UTC, head `eecf6cc` ba checks SUCCESS. Branch `docs/38-pilot-acceptance-prep`, early scope `1549b17`; exact final head/CI trong PR46. Snapshot Draft45/đợi merge45/ngưỡng còn proposal bên dưới là lịch sử trước quyết định38.
 
 ## A'-7 — đã chuẩn bị, chưa nghiệm thu pilot
