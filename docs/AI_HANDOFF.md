@@ -1,5 +1,11 @@
 # AI Agent handoff — HTML Share Platform
 
+> **2026-10-24 — Issue37 closeout / [DraftPR47](https://github.com/cfotel2604/html-share-platform/pull/47)**. Worktree `C:\Users\admin\.codex\worktrees\37-legacy-closeout\html-share-platform`, branch `docs/37-legacy-closeout`, base main `9010dc56957a34f74d8cf7f8b4e35792b26bfcf2`, scope `a8e3e78`; final exact head/CI in PR. Consolidated owner prompt explicitly supersedes earlier Fast-track/per-item approval gates.
+
+All six old PRs21/22/23/24/27/29 and four Issues20/25/26/28 CLOSED as superseded/abandoned; original descriptions remain exact suffixes, head/base/Draft/history retained, no merge/ref deletion. #10/audit19 OPEN and unchanged. [Receipt/hashes/commands](validation/2026-10-24-legacy-closeout.md). Do not reopen/port old architecture or re-ask per-item dispositions. Source PR47 stays Draft for owner merge; actual source/SQL/runtime unchanged here.
+
+Continue #38 independently in `feat/38-pilot-cutover` / DraftPR48 from fresh9010dc5. Consolidated owner authority permits named pilot inventory/projector/rebuild/publicWorkerdeploy/oldWorker retirement and narrowly scoped legacy D1/R2 deletion with pre/post fingerprints and manifest protection. No automatic merge/production/#10decision; VM/Docker/ownerprivatefiles outside allowedCLI, token actions outside policy, ADR/security exceptions or wider deletion still require owner. Never use a local ephemeral source or old D1 as a substitute for durable Node/PostgreSQL. No scheduler/pollmerge; preserve owner worktrees/env/untracked/data/volumes. Old prepare-only/pending-owner snapshots below are historical.
+
 > **2026-10-24 — Issue #38 preparation / [Draft PR #46](https://github.com/cfotel2604/html-share-platform/pull/46)**. Worktree `C:\Users\admin\.codex\worktrees\38-pilot-acceptance-prep\html-share-platform`, branch `docs/38-pilot-acceptance-prep`, fresh main `76b38faf169477af480690f222123214f4d8c3c5` (owner báo merge45 + GitHub xác nhận13:58:40UTC, tested head `eecf6cc`3SUCCESS). Scope `1549b17`; final exact head/CI/commands ở PR46. Snapshot chờ merge45/ngưỡng chưa chốt dưới đây là lịch sử.
 
 ## Tiếp tục #38 — chỉ chuẩn bị; chờ owner giao bước remote cụ thể

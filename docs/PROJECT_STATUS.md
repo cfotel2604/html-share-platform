@@ -1,5 +1,9 @@
 # Project status — HTML Share Platform
 
+> **2026-10-24 — Issue37 closeout / [DraftPR47](https://github.com/cfotel2604/html-share-platform/pull/47)**. Fresh main `9010dc56957a34f74d8cf7f8b4e35792b26bfcf2`, scope `a8e3e78`; final exact head/CI in PR. Owner's consolidated A' instruction replaces the prior pending per-item gate.
+
+Closed PR21/22/23/24/27/29 and Issues20/25/26/28 as superseded/abandoned, with source-based reasons and verified original body/head/base/history preservation. Issue10 and auditPR19 remain OPEN/unchanged. [Receipt](validation/2026-10-24-legacy-closeout.md). No source merge, resource deletion or runtime/VM/Docker action in this closeout. #38 continues independently in DraftPR48; pilot permission now includes named Cloudflare execution/legacy-only cleanup, while VM/private-file/token-policy exceptions and production still require owner. Old PENDING/prepare-only snapshots below predate the consolidated instruction.
+
 > **2026-10-24 — Issue #38 preparation / [Draft PR #46](https://github.com/cfotel2604/html-share-platform/pull/46)**. Owner báo merge45; fetch/GitHub xác nhận main `76b38faf169477af480690f222123214f4d8c3c5`, PR45 MERGED13:58:40UTC, head `eecf6cc` ba checks SUCCESS. Branch `docs/38-pilot-acceptance-prep`, early scope `1549b17`; exact final head/CI trong PR46. Snapshot Draft45/đợi merge45/ngưỡng còn proposal bên dưới là lịch sử trước quyết định38.
 
 ## A'-7 — đã chuẩn bị, chưa nghiệm thu pilot
