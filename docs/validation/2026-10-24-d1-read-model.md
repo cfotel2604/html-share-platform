@@ -8,7 +8,7 @@ Startup verified primary checkout `main` at `78cb7ca`, 55 commits behind freshly
 
 ADR-0005 serving context was read from PR #21 branch `codex/cloudflare-path-adr` at `77ae10a3fdafe2a0f5b5818ad1ea5e826b886606` because it is absent from `main`. Its D1-primary/API/preview design is superseded by ADR-0006; only its public-serving constraints inform this work. Legacy migrations were read at PR #24 `bb0327d` / PR #29 `6182262` and copied unchanged into tests, never into the new migration directory.
 
-Only schema/SQL/migration configuration, tests and documentation change. PostgreSQL migrations, Node management/auth/upload handlers, public/preview/API Workers, lab VM/Desktop runtime, Cloudflare resources and existing PRs are unchanged. No source merge or deployment is performed.
+Only schema/SQL/migration configuration, tests and documentation change in the repository. The separate owner-authorized remote action applied only D1 migration0004, as recorded below. PostgreSQL migrations, Node management/auth/upload handlers, public/preview/API Workers and lab VM/Desktop runtime are unchanged; no Cloudflare resource provisioning, source merge or Worker deployment is performed.
 
 ## Agent-checked locally
 
