@@ -29,7 +29,7 @@ async function seed(code,status='published',changes={}){
   await runtime.send(event);return event;
 }
 before(async()=>{runtime=await publicWorkerRuntime();await seed(published);await seed(unpublished,'unpublished');await seed(revoked,'revoked');});
-after(async()=>{if(runtime){assert.equal(runtime.egress(),0,'Worker made an outbound/VM request');await runtime.close();}});
+after(async()=>{if(runtime){const egress=runtime.egress();await runtime.close();assert.equal(egress,0,'Worker made an outbound/VM request');}});
 
 test('actual Worker bundle in workerd serves published root/nested/direct assets and controlled headers',async()=>{
   for(const [path,body] of bodies){
