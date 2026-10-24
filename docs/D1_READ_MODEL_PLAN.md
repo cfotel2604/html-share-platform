@@ -89,12 +89,12 @@ Tài liệu này chia việc thành một Epic và 7 Issue con. Mỗi Issue con 
 
 **Phạm vi:**
 - Một Worker duy nhất phục vụ public theo đặc tả serving của ADR-0005/ADR-0006 điểm 4: tra D1 (primary) theo code → kiểm published/chưa revoke → đọc R2 theo manifest đã pin size/ETag → trả nội dung + security headers (CSP sandbox `allow-scripts` không `allow-same-origin`, `no-store`, `nosniff`, `no-referrer`); canonical `/<code>/` → `index.html`; ngoài manifest trả 404; tối đa 1 truy vấn D1 cho mỗi request.
-- Worker không có binding ghi D1/R2, không secret quản trị/Clerk/service token, không route quản trị, không gọi về VM/Node/PostgreSQL (kể cả qua Tunnel/VPC — theo ADR-0006, đó không phải đường public chính).
+- Worker không có code path ghi D1/R2, không secret quản trị/Clerk/service token, không route quản trị, không gọi về VM/Node/PostgreSQL (kể cả qua Tunnel/VPC — theo ADR-0006, đó không phải đường public chính). Owner làm rõ #36 ngày2026-10-24: read-only ở code/test/review/gate deploy (fixed SELECT tham số hóa từ resolve.sql, R2GET/HEAD), native bindings vẫn có khả năng ghi, không IAM read-only; đây không phải ngoại lệ ADR0006 và chưa duyệt deploy.
 - Tái sử dụng phần serving đã review trong PR #22 ở mức code nếu phù hợp, sau khi cắt bỏ API Worker và preview Worker.
 
 **Acceptance:**
 - [ ] Bộ test serving đạt: published 200 đúng nội dung/headers; unpublished/revoked/không tồn tại 404; asset ngoài manifest 404; nested HTML cũng có CSP sandbox; direct navigation cũng bị sandbox.
-- [ ] Kiểm tra cấu hình đã deploy: đúng một Worker public, binding chỉ đọc, không secret quản trị (liệt kê bằng chứng).
+- [ ] Kiểm tra cấu hình đã deploy: đúng một Worker public, native bindings chỉ được code dùng fixed SELECT/get/head, không secret quản trị (liệt kê bằng chứng). Theo owner clarification #36, đây là read-only ở code/test/review/gate deploy, không IAM read-only; native capability vẫn rộng hơn.
 - [ ] Tắt VM/Node/PostgreSQL: site đã publish vẫn phục vụ 200; bật lại không cần thao tác tay.
 - [ ] Không request public nào phát sinh request về VM (kiểm tra log hai phía trong kịch bản test).
 

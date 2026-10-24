@@ -1,5 +1,18 @@
 # AI Agent handoff — HTML Share Platform
 
+> **2026-10-24 — Issue #36 / [Draft PR #44](https://github.com/cfotel2604/html-share-platform/pull/44)**. Worktree `C:\Users\admin\.codex\worktrees\36-public-read-model-worker\html-share-platform`, branch `feat/36-public-read-model-worker`, base main `f6c7834` sau PR43 MERGED (owner báo + live verified). Source/test head `3601b0b222e720934ac32adea8dbf7bbb8eda35e`. [Contract](PUBLIC_READ_MODEL_WORKER.md), [validation](validation/2026-10-24-public-read-model-worker.md).
+
+## Tiếp tục #36
+
+- **Owner đã chốt option1 ngày2026-10-24:** chỉ đọc ở code/test/review/gate deploy, native D1/R2 vẫn có API ghi, không IAM-read-only. Fixed SELECT tham số hóa từresolve.sql + R2get/head manifestpin, noSQLwrite/dynamic/batch/put/delete/adminroute/secret. Đây là clarification, không exception ADR0006; chưa duyệt deploy. Đã cập nhật ADR/Guide/plan; không hỏi lại câu binding hoặc giữ nhãn pending.
+- Có native `worker.mjs`, ESMbundle từ exactresolve.sql, localWranglertemplate chỉ2nativebindings/2origins. `npm run build:public-worker` purelocal esbuild0.28.2 dev-only; runtime deps không đổi. CLI chạy từ repo root; đã bỏ sai custombuildcwd, Wrangler4.152types PASS, generatedtypes ở ignorednode_modules/.cache. Không configprivate thật/resourceIDs/token được đưa vàoGit.
+- **Agent-checked `3601b0b`:**162unit,20Worker cases, cả4CI SUCCESS gồmWorkerbundle +5realPG/outbox/recovery và inheritedsecurity500/RBAC/ownership/audit/preview/origin. Source +artifact AST guards failwriteAPIs/SQL/batch/nativeescape/dynamicSQL/egress/logging; unitnativeadapterexact1prepare/bind/first; actualworkerd/localD1/R2 verifiespublishedfilter/SQLinjection404/manifest/sizeETag. Node500→outbox→projector→Worker sourceclose/reopen200 withoutreprojection, revoke/stalereplay/rotate/version/unpublish/publish, egress0. Đây là localsimulation; không realVM/Pilotproof. BuildNextretry PASS, warning40 kế thừa riêng.
+- Applied PG/D1 SQL/migrations, UI/backend Node vàtoken không thay. Realdeploy/singleWorker/binding-secretinventory/primaryreplication/R2live/VMoffline/logs2phía/browsermobile/revoke404 vẫn chờ owner duyệt riêng;60giây chưa làapprovedSLO. Template không chứng minh deployedoldsecrets/bindings đã bỏ; native capability không giảm bởi facade/type. OldAPI/previewWorkers retirement belongs37/38, không tự tắt/deploy.
+- PR43 merge `f6c7834`, #33/#34 vẫn OPEN cho pilot; không tự đóng từ merge source. Ownerworktrees/main78cb7ca/private env/uploads/volumes giữ nguyên; no reset/clean. Không D1remote read/write/rebuild/projector/Worker deploy/VM/localDocker. Không thêm agent mới: quyền agent trước chỉ cho runbook34 đã hoàn tất.
+- Chờ owner báo merge44 sau review trước37, rồi chuẩn bị38; không tự theo dõi/poll/cài lịch, không autoReady/merge/deploy. #40 dependencies riêng, old stackedPR disposition thuộc37. Các snapshot34/33 bên dưới là lịch sử.
+
+## Bàn giao Issue #34 trước merge — lịch sử
+
 > **2026-10-24 — Issue #34 / [Draft PR #43](https://github.com/cfotel2604/html-share-platform/pull/43)**. Worktree `C:\Users\admin\.codex\worktrees\34-read-model-recovery\html-share-platform`, branch `feat/34-read-model-recovery`, base main `a98a1d6` (PR42 MERGED verified sau owner báo). Source head `78fcb63dac63e34f92aae156ba868a2a9a00cd18`. [Runbook](READ_MODEL_RECOVERY.md), [validation](validation/2026-10-24-read-model-recovery.md).
 
 ## Tiếp tục sau #34

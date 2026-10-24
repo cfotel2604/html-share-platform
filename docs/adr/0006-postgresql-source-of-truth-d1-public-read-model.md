@@ -29,6 +29,10 @@ Trong khi đó lưu lượng ghi vốn thấp và nội bộ (vài nhân viên, 
 9. **Preview không nằm trong Worker public.** Preview site chưa publish thực hiện ở phía VM/Studio theo cơ chế grant ngắn hạn của lab (ADR-0003). Nếu sau này cần preview trên Cloudflare, phải có ADR riêng; không tự gộp preview Worker trở lại và không nới lỏng ranh giới của điểm 4.
 10. **Token Cloudflare REST là secret quản trị, có phạm vi nổ nhỏ nhất có thể.** Token dùng cho projector chỉ để trong secret store của Node trên VM, không xuống browser, không vào Git/log/response. Ưu tiên account Cloudflare riêng cho pilot để giới hạn phạm vi (token D1 không phân quyền theo từng database). Có kế hoạch rotate/revoke token; rò token phải được coi là sự cố bảo mật. Mọi thao tác ghi D1 khác (migration read model, rebuild) cũng đi qua cùng kỷ luật secret này.
 
+## Làm rõ binding chỉ đọc — owner chốt 2026-10-24, Issue #36 / PR #44
+
+“Chỉ đọc” của Worker được bảo đảm bằng **code/test/review và gate deploy**, không phải IAM chỉ đọc ở cấp native binding. Native D1/R2 bindings vẫn có API ghi. Worker chỉ dùng đúng SELECT tham số hóa từ `resolve.sql` theo share_code/status published; R2 chỉ GET/HEAD theo manifest pin path/size/ETag. Không SQL động, INSERT/UPDATE/DELETE/batch ghi, R2put/delete, route quản trị hoặc secret quản trị. CI phải chặn API ghi bằng quét tĩnh và kiểm thử phủ định. Đây là làm rõ cách hiểu, **không phải ngoại lệ ADR-0006**; không cấp quyền deploy pilot. Không gọi facade/type hoặc native binding là IAM read-only.
+
 ## Sơ đồ đích
 
 ```text
@@ -86,5 +90,5 @@ Quyết định này được coi là đã triển khai đúng khi các bằng c
 - Publish một site từ Studio → nội dung xuất hiện qua `hsp-pilot` chỉ sau khi sự kiện outbox được chiếu; unpublish/revoke → Worker trả 404 trong ngưỡng thời gian đã đo và công bố.
 - Tắt VM/Node/PostgreSQL: site đã publish vẫn phục vụ; bật lại: outbox tồn đọng được chiếu hết, không mất/không trùng hiệu lực.
 - Rebuild D1 từ PostgreSQL trên môi trường trống cho kết quả trùng khớp; reconciliation phát hiện được lệch cố ý.
-- Worker không có binding ghi, không có secret quản trị, không endpoint quản trị; D1 không chứa dữ liệu ngoài danh mục ở điểm 3.
+- Worker không có code path ghi theo mục làm rõ binding chỉ đọc, không có secret quản trị, không endpoint quản trị; D1 không chứa dữ liệu ngoài danh mục ở điểm 3. Native capability vẫn rộng hơn code và không được mô tả là IAM read-only.
 - Xem lại ADR nếu: cần revoke tức thời dưới ngưỡng projector không đạt được, preview trên Cloudflare trở thành yêu cầu, hoặc quy mô ghi tăng tới mức REST API của D1 thành nút thắt đo được.
