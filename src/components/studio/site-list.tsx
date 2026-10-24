@@ -71,6 +71,12 @@ function SiteRow({
           <span className="studio-meta-separator">·</span>
           <span title={site.id}>{site.id.slice(0, 8)}</span>
         </p>
+        {site.projection?.pending && (
+          <p className="studio-site-meta" role="status">
+            Chờ đồng bộ public · {site.projection.pending_events} sự kiện
+            {site.projection.last_error ? " · đang thử lại" : ""}
+          </p>
+        )}
         <div className="studio-site-actions">
           {!published && (
             <a className="studio-button" href={`/preview/${site.id}`} target="_blank" rel="noopener noreferrer">

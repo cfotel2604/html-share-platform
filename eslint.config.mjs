@@ -35,6 +35,8 @@ export default defineConfig([
                 "pg",
                 "@aws-sdk/*",
                 "node:*",
+                "**/public-projector*",
+                "**/project-public-outbox*",
               ],
               message:
                 "Studio UI uses features/studio API contracts; server services stay behind Route Handlers.",
