@@ -35,6 +35,8 @@ Errors dùng HTTP status phù hợp và JSON `{ error: string }`. Demo auth là 
 
 Issue #35 / PR #41 thay bootstrap auth→list bằng một workspace request Node/PostgreSQL theo ADR-0006. Adapter chỉ coalesce request đang chạy, không cache kết quả quyền; explicit refresh/mutations giữ list endpoint. Presentation không đổi. [Contract và kiểm chứng](../NODE_POSTGRES_ADMIN.md).
 
+Issue #33 / PR #42 thêm trường `SiteSummary.projection` chỉ cho Admin trong list/workspace: `{ pending, pending_events, oldest_pending_at, last_error }`; Employee không nhận trường này. Studio chỉ hiện nhãn chờ chiếu/thử lại qua DTO, không import projector hoặc thêm idle polling. Xem [contract projector](../PUBLIC_PROJECTOR.md); pending=false không thay thế reconciliation dữ liệu lịch sử.
+
 PR #13 đã thêm Clerk auth và POST `/api/sites/:id/preview` → `{ url, expiresAt }`. PR #15 thêm share lifecycle; `SiteSummary` có `share_code: string | null` và `share_url: string | null` canonical do server sinh. UI không tự dùng host ID làm link thay thế. Revoke/rotate không sửa trạng thái published; backend giữ mapping, ownership/audit và transaction. Xem [SHARE_LINKS](../SHARE_LINKS.md).
 
 ## Consequences và validation

@@ -1,5 +1,19 @@
 # Project status — HTML Share Platform
 
+> **2026-10-24 — Issue #33 / [Draft PR #42](https://github.com/cfotel2604/html-share-platform/pull/42)**. Base main `40b0dd9f03d951ae8d98064e265f953e250b4a75`; live GitHub: PR39/41 MERGED, #32/#35 CLOSED. Implementation `9a0b1f6`, regression guards `004792a4c8326e6b24cbc8708cf7dc4b8ca5c352`. Các snapshot Draft/OPEN của #32/#35 bên dưới là lịch sử.
+
+## A'-2 — Transactional outbox / Node projector
+
+PostgreSQL migration additive mới0004 ghi outbox cùng source transaction, snapshot cuối transaction và revision theo khóa site. Job Node riêng mặc định tắt; một REST batch guarded/event, FIFO từng site, ưu tiên chuỗi revoke, replay an toàn. Advisory lock/throttle bền vững tối thiểu5giây,429/auth cooldown/alert; metric độ sâu/lag/revoke và nhãn Admin đang chờ chiếu. Không có handler ghi/gọi D1. [Runbook/token policy](PUBLIC_PROJECTOR.md), [validation tại exact heads](validation/2026-10-24-public-projector.md).
+
+**Đã kiểm chứng `004792a`:** cả4checks SUCCESS:130unit/lint/typecheck/build,4nhóm real PostgreSQL/outbox và security integration kế thừa (RBAC/ownership/audit, preview,500file upload/readback). CI benchmark PostgreSQL16 + D1 giả lập:12events/12RESTbatches,6mẫu/nhóm;1file p50/p95=4989.780/4994.840ms,500file=4914.006/4935.046ms. Đây không phải pilot latency/Worker404 acceptance. Docs/YAML/diff và standalone disabled/SQL-package checks PASS; Next dependency risk #40 giữ riêng.
+
+**Chỉ đọc remote:** constant SELECT xác nhận REST batch số/NULL, changed_db=false, replication disabled. Config private mới của task không token, cả hai cờ chạy false. Không projector remote, không ghi D1/áp lại0004/deploy Worker/chạm VM/localDocker/ownerworktrees/privatefiles. Applied PG0001–3 và toàn bộ D1 contract/schema không đổi. Migration không backfill lịch sử; republish/rotate version cũ thiếu verifiedETag bị chặn COMMIT, cần upload mới đã readback; unpublish/revoke vẫn được.
+
+**Owner đã chốt:** account hiện tại, token riêng `hsp-projector-pilot` chỉ D1Read/Write ở Node secret store; rotation90ngày/incident và revoke khẩn theo runbook. **Còn mở:** duyệt riêng remote projector/VM migration, liveR2/pilot p50/p95/public revoke404;60giây vẫn là đề xuất, chưa chốt SLO. PR42 giữ Draft, không tự Ready/merge/deploy. Theo Fast-track đã duyệt: owner merge42 rồi tự làm34, tiếp36,37, chuẩn bị38; mỗi issue một branch/Draft riêng, refresh live dependencies trước. Theo dõi cùng chat mỗi10phút, im lặng khi chưa đổi; merge source không cấp quyền remote.
+
+## Snapshot Issue #35 trước merge — lịch sử
+
 > **2026-10-24 — Issue #35 / [Draft PR #41](https://github.com/cfotel2604/html-share-platform/pull/41)**. Base main `664e6c0` (PR39 MERGED/#32 CLOSED, live GitHub verified); implementation `da92385d4531d07884aafa228d7fec135c207891`. Các snapshot #32/#39 Draft bên dưới là lịch sử trước merge.
 
 ## A'-4 — Node/PostgreSQL administration

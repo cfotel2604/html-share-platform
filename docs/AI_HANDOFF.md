@@ -1,5 +1,20 @@
 # AI Agent handoff — HTML Share Platform
 
+> **2026-10-24 — Issue #33 / [Draft PR #42](https://github.com/cfotel2604/html-share-platform/pull/42)**. Branch `feat/33-transactional-outbox`, base main `40b0dd9` sau PR41. Live PR39/41 MERGED, #32/#35 CLOSED. Implementation `9a0b1f6`, final source/regression head `004792a4c8326e6b24cbc8708cf7dc4b8ca5c352`. [Runbook](PUBLIC_PROJECTOR.md), [validation](validation/2026-10-24-public-projector.md). Snapshot #35/#32 bên dưới là lịch sử.
+
+## Tiếp tục chuỗi A' sau #33
+
+- Worktree riêng `C:\Users\admin\.codex\worktrees\33-outbox-projector\html-share-platform`; Draft42 mở sớm tạic77e744. Owner checkout/main/worktrees/private env và Docker giữ nguyên. Đã fetch main mới trước tạo branch, không reset/clean.
+- PG0004 mới là **PostgreSQL outbox**, không phải áp lại D1schema0004. Trigger cùng transaction, khóa site trước revision, coalesce cuối transaction. Job riêng mặc định tắt, không khởi động từ web; FIFO/site + ưu tiên revoke, exact project.sql batch, persistent5s throttle +429/auth cooldown, target fingerprint pin. Đọc runbook trước sửa semantics/rebuild. Không purge outbox/tombstones/reset sequence.
+- **Agent-checked `004792a`:** cả4CI SUCCESS,130unit/lint/typecheck/build,4nhóm realPG outbox/concurrency/replay/benchmark, security integration kế thừa500file/RBAC/ownership/audit/preview. Benchmark6mẫu/nhóm tại head đó:1file p50/p95 4989.780/4994.840ms;500file 4914.006/4935.046ms;12events/12batches. D1 và S3 trong benchmark giả lập, không suy thành pilot/R2live. Validation có command/check URLs và số local9a0b1f6. Mọi head tiếp theo phải kiểm Checks riêng.
+- Admin DTO/Studio chỉ thêm pending/retry; Employee không nhận projection. Existing published versions thiếu verifiedETag không được republish/rotate cho tới verified Node reupload; unpublish/revoke còn được. Migration additive giữ legacy rows và không backfill lịch sử; outbox rỗng không chứng minh D1 đã rebuild.
+- **Remote chỉ đọc đã được owner duyệt:** SELECT số/NULL qua batch, changed_db=false, replication disabled; config private task mới không token, cờ enabled/remote-approved false. Chưa chạy projector/ghiD1/migrateVM/deployWorker; không đọc private receipt/config của owner. Recheck target/schema/primary và xin duyệt riêng bước remote cụ thể trước mọi write, không áp lại D1 0004.
+- **Không hỏi lại token policy:** account pilot hiện tại; `hsp-projector-pilot`, chỉ D1Read/Write, không Workers/R2/account-admin hoặc dùng chung Wrangler/dashboard. Chỉ Node VM secret store/env startup. Rotate90ngày/incident: mới→secretstore→restart→drain→revoke cũ→ghi ngày/tên. Revoke khẩn ngay dashboard; fail closed/queue/alert/Admin pending. Không lấy/in/paste giá trị. Đây không phải phê duyệt thao tác VM/token.60giây vẫn proposal, chưa approvedSLO; runtime metrics có lag_basis để phân biệt actualcommit và enqueueupperbound.
+- **Fast-track owner duyệt:** sau owner merge42 tự tiếp #34 từ main mới, rồi #36, #37, chuẩn bị #38, không chờ brief mới. Chỉ qua issue phụ thuộc khi PR trước MERGED; một branch/Draft riêng/Refs đúng issue/validation exacthead/handoff. Không auto Ready/merge/deploy, không VM/localDocker/privatefiles/remoteD1 writes. Được CLI chỉ đọc, D1local, config private mới; tự quyết trong ADR0006, phá bất biến thì dừng hỏi. Heartbeat cùng chat `html-share-a-fast-track-draft` mỗi10phút, im lặng khi unchanged, chỉ báo mốc/lỗi/cần quyết định. Sau chuẩn bị38 kết thúc theo dõi.
+- PR42 vẫn Draft chờ owner source review/merge; remote p50/p95/revoke404/R2live và quyết định ngưỡng còn mở. Rebuild34/Worker36 không lẫn vào33; stack cũ19/21–24/27/29 giữ Draft, đề xuất disposition thuộc37; dependencyrisk40 riêng.
+
+## Bàn giao Issue #35 trước merge — lịch sử
+
 > **2026-10-24 — Issue #35 / [Draft PR #41](https://github.com/cfotel2604/html-share-platform/pull/41)**. `feat/35-node-postgres-admin` từ main `664e6c0`, implementation `da92385d4531d07884aafa228d7fec135c207891`. Live GitHub: PR39 MERGED/#32 CLOSED; snapshot #32 bên dưới là lịch sử. [Validation](validation/2026-10-24-node-postgres-admin.md), [Node contract](NODE_POSTGRES_ADMIN.md).
 
 ## Tiếp tục #35
