@@ -54,6 +54,7 @@ export function assertReaderBundle(source,resolveSql){
   const file=ts.createSourceFile('bundle.mjs',source,ts.ScriptTarget.Latest,true,ts.ScriptKind.JS);
   const normalize=sql=>sql.replace(/--[^\n]*/g,'').replace(/\s+/g,' ').trim();
   function walk(node){
+    if(ts.isIdentifier(node))assert.ok(!['console','process','require','caches'].includes(node.text),'unsafe ambient authority in built artifact');
     if(ts.isCallExpression(node)||ts.isNewExpression(node)){
       const method=property(node.expression);
       const regexExec=method==='exec'&&ts.isPropertyAccessExpression(node.expression)&&node.expression.expression.kind===ts.SyntaxKind.RegularExpressionLiteral;

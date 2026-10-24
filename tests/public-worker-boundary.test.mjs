@@ -26,15 +26,18 @@ test('actual Worker bundle dependency graph has one fixed SELECT and no write/ne
 test('static guard fails on write APIs/SQL, native alias escape, dynamic SQL and outbound calls',()=>{
   for(const source of ["const sql='INSERT INTO x VALUES(1)'","const sql='UPDATE x SET y=1'","const sql='DELETE FROM x'"]){
     assert.throws(()=>assertReaderSource(source),/write SQL literal/);
+    assert.throws(()=>assertReaderBundle(source,sql),/unexpected SQL/);
   }
   for(const source of ['env.ASSETS.put(key,body)','env.ASSETS.delete(key)','env.ASSETS["delete"](key)',
     'env.PUBLIC_READ_MODEL.batch([])','env.PUBLIC_READ_MODEL.exec(sql)','env.PUBLIC_READ_MODEL.prepare(resolveSql).bind(code).run()']){
     assert.throws(()=>assertReaderSource(source),/write\/unsafe provider API|fixed parameterized first query/);
+    assert.throws(()=>assertReaderBundle(source,sql),/write\/unsafe API/);
   }
   assert.throws(()=>assertReaderSource('const raw=env.ASSETS'),/native binding escapes/);
   assert.throws(()=>assertReaderSource('env.PUBLIC_READ_MODEL.prepare(request.url).bind(code).first()'),/dynamic SQL/);
   assert.throws(()=>assertReaderSource('env.D1_PROJECTOR_API_TOKEN'),/unexpected environment/);
   assert.throws(()=>assertReaderSource('fetch("https://synthetic.example.test")'),/egress/);
+  assert.throws(()=>assertReaderBundle('console.log("SYNTHETIC")',sql),/ambient authority/);
 });
 
 test('local Worker config has only public D1/R2 plus origins, no management/preview/service bindings',async()=>{
