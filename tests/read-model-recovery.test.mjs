@@ -76,6 +76,16 @@ test('non-admin/disabled policy cannot enqueue recovery; role checked at the Nod
   await pg.pool.query("UPDATE auth_allowlist SET status='active' WHERE role='admin'");
 });
 
+test('source mutation during paginated D1 reads makes reconciliation inconclusive',async()=>{
+  const send=async()=>{};send.targetFingerprint=d1.send.targetFingerprint;
+  send.readPage=async cursor=>{
+    await services.ops.setPublished(admin,site.id,true);
+    return d1.send.readPage(cursor);
+  };
+  await clear();await assert.rejects(planRecovery(pg.pool,send),error=>error.code==='source_changed');
+  await services.ops.setPublished(admin,site.id,false);await drain();
+});
+
 test('reads share durable projector throttle and429 cooldown without leaking provider text',async()=>{
   await clear();assert.ok((await recoveryReadPage(pg.pool,d1.send)).rows);
   const reads=d1.reads.length;assert.ok((await recoveryReadPage(pg.pool,d1.send)).waitMs>0);assert.equal(d1.reads.length,reads);

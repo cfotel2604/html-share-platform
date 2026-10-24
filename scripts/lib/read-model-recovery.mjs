@@ -119,6 +119,8 @@ export async function enqueueRecovery(pool,plan,operatorId) {
   if(!/^[a-f0-9-]{36}$/i.test(operatorId??''))throw new ProjectionError('invalid_operator');
   if(!(await pool.query(`SELECT u.id FROM users u JOIN auth_allowlist p ON p.email=u.email WHERE u.id=$1
     AND u.status='active' AND u.role='admin' AND p.status='active' AND p.role='admin'`,[operatorId])).rowCount)throw new ProjectionError('invalid_operator');
+  const current=await sourceSnapshots(pool,plan.selected.map(row=>row.share_code));
+  if(stable(current.rows)!==stable(plan.selected))throw new ProjectionError('source_changed');
   const runId=randomUUID(),ids=[];
   const groups=new Map();for(const row of plan.selected){if(!groups.has(row.site_id))groups.set(row.site_id,[]);groups.get(row.site_id).push(row);}
   for(const [siteId,rows] of [...groups].sort(([a],[b])=>a.localeCompare(b))){
