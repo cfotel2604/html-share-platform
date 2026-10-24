@@ -139,7 +139,7 @@ export async function enqueueRecovery(pool,plan,operatorId) {
         const {rows:[event]}=await client.query(`INSERT INTO public_projection_outbox(site_id,changed_codes,priority)
           VALUES($1,$2,$3) RETURNING id`,[siteId,chunk.map(row=>row.share_code),chunk.some(row=>row.status!=='published')]);
         await client.query(`INSERT INTO audit_events(actor_id,action,target_type,target_id,request_id)
-          VALUES($1,$2,'public-recovery',$3,$4)`,[operatorId,'public.'+plan.mode,plan.fingerprint,runId]);
+          VALUES($1,$2,'public-recovery',$3,$4)`,[operatorId,'public.'+plan.mode,plan.fingerprint+':'+event.id,runId]);
         await client.query('COMMIT');ids.push(event.id);
       }catch(error){await client.query('ROLLBACK').catch(()=>{});throw error;}finally{client.release();}
     }

@@ -45,6 +45,7 @@ test('reviewed rebuild fills empty D1 via existing projector; public snapshot an
   const check=await planRecovery(pg.pool,fastSend);assert.equal(check.differences.length,0);
   const audit=(await pg.pool.query("SELECT * FROM audit_events WHERE target_type='public-recovery'")).rows;
   assert.equal(audit.length,1);assert.equal(audit[0].actor_id,admin.id);assert.equal(audit[0].action,'public.rebuild');
+  assert.match(audit[0].target_id,new RegExp('^'+plan.fingerprint+':\\d+$'));
 });
 
 test('reconcile detects deliberate valid drift and repairs with a fresh higher PostgreSQL revision',async()=>{
