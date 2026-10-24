@@ -5,6 +5,7 @@ import pg from 'pg';
 import { localD1,seedActor,nodeServices } from '../helpers/public-projection.mjs';
 import { measureProjection } from '../helpers/projection-benchmark.mjs';
 import { projectOnce } from '../../scripts/lib/public-projector.mjs';
+import { planRecovery,applyRecovery,enqueueRecovery } from '../../scripts/lib/read-model-recovery.mjs';
 
 assert.equal(process.env.UPLOAD_TEST_GUARD,'isolated-public-outbox');
 assert.equal(process.env.PGDATABASE,'outbox_test');
@@ -68,4 +69,22 @@ test('real PostgreSQL/Node and local D1 latency samples include500file events at
     assert.equal(report.events,12);assert.equal(report.rest_batches,12);
     console.log('PROJECTION_BENCHMARK '+JSON.stringify({...report,environment:'CI_PostgreSQL_local_D1_emulation'}));
   } finally {await measured.close();}
+});
+
+test('real PostgreSQL recovery uses audited fresh snapshots and rejects a competing source change',async()=>{
+  const target=await localD1();
+  const admin={...await seedActor(pool,'recovery','admin'),mode:'clerk'};
+  // Only non-timing recovery tests advance the durable slot after actual dispatch.
+  const send=async event=>{try{return await target.send(event);}finally{await clearSlot();}};
+  Object.defineProperties(send,{targetFingerprint:{value:target.send.targetFingerprint},readPage:{value:async cursor=>{try{return await target.send.readPage(cursor);}finally{await clearSlot();}}}});
+  try{
+    await clearSlot();const plan=await planRecovery(pool,send,{mode:'rebuild'});
+    assert.equal(plan.blocked,false);assert.equal((await applyRecovery(pool,send,plan,{fingerprint:plan.fingerprint,operatorId:admin.id})).state,'projected');
+    assert.equal((await planRecovery(pool,send)).differences.length,0);
+    const reviewed=await planRecovery(pool,send,{mode:'rebuild'});
+    await services.ops.setPublished(actor,site.id,false);
+    await assert.rejects(enqueueRecovery(pool,reviewed,admin.id),error=>error.code==='source_changed');
+    const audit=(await pool.query("SELECT count(*)::int n FROM audit_events WHERE target_type='public-recovery' AND actor_id=$1",[admin.id])).rows[0].n;
+    assert.ok(audit>0);
+  }finally{await target.close();}
 });

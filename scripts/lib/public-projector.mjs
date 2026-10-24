@@ -49,8 +49,7 @@ export function createD1Writer({ accountId, databaseId, token, fetcher = fetch }
   if (!/^[a-f0-9]{32}$/.test(accountId ?? '') || !/^[a-f0-9-]{36}$/.test(databaseId ?? '')
     || typeof token !== 'string' || !token || /[\r\n]/.test(token)) throw new ProjectionError('invalid_config');
   const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/d1/database/${databaseId}/query`;
-  const send = async event => {
-    const batch = validateEvent(event);
+  const request = async batch => {
     let response;
     try {
       response = await fetcher(url, { method: 'POST', redirect: 'error', signal: AbortSignal.timeout(15000),
@@ -68,7 +67,17 @@ export function createD1Writer({ accountId, databaseId, token, fetcher = fetch }
     // Never propagate provider error text, SQL, response rows or credential-bearing exceptions.
     if (result.success !== true || !Array.isArray(result.result) || result.result.length !== batch.length
       || result.result.some(item => item.success !== true)) throw new ProjectionError('batch_failed');
+    return result.result;
   };
+  const send = event => request(validateEvent(event));
+  // Closed read API for #34, never arbitrary SQL or management-table access.
+  Object.defineProperty(send,'readPage',{value:async(cursor='')=>{
+    if(cursor!=='' && !/^[A-Za-z0-9]{10}$/.test(cursor))throw new ProjectionError('invalid_event');
+    const [result]=await request([{sql:`SELECT share_code,site_id,status,active_version,manifest,projection_version,updated_at
+      FROM public_read_model WHERE share_code>? COLLATE BINARY ORDER BY share_code COLLATE BINARY LIMIT 20`,params:[cursor]}]);
+    if(result.meta?.changed_db!==false || !Array.isArray(result.results) || result.results.length>20)throw new ProjectionError('invalid_response');
+    return result.results;
+  }});
   Object.defineProperty(send,'targetFingerprint',{value:createHash('sha256').update(accountId+'/'+databaseId).digest('hex')});
   return send;
 }

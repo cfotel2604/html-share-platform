@@ -37,12 +37,12 @@ test('payload whitelist rejects management data before any REST request',async()
   }
 });
 
-test('only the separate projector owns D1 REST credentials/dispatch in runtime scripts',async()=>{
+test('only projector and recovery entrypoints own D1 REST credentials/dispatch in runtime scripts',async()=>{
   async function scan(directory) {
     for(const entry of await readdir(directory,{withFileTypes:true})) {
       const path=new URL(entry.name+(entry.isDirectory()?'/':''),directory);
       if(entry.isDirectory()){await scan(path);continue;}
-      if(!path.pathname.endsWith('.mjs') || /\/(?:lib\/public-projector|project-public-outbox)\.mjs$/.test(path.pathname))continue;
+      if(!path.pathname.endsWith('.mjs') || /\/(?:lib\/public-projector|project-public-outbox|recover-public-read-model)\.mjs$/.test(path.pathname))continue;
       assert.doesNotMatch(await readFile(path,'utf8'),/api\.cloudflare\.com|D1_PROJECTOR|d1\/database/,path.pathname);
     }
   }
