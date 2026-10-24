@@ -42,7 +42,7 @@ test('Node validates and reads back all 500 ZIP files before PostgreSQL activati
   const result = await ops.uploadVersion({ id: 'synthetic', role: 'employee', mode: 'clerk' },
     new File([zipBytes(entries)], 'synthetic.zip'), 'Synthetic');
   assert.equal(result.fileCount, 500); assert.equal(puts, 500); assert.equal(gets, 500);
-  assert.ok(maxInFlight>1 && maxInFlight<=6); assert.equal(inFlight,0);
+  assert.ok(maxInFlight>1 && maxInFlight<=12); assert.equal(inFlight,0);
   assert.deepEqual(manifest.map(x=>x.path),entries.map(x=>x.name));
   assert.equal(queries.at(-1), 'COMMIT');
   for (const asset of manifest) { assert.match(asset.sha256, /^[a-f0-9]{64}$/); assert.match(asset.etag, /^[a-f0-9]{32}$/); }
@@ -61,7 +61,7 @@ test('failure drains late writes/readbacks before rollback and cleans only ackno
     if(sql==='ROLLBACK')assert.equal(active,0,'rollback before draining transfers');
     return {rowCount:1,rows:[]};
   },release(){}};
-  const assets=Array.from({length:12},(_,i)=>({path:i===0?'index.html':`file-${i}.txt`,type:i===0?'text/html':'text/plain',body:Buffer.from('synthetic')}));
+  const assets=Array.from({length:24},(_,i)=>({path:i===0?'index.html':`file-${i}.txt`,type:i===0?'text/html':'text/plain',body:Buffer.from('synthetic')}));
   const load=tsLoader({
     './db':{db:()=>({connect:async()=>client})},'./auth-policy':{lockActor:async(_client,actor)=>actor},
     './upload':{parseSite:async()=>assets,fingerprint:()=> 'synthetic'},
@@ -69,7 +69,7 @@ test('failure drains late writes/readbacks before rollback and cleans only ackno
       const index=started.length;started.push(key);active++;
       if(index>0)await peers;
       objects.add(key);
-      if(index===5){unconfirmed.push(key);active--;throw latePutError;}
+      if(index===11){unconfirmed.push(key);active--;throw latePutError;}
       confirmed.push(key);return 'etag';
     },readbackFile:async key=>{
       if(key.endsWith('/index.html')){active--;reportFailure();throw failure;}
@@ -83,9 +83,9 @@ test('failure drains late writes/readbacks before rollback and cleans only ackno
   const upload=ops.uploadVersion({id:'owner',role:'employee',mode:'clerk'},new File(['fixture'],'fixture.zip'),'Fixture','a'.repeat(32));
   const rejected=assert.rejects(upload,error=>error===failure);
   await reported;await new Promise(resolve=>setImmediate(resolve));
-  assert.ok(started.length>1 && started.length<=6);assert.equal(calls.includes('ROLLBACK'),false);assert.equal(cleaned,undefined);
+  assert.ok(started.length>1 && started.length<=12);assert.equal(calls.includes('ROLLBACK'),false);assert.equal(cleaned,undefined);
   releasePeers();await rejected;
-  assert.equal(started.length,6,'new transfers scheduled after first failure');
+  assert.equal(started.length,12,'new transfers scheduled after first failure');
   assert.equal(calls.includes('COMMIT'),false);assert.ok(!calls.some(sql=>sql.startsWith('UPDATE sites')));
   assert.deepEqual(new Set(cleaned),new Set(confirmed));assert.deepEqual(objects,new Set(unconfirmed));
   await new Promise(resolve=>setImmediate(resolve));assert.deepEqual(objects,new Set(unconfirmed),'a late write resurrected a cleaned object');
