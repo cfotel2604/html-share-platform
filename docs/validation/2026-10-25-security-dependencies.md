@@ -1,0 +1,7 @@
+# Issue40 — dependency remediation, separate from pilot38
+
+Refs #40 / #10 / #38. Base main `9010dc56957a34f74d8cf7f8b4e35792b26bfcf2`. Preparing this independent remediation while pilot/source Draft48 awaits review; no source from abandoned legacy PR23 is ported. Owner merges; no VM/Docker/Cloudflare/runtime/production action belongs here.
+
+Current npm audit confirms Next16.4.0critical and transitive Zod4.6.5high. Zod is **dev-only** via eslint-config-next→eslint-plugin-react-hooks, not an application runtime import. Exploitability of this application was not established; a build retry does not remediate versions. Plan exact nonmajor Next/eslint-config-next16.4.3 and Zod4.6.6within existing peer ranges, not an audit-force upgrade.
+
+Primary references: [Next advisory](https://github.com/vercel/next.js/security/advisories/GHSA-2464-fhr4-w9xw), [Server Actions advisory](https://github.com/vercel/next.js/security/advisories/GHSA-p3m5-59mp-jv5r), [typed-array advisory](https://github.com/vercel/next.js/security/advisories/GHSA-673q-mjm6-r5xr), [Zod4.6.6release](https://github.com/colinhacks/zod/releases/tag/v4.6.6) and [maintainer fix](https://github.com/colinhacks/zod/commit/a0ebf970f2d752e5f58527cd2942ff48be4f46bd). Npm registry confirmed candidate versions/engines; validation will record actual lockfile graph, clean install/build/audits and exact-head CI. Vendor release notes distinguish unpublished reverted repository commits from the npm release; retain registry integrity/provenance checks rather than assuming package safety.
