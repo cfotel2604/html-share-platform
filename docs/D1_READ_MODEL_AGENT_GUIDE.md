@@ -15,7 +15,7 @@ Tài liệu này dành cho coding agent bắt đầu làm việc trên hướng 
 3. [D1_READ_MODEL_PLAN](D1_READ_MODEL_PLAN.md) — Issue bạn được giao, các Issue phụ thuộc, acceptance.
 4. `PLAN.md`, `docs/ARCHITECTURE.md`, `docs/WORKFLOW.md` — bối cảnh tổng thể và nhịp Issue → branch → Draft PR.
 5. [ADR-0001](adr/0001-public-site-origin-isolation.md), [ADR-0004](adr/0004-domains-and-share-codes.md) — ranh giới origin/domain/mã chia sẻ vẫn còn hiệu lực.
-6. [ADR-0005](adr/0005-path-sandbox-cloudflare-pilot.md) — chỉ còn giá trị ở phần *serving*; các phần về API Worker/D1-primary/preview Worker đã bị ADR-0006 thay thế. Nếu ADR-0005 chưa có trên `main` (nó đang ở Draft PR #21), đọc nó từ branch của PR #21 và ghi rõ nguồn trong PR của bạn.
+6. ADR-0005 (`docs/adr/0005-path-sandbox-cloudflare-pilot.md`, trong Draft PR #21) — chỉ còn giá trị ở phần *serving*; các phần về API Worker/D1-primary/preview Worker đã bị ADR-0006 thay thế. Nếu ADR-0005 chưa có trên `main` (nó đang ở Draft PR #21), đọc nó từ branch của PR #21 và ghi rõ nguồn trong PR của bạn.
 7. `docs/PROJECT_STATUS.md` và `docs/AI_HANDOFF.md` — trạng thái snapshot; **luôn** kiểm chứng lại bằng GitHub (`gh pr list`, `gh issue list`, trạng thái CI tại head chính xác) trước khi kết luận, theo đúng hướng dẫn trong `AGENTS.md`.
 
 Trước khi viết code, hãy nêu ngắn gọn trong PR (hoặc báo owner nếu chưa có PR): bạn hiểu đích kiến trúc là gì, Issue của bạn chạm vào phần nào, phần nào bạn **không** đụng tới.

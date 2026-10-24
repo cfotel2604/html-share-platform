@@ -3,7 +3,7 @@
 - **Status:** Accepted — owner chốt ngày 2026-10-24. Đây là phê duyệt *quyết định kiến trúc*, không phải phê duyệt release/production; các gate của Issue #10 vẫn áp dụng.
 - **Date:** 2026-10-24
 - **Refs:** #10, #20; Draft PR #21–#24, #27, #29 (xem mục Hệ quả với các PR đang mở).
-- **Supersedes (một phần):** [ADR-0005](0005-path-sandbox-cloudflare-pilot.md) (Proposed, trong Draft PR #21) ở các điểm: (1) "Worker API là metadata writer duy nhất vào D1", (2) "không dual-write/fallback về PostgreSQL trong pilot mode", (3) preview Worker riêng trên Cloudflare. Các phần còn lại của ADR-0005 về *serving* (path-based `/<code>/`, HTTP CSP sandbox, kiểm tra published/manifest ở mọi request, tombstone không hồi sinh) được **giữ nguyên** và dẫn lại trong ADR này.
+- **Supersedes (một phần):** ADR-0005 `docs/adr/0005-path-sandbox-cloudflare-pilot.md` (Proposed, hiện chỉ có trong Draft PR #21, chưa lên `main`) ở các điểm: (1) "Worker API là metadata writer duy nhất vào D1", (2) "không dual-write/fallback về PostgreSQL trong pilot mode", (3) preview Worker riêng trên Cloudflare. Các phần còn lại của ADR-0005 về *serving* (path-based `/<code>/`, HTTP CSP sandbox, kiểm tra published/manifest ở mọi request, tombstone không hồi sinh) được **giữ nguyên** và dẫn lại trong ADR này.
 - **Không thay đổi:** [ADR-0001](0001-public-site-origin-isolation.md) và [ADR-0004](0004-domains-and-share-codes.md) cho lab VM/hostname hiện hữu; [ADR-0002](0002-replaceable-studio-ui.md) về ranh giới Studio UI.
 
 ## Context
