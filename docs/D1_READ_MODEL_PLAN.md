@@ -94,7 +94,7 @@ Tài liệu này chia việc thành một Epic và 7 Issue con. Mỗi Issue con 
 
 **Acceptance:**
 - [ ] Bộ test serving đạt: published 200 đúng nội dung/headers; unpublished/revoked/không tồn tại 404; asset ngoài manifest 404; nested HTML cũng có CSP sandbox; direct navigation cũng bị sandbox.
-- [ ] Kiểm tra cấu hình đã deploy: đúng một Worker public, binding chỉ đọc, không secret quản trị (liệt kê bằng chứng).
+- [ ] Kiểm tra cấu hình đã deploy: đúng một Worker public, native bindings chỉ được code dùng fixed SELECT/get/head, không secret quản trị (liệt kê bằng chứng). Theo owner clarification #36, đây là read-only ở code/test/review/gate deploy, không IAM read-only; native capability vẫn rộng hơn.
 - [ ] Tắt VM/Node/PostgreSQL: site đã publish vẫn phục vụ 200; bật lại không cần thao tác tay.
 - [ ] Không request public nào phát sinh request về VM (kiểm tra log hai phía trong kịch bản test).
 

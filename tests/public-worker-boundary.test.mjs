@@ -42,6 +42,7 @@ test('local Worker config has only public D1/R2 plus origins, no management/prev
   const config=JSON.parse(source.replace(/^\s*\/\/.*$/gm,''));
   assert.equal(config.name,'hsp-pilot');assert.equal(config.main,'../../dist/public-worker/worker.mjs');
   assert.equal(config.no_bundle,true);assert.equal(config.workers_dev,false);assert.equal(config.preview_urls,false);assert.equal(config.observability.enabled,false);
+  assert.deepEqual(config.build,{command:'npm run build:public-worker'}); // Run CLI from repository root.
   assert.deepEqual(Object.keys(config.vars).sort(),['PUBLIC_ORIGIN','STUDIO_ORIGIN']);
   assert.equal(config.d1_databases.length,1);assert.equal(config.d1_databases[0].binding,'PUBLIC_READ_MODEL');assert.equal(config.d1_databases[0].remote,false);
   assert.equal(config.r2_buckets.length,1);assert.equal(config.r2_buckets[0].binding,'ASSETS');assert.equal(config.r2_buckets[0].remote,false);

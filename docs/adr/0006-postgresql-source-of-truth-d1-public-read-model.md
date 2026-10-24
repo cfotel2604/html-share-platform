@@ -90,5 +90,5 @@ Quyết định này được coi là đã triển khai đúng khi các bằng c
 - Publish một site từ Studio → nội dung xuất hiện qua `hsp-pilot` chỉ sau khi sự kiện outbox được chiếu; unpublish/revoke → Worker trả 404 trong ngưỡng thời gian đã đo và công bố.
 - Tắt VM/Node/PostgreSQL: site đã publish vẫn phục vụ; bật lại: outbox tồn đọng được chiếu hết, không mất/không trùng hiệu lực.
 - Rebuild D1 từ PostgreSQL trên môi trường trống cho kết quả trùng khớp; reconciliation phát hiện được lệch cố ý.
-- Worker không có binding ghi, không có secret quản trị, không endpoint quản trị; D1 không chứa dữ liệu ngoài danh mục ở điểm 3.
+- Worker không có code path ghi theo mục làm rõ binding chỉ đọc, không có secret quản trị, không endpoint quản trị; D1 không chứa dữ liệu ngoài danh mục ở điểm 3. Native capability vẫn rộng hơn code và không được mô tả là IAM read-only.
 - Xem lại ADR nếu: cần revoke tức thời dưới ngưỡng projector không đạt được, preview trên Cloudflare trở thành yêu cầu, hoặc quy mô ghi tăng tới mức REST API của D1 thành nút thắt đo được.
