@@ -13,6 +13,15 @@ test("strict per-site hosts and root/relative asset mapping",()=>{
   for(const host of ["matbao.test","evil.test",id+".matbao.test.evil.test",id+".sub.matbao.test",id+".matbao.test.",id+".matbao.test:444",id+".matbao.test,evil.test","b".repeat(32)+".matbao.test"]) assert.equal(mapHostRequest(host,"/",config),null,host);
   for(const path of ["/../index.html","/%2e%2e/index.html","/%252e%252e/index.html","/%2Fsecret.html","/test.svg","/test.xhtml","/test.xml","/test.pdf"]) assert.equal(mapHostRequest(id+".matbao.test",path,config),null,path);
 });
+
+test("A' preview namespace is exactly a 62-character label with a complete grant",()=>{
+  const grant="c".repeat(26),label=`p-${id}--${grant}`;
+  assert.equal(label.length,62);
+  assert.deepEqual(mapHostRequest(label+".matbao.test","/",config),{id,asset:"index.html",type:"text/html; charset=utf-8",grant});
+  for(const host of [`${id}--${grant}.matbao.test`,`p-${id}.matbao.test`,`p-${id}--${grant.slice(1)}.matbao.test`,
+    `p-${id}--${grant}x.matbao.test`,`p-${id}--${grant}.matbao.test.evil.test`,`p-${id}--${grant}.sub.matbao.test`])
+    assert.equal(mapHostRequest(host,"/",config),null);
+});
 test("public HTTP hostnames and malformed config fail closed",()=>{
   assert.throws(()=>gatewayConfig({GATEWAY_MODE:"hostname",PUBLIC_SITE_DOMAIN:"matbao.one",PUBLIC_SITE_SCHEME:"http"}));
   assert.throws(()=>gatewayConfig({GATEWAY_VIEWER_ORIGIN:"https://view.test/path"}));
@@ -41,6 +50,18 @@ async function fixture(t,{manifest=true,corrupt=false}={}) {
 }
 test("unknown host is rejected before DB/storage even with spoofed forwarded host",async t=>{
   const f=await fixture(t);assert.equal((await f.read("/","evil.test",{"X-Forwarded-Host":id+".matbao.test"})).status,404);assert.equal(f.queries.length,0);assert.equal(f.keys.length,0);
+});
+
+test("namespaced preview uses the hashed grant; old grant hosts cannot query PG or R2",async t=>{
+  const f=await fixture(t),grant="c".repeat(26);
+  const denied=await f.read("/",`${id}--${grant}.matbao.test`);
+  assert.equal(denied.status,404);assert.equal(f.queries.length,0);assert.equal(f.keys.length,0);
+  const preview=await f.read("/",`p-${id}--${grant}.matbao.test`);
+  assert.equal(preview.status,200);
+  assert.deepEqual(f.queries[0].values,[id,createHash("sha256").update(grant).digest("hex")]);
+  assert.match(f.queries[0].sql,/g\.expires_at>now\(\)/);
+  assert.match(preview.headers.get("content-security-policy"),/^sandbox allow-scripts;/);
+  assert.equal(preview.headers.get("set-cookie"),null);
 });
 test("gateway requires manifest membership and never probes arbitrary private keys",async t=>{
   const f=await fixture(t);assert.equal((await f.read("/hidden.html")).status,404);assert.equal(f.keys.length,0);
