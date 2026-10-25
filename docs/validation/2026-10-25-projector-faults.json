@@ -1,0 +1,259 @@
+{
+  "date": "2026-10-25",
+  "source_merge": "1fbe19ce70ab52630223f7d30ebb15d5dbb77e23",
+  "prepared_pr_head": "2e1e57f2abc8a7f62280d4a3402ca4a2f199566d",
+  "remote_receipts": [
+    {
+      "spec": {
+        "pr_head": "2e1e57f2abc8a7f62280d4a3402ca4a2f199566d",
+        "bundle_sha256": "0ce0776ea3b8c4751b1a6dc5bb6e670ac52bdbe08a5f666cb65f015916333469",
+        "name": "pilot-faults-0ce0776ea3b8c4751b1a6dc5bb6e670ac52bdbe08a5f666cb65f015916333469.mjs",
+        "project_sql_sha256": "0ac275d57fb30bd20c80cfea705e62013db6c600ed73edbbc378390bec56df29",
+        "core_sha256": "674866afea2db4120384eac6aed6fd8f218fd8153d76274d9bca3bd430b59d36"
+      },
+      "runtime_source": "2a396ae2d4b8a1e2feb3e14b7dc6d9fb88e78e64",
+      "reports": [
+        {
+          "event": "fault.preparation_committed",
+          "original_synthetic_fixture_only": true,
+          "capabilities_disclosed": false
+        },
+        {
+          "event": "fault.fixture_prepared",
+          "actual_node_pg": true,
+          "files": 500,
+          "public_status": 200,
+          "queue_drained": true,
+          "other_sites_unchanged": true,
+          "target_replication_match": true,
+          "capabilities_disclosed": false
+        },
+        {
+          "event": "projector.rate_limited",
+          "error_code": "rate_limited",
+          "attempt": 1,
+          "retry_ms": 300000,
+          "controlled_fault": "429",
+          "provider_generated_error": false
+        },
+        {
+          "event": "fault.cooldown_started",
+          "retry_ms": 300000,
+          "attempt": 1,
+          "real_rest_calls": 0,
+          "source_event_id": "51",
+          "actual_pg_backoff": true,
+          "capabilities_disclosed": false
+        },
+        {
+          "event": "fault.fixture_cleanup_committed",
+          "original_synthetic_fixture_only": true,
+          "capabilities_disclosed": false
+        },
+        {
+          "event": "fault.runtime_restored",
+          "success": false,
+          "same_projector_container": true,
+          "pending": 1,
+          "ledger": 4,
+          "sites": 2,
+          "versions": 4,
+          "old_hsp_lab_unchanged": true,
+          "r2_objects_deleted": 0,
+          "no_tokens_rotated": true
+        }
+      ],
+      "success": false
+    },
+    {
+      "spec": {
+        "pr_head": "2e1e57f2abc8a7f62280d4a3402ca4a2f199566d",
+        "bundle_sha256": "613717dec4b14968491ddf03067017df2ffc7098dbeeeacb53e7cc27a8f27d1f",
+        "name": "pilot-faults-613717dec4b14968491ddf03067017df2ffc7098dbeeeacb53e7cc27a8f27d1f.mjs",
+        "project_sql_sha256": "0ac275d57fb30bd20c80cfea705e62013db6c600ed73edbbc378390bec56df29",
+        "core_sha256": "674866afea2db4120384eac6aed6fd8f218fd8153d76274d9bca3bd430b59d36"
+      },
+      "runtime_source": "2a396ae2d4b8a1e2feb3e14b7dc6d9fb88e78e64",
+      "reports": [
+        {
+          "event": "fault.cooldown_survives_service_restart",
+          "same_container": true,
+          "attempts_before": 1,
+          "attempts_after": 1,
+          "durable_deadline_unchanged": true,
+          "metadata_or_clock_edited": false,
+          "direct_container_control_no_dependencies": true
+        },
+        {
+          "event": "fault.cooldown_resumed",
+          "source_event_id": "51",
+          "attempt": 1,
+          "original_deadline_preserved": true,
+          "no_second_429": true,
+          "capabilities_disclosed": false
+        },
+        {
+          "event": "fault.overdue_observed",
+          "metrics": {
+            "pending": 1,
+            "pending_revocations": 1,
+            "oldest_revoke_ms": 280162.953,
+            "revoke_threshold_proposal_ms": 60000,
+            "revoke_over_proposal": true
+          },
+          "admin_pending": true,
+          "admin_revoke_overdue": true,
+          "public_still_200_during_outage": true,
+          "healthy_slo_sample": false
+        },
+        {
+          "event": "projector.retry",
+          "error_code": "http_503",
+          "attempt": 2,
+          "retry_ms": 5000,
+          "controlled_fault": "503",
+          "provider_generated_error": false
+        },
+        {
+          "event": "projector.retry",
+          "error_code": "network",
+          "attempt": 3,
+          "retry_ms": 8000,
+          "controlled_fault": "lost_ack",
+          "provider_generated_error": false
+        },
+        {
+          "event": "fault.acknowledgement_lost",
+          "pending": 1,
+          "attempt": 3,
+          "real_rest_committed": true,
+          "public_status": 404,
+          "real_rest_calls": 1,
+          "capabilities_disclosed": false
+        },
+        {
+          "event": "projector.projected",
+          "attempt": 4,
+          "lag_ms": 314865,
+          "lag_basis": "commit",
+          "controlled_fault": "normal",
+          "provider_generated_error": false
+        },
+        {
+          "event": "fault.complete",
+          "source_event_id": "51",
+          "controlled_429_and_503": true,
+          "actual_cloudflare_429_or_503": false,
+          "real_rest_calls": 2,
+          "request_spacing_ms": 9085,
+          "first_write_changes": 1,
+          "replay_changes": 0,
+          "final": {
+            "attempts": 4,
+            "last_error": null,
+            "state": "projected",
+            "commit_to_projected_ms": 314865.149
+          },
+          "public_status": 404,
+          "other_sites_unchanged": true,
+          "healthy_slo_sample": false,
+          "outage_disclosed_separately": true,
+          "capabilities_disclosed": false
+        },
+        {
+          "event": "fault.runtime_restored",
+          "success": true,
+          "same_projector_container": true,
+          "pending": 0,
+          "ledger": 4,
+          "sites": 2,
+          "versions": 4,
+          "old_hsp_lab_unchanged": true,
+          "r2_objects_deleted": 0,
+          "no_tokens_rotated": true
+        }
+      ],
+      "success": true
+    }
+  ],
+  "ledger_readback": {
+    "ledger_rows": 4,
+    "ledger_names_checksums_equal_pre_fault_receipt": true,
+    "all_applied_pg_files_match_canonical_source": true,
+    "d1_migrations_not_invoked": true,
+    "compose_start_did_invoke_pg_migration_checker": true,
+    "no_new_pg_migration_applied": true
+  },
+  "final_runtime": {
+    "source_head": "2a396ae2d4b8a1e2feb3e14b7dc6d9fb88e78e64",
+    "node_image": "sha256:d927742b4d5aca35e11a0cce742939ea52cc62dc9087b9bd9ca3f850ea135025",
+    "services": [
+      {
+        "service": "db",
+        "state": "running",
+        "health": "healthy"
+      },
+      {
+        "service": "migrate",
+        "state": "exited",
+        "health": "none"
+      },
+      {
+        "service": "web",
+        "state": "running",
+        "health": "healthy"
+      },
+      {
+        "service": "preview",
+        "state": "running",
+        "health": "healthy"
+      },
+      {
+        "service": "projector",
+        "state": "running",
+        "health": "none"
+      }
+    ],
+    "postgres": {
+      "sites": 2,
+      "versions": 4,
+      "ledger_count": 4,
+      "pending": 0,
+      "errors": 0,
+      "overdue_revokes": 0,
+      "published_sites": 1
+    },
+    "old_hsp_lab_unchanged": true,
+    "old_source_unchanged": true,
+    "nginx_sha256": "19d6c7f0d583c4d7711c6783dc08e42ee24c0daabf0eba7249c1b10c3bdc5ab2",
+    "r2_objects_deleted": 0,
+    "private_values_disclosed": false,
+    "studio_https_from_operator_node": [
+      {
+        "path": "/api/health/live",
+        "status": 200,
+        "no_store": true
+      },
+      {
+        "path": "/api/health/ready",
+        "status": 200,
+        "no_store": true
+      }
+    ]
+  },
+  "browser_warning": {
+    "actual_admin_session": true,
+    "overdue_text_visible": true,
+    "retry_state_visible": true,
+    "warning_cleared_without_second_manual_refresh": true,
+    "visible_tab": true,
+    "screenshot_during_fault": "task-local tmp/pilot-studio-overdue.png",
+    "screenshot_after_recovery": "task-local tmp/pilot-studio-recovered.png"
+  },
+  "limitations": [
+    "429/503and acknowledgement loss are injected Node transport faults; not actual Cloudflare-generated errors.",
+    "Actual PG/backoff/projector/D1write/idempotent retry and public/Studio responses are remote evidence.",
+    "First supervisor run failed on container enumeration and invoked the existing PGmigration checker through Compose dependencies. No new SQL was applied; failure receipt retained.",
+    "Real Cloudflare prolonged429, token rotation/revoke, full IAMpolicy and remaining release10matrix are not proven here."
+  ]
+}
