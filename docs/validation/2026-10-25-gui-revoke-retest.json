@@ -10,6 +10,144 @@
   "gui_revoke_gate": "owner_confirmed_pass_for_this_case",
   "elapsed_ms": null,
   "new_healthy_slo_sample": false,
-  "source_notice_stale": true,
-  "no_overall_pilot_or_release10_acceptance_inferred": true
+  "no_overall_pilot_or_release10_acceptance_inferred": true,
+  "observed_stale_notice_before_fix": true,
+  "draft_pr": 58,
+  "source_head": "2734de5f6b345050f95b0db75bab9ac71b908de7",
+  "node_image": "sha256:2fd14cccc9bfd9e3402b968c4eebeff664d0519cd069e55e88bf95cd768c1a8b",
+  "archive_sha256": "1cad449a576c03b476dbc0bce5ee21df79758b908fde4ca261e25c6b030bc2a4",
+  "archive_files": 226,
+  "source_head_ci": {
+    "total": 4,
+    "success": 4
+  },
+  "local_validation": {
+    "lint": "PASS",
+    "typecheck": "PASS",
+    "unit_tests": {
+      "pass": 176,
+      "fail": 0
+    },
+    "build": "PASS",
+    "docs": "PASS",
+    "diff_check": "PASS",
+    "stale_direct_access_claim_scan": "no matches"
+  },
+  "remote": {
+    "target_and_replication_rechecked": true,
+    "nonroot_runtime_probe": {
+      "result": "PASS",
+      "uid": 1000,
+      "readableFiles": 30,
+      "projectionLibraries": true
+    },
+    "db_migrate_ids_preserved": true,
+    "migrations_rerun": false,
+    "before_totals": {
+      "sites": 3,
+      "versions": 5,
+      "ledger": 4,
+      "pending": 0,
+      "errors": 0,
+      "published_sites": 2
+    },
+    "after": {
+      "source_head": "2734de5f6b345050f95b0db75bab9ac71b908de7",
+      "node_image": "sha256:2fd14cccc9bfd9e3402b968c4eebeff664d0519cd069e55e88bf95cd768c1a8b",
+      "readback": {
+        "totals": {
+          "sites": 3,
+          "versions": 5,
+          "ledger": 4,
+          "pending": 0,
+          "errors": 0,
+          "published_sites": 2
+        },
+        "state_fingerprint": "fd5d8e7f0a09cd163599201d3cbc08f1c847c2b38270e70fcd5e610f6932381c",
+        "fixture_status": "published",
+        "fixture_active_codes": 0,
+        "latest_projection": {
+          "id": "64",
+          "state": "projected",
+          "attempts": 1,
+          "last_error": null,
+          "has_revoke": true,
+          "statuses": [
+            "revoked"
+          ]
+        },
+        "revoked_public_status": 404,
+        "owner_500_manifest_preserved": true,
+        "owner_asset_probes": [
+          {
+            "path": "index.html",
+            "status": 200,
+            "integrity": true,
+            "no_store": true
+          },
+          {
+            "path": "assets/style.css",
+            "status": 200,
+            "integrity": true,
+            "no_store": true
+          },
+          {
+            "path": "assets/app.js",
+            "status": 200,
+            "integrity": true,
+            "no_store": true
+          }
+        ],
+        "source_mutations": 0
+      },
+      "deployed_notice": {
+        "new_success_suffix_present": true,
+        "old_success_suffix_present": false
+      },
+      "services": [
+        {
+          "service": "db",
+          "state": "running",
+          "health": "healthy"
+        },
+        {
+          "service": "migrate",
+          "state": "exited",
+          "health": "none"
+        },
+        {
+          "service": "web",
+          "state": "running",
+          "health": "healthy"
+        },
+        {
+          "service": "preview",
+          "state": "running",
+          "health": "healthy"
+        },
+        {
+          "service": "projector",
+          "state": "running",
+          "health": "none"
+        }
+      ],
+      "old_source_services_nginx_preserved": true,
+      "r2_deletions": 0,
+      "secret_actions": 0,
+      "owner_metadata_state_unchanged": true
+    },
+    "authenticated_new_notice_render_claimed": false,
+    "new_synthetic_mutations": 0,
+    "secrets_rotated_or_copied": false,
+    "studio_https_health": {
+      "live_status": 200,
+      "ready_status": 200,
+      "both_no_store": true
+    },
+    "owner_private_catalogue_preserved": true
+  },
+  "helper_sha256": {
+    "revoke_notice_readback.py": "0849ede30ed060b3c6209d2e02a339eda1666d7d878e87f9b9b57c4d27fd6159",
+    "rollout_notice_candidate.py": "1dc0c0238636cf95ac0dbebee03378264dd507c3e16a0e527feb1393543aa07d"
+  }
 }
