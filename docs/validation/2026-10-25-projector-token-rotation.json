@@ -1,0 +1,139 @@
+{
+  "date": "2026-10-25",
+  "early_drill_approval": "Explicit owner approval in current chat before operator handoff",
+  "operator_replacement_name": "hsp-projector-pilot-1",
+  "retired_name": "hsp-projector-pilot",
+  "operator_reported_new_secret_loaded": true,
+  "operator_reported_old_revoked": true,
+  "creation_and_old_revocation_basis": "owner/operator confirmation; no token values or policy exports collected",
+  "agent_pre_revoke_receipts": [
+    {
+      "event": "rotation.preflight",
+      "old_running_credential_valid": true,
+      "new_secret_store_credential_valid": true,
+      "target_replication_match": true,
+      "secrets_permissions_valid": true,
+      "token_values_or_fingerprints_disclosed": false
+    },
+    {
+      "event": "rotation.ready_for_old_revoke",
+      "date": "2026-10-25",
+      "new_token_name": "hsp-projector-pilot-1",
+      "old_token_name": "hsp-projector-pilot",
+      "operator_reported_new_secret_loaded": true,
+      "early_drill_owner_approved": true,
+      "new_projector_container": true,
+      "same_source_image": true,
+      "db_web_preview_migrate_ids_preserved": true,
+      "migrate_not_started": true,
+      "old_hsp_lab_unchanged": true,
+      "role_and_target_readback": {
+        "target_replication_match": true,
+        "d1_only_role": true,
+        "credential_read_valid": true
+      },
+      "drain_cycle": {
+        "event": "rotation.drain_cycle",
+        "actual_node_pg_projector_d1": true,
+        "operator_functions_not_clerk_mutation_test": true,
+        "files": 500,
+        "public_publish_200": true,
+        "public_revoke_404": true,
+        "events": [
+          {
+            "id": "54",
+            "state": "projected",
+            "attempts": 1,
+            "last_error": null,
+            "has_revoke": false,
+            "payload_rows": 1
+          },
+          {
+            "id": "55",
+            "state": "projected",
+            "attempts": 1,
+            "last_error": null,
+            "has_revoke": false,
+            "payload_rows": 1
+          },
+          {
+            "id": "56",
+            "state": "projected",
+            "attempts": 1,
+            "last_error": null,
+            "has_revoke": true,
+            "payload_rows": 1
+          }
+        ],
+        "pending": 0,
+        "errors": 0,
+        "other_sites_unchanged": true,
+        "original_fixture_restored_unpublished": true,
+        "new_healthy_slo_sample": false,
+        "capabilities_or_secrets_disclosed": false
+      },
+      "bundle_sha256": "e3213ca04ba9cc96a5f4e7a5f1bae89dda6d89aa670cef151a0bec6b20a0cf07",
+      "old_token_revoke_not_yet_confirmed": true,
+      "token_values_or_fingerprints_disclosed": false
+    }
+  ],
+  "agent_post_revoke_receipt": {
+    "event": "rotation.completed",
+    "date": "2026-10-25",
+    "new_token_name": "hsp-projector-pilot-1",
+    "old_token_name": "hsp-projector-pilot",
+    "old_token_revoke_operator_confirmed": true,
+    "old_credential_retrieved_or_probed": false,
+    "post_revoke_metadata": {
+      "new_credential_valid_after_old_revoke": true,
+      "target_replication_match": true,
+      "d1_only_role": true
+    },
+    "post_revoke_drain_cycle": {
+      "event": "rotation.drain_cycle",
+      "actual_node_pg_projector_d1": true,
+      "operator_functions_not_clerk_mutation_test": true,
+      "files": 500,
+      "public_publish_200": true,
+      "public_revoke_404": true,
+      "events": [
+        {
+          "id": "58",
+          "state": "projected",
+          "attempts": 1,
+          "last_error": null,
+          "has_revoke": false,
+          "payload_rows": 1
+        },
+        {
+          "id": "59",
+          "state": "projected",
+          "attempts": 1,
+          "last_error": null,
+          "has_revoke": false,
+          "payload_rows": 1
+        },
+        {
+          "id": "60",
+          "state": "projected",
+          "attempts": 1,
+          "last_error": null,
+          "has_revoke": true,
+          "payload_rows": 1
+        }
+      ],
+      "pending": 0,
+      "errors": 0,
+      "other_sites_unchanged": true,
+      "original_fixture_restored_unpublished": true,
+      "new_healthy_slo_sample": false,
+      "capabilities_or_secrets_disclosed": false
+    },
+    "runtime_source": "2a396ae2d4b8a1e2feb3e14b7dc6d9fb88e78e64",
+    "same_image_no_additional_restart": true,
+    "no_token_values_or_fingerprints_collected": true,
+    "next_regular_rotation_due": "2027-01-23"
+  },
+  "next_regular_rotation_due": "2027-01-23",
+  "emergency_active_token_revocation_fault_not_run": true
+}

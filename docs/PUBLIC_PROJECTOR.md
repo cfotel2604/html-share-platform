@@ -1,5 +1,7 @@
 # Transactional public outbox / Node projector — Issue #33
 
+> **2026-10-25 current credential:** owner-approved early rotation completed. Active dedicated token name **hsp-projector-pilot-1**; original **hsp-projector-pilot** revoked on Dashboard per operator confirmation. Only projector recreated, source/image preserved; actual metadata and500file publish/revoke/drain passed before and after old revoke. [Rotation evidence](validation/2026-10-25-projector-token-rotation.json), [method/basis/limits](validation/2026-10-25-browser-boundary.md). No token values/fingerprints/export collected. Next regular90day due2027-01-23, earlier on agreed incident triggers. Do not ask account/scope again. Emergency active-token failure drill remains unrun.
+
 Current operation scope: [consolidated pilot authority](PILOT_APRIME_AUTHORITY.md) grants the named D1 pilot projector/rebuild run without another Cloudflare packet approval. Rechecks, durable Node/PostgreSQL source, explicit flags and Node secret-store policy remain required. Subsequent owner25/10approval covers bounded VM setup under the [rollout plan](PILOT_APRIME_NODE_ROLLOUT.md), only after49merge/refreshed48CI and operator secret provisioning; no VM rollout has run. No Wrangler-token extraction or ephemeral source substitution. Older per-step remote approval statements below predate this owner instruction.
 
 Refs #33 / Epic #31, [ADR-0006](adr/0006-postgresql-source-of-truth-d1-public-read-model.md), [read-model contract](D1_PUBLIC_READ_MODEL.md). Base freshly fetched main `40b0dd9f03d951ae8d98064e265f953e250b4a75` (PR39/41 merged, Issues32/35 closed). Work is on `feat/33-transactional-outbox`.
@@ -41,7 +43,7 @@ Admin `SiteSummary` in `/api/sites` and `/api/workspace` gains `projection: { pe
 
 ## Owner-approved token policy — 2026-10-24
 
-Use the **existing pilot account**, with a separate token named **`hsp-projector-pilot`**, D1 Read/Write only: no Workers, R2 or account administration; never shared with Wrangler/dashboard. D1 permission is account-scoped, so the explicit target pin is essential. Store the value only in Node's VM secret store and load at job startup; never Git/log/response/PR/chat, shell arguments or checked-in config. No projector token has been created or retrieved in this task.
+Use the **existing pilot account**, with a separate dedicated projector token (active **`hsp-projector-pilot-1`**, original `hsp-projector-pilot` retired), D1 Read/Write only: no Workers, R2 or account administration; never shared with Wrangler/dashboard. D1 permission is account-scoped, so the explicit target pin is essential. Store the value only in Node's VM secret store and load at job startup; never Git/log/response/PR/chat, shell arguments or checked-in config. The operator creates/revokes tokens; the agent consumes only the protected startup environment and never retrieves token values.
 
 Rotate every **90days**, and immediately on suspected disclosure, administrator change or suspected VM compromise:
 
@@ -50,9 +52,9 @@ Rotate every **90days**, and immediately on suspected disclosure, administrator 
 3. Revoke the old token on the dashboard.
 4. Record only the rotation date and token name in validation documentation.
 
-Emergency: revoke immediately on the dashboard. Projection fails closed, outbox accumulates/alerts and Admin shows pending status. The intended public D1+R2 reader does not use this token; already projected public state remains independently readable. Replace/verify before resuming. This task performs none of those token/VM operations.
+Emergency: revoke immediately on the dashboard. Projection fails closed, outbox accumulates/alerts and Admin shows pending status. The intended public D1+R2 reader does not use this token; already projected public state remains independently readable. Replace/verify before resuming. The normal replacement drill above is complete; emergency active-token revocation remains an unrun scenario.
 
-## Remote gate and rollback
+## Historical initial remote gate and retained rollback
 
 The owner authorized read-only Cloudflare CLI checks and preparation of a new ignored task-owned target file. A constant SELECT verified REST batch numeric/NULL binding, `changed_db=false`, and replication disabled; this is **not a projector run**. The prepared target file contains no token and keeps both execution gates false. No owner private config/worktree was read or changed.
 
