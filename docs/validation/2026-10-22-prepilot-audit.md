@@ -1,5 +1,7 @@
 # Audit chỉ đọc trước pilot — Issue #10
 
+> Historical22/10legacy audit only. Its MinIO/VMviewer/production assumptions do not describe accepted A'. Current pilot-only review: [25/10A' security closeout](2026-10-25-aprime-pilot-security.md). Do not execute its old rollout/backfill suggestions or carry its obsolete blockers into A'.
+
 Ngày **2026-10-22 (Asia/Saigon)**. Refs [Issue #10](https://github.com/cfotel2604/html-share-platform/issues/10), [lab baseline](../LAB_HANDOFF.md), [merge record](../reviews/2026-10-22-stack-merged.md). Đây là đối chiếu acceptance và kế hoạch kiểm chứng tiếp theo, chưa phải security/release approval.
 
 ## Phạm vi và nguồn bằng chứng
@@ -49,7 +51,7 @@ Canonical viewer hiện published GET200, no-store/no Set-Cookie, iframe `sandbo
 | Lớp | Đã kiểm trực tiếp | Còn thiếu |
 | --- | --- | --- |
 | Content nginx | `limit_req_zone $binary_remote_addr zone=lsods:10m rate=30r/s`; `limit_req zone=lsods burst=100 nodelay`; body cap1m ở content vhost | Không thấy `limit_conn_zone`/`limit_conn` trong effective nginx; chưa đo concurrency, memory/object buffering hoặc abuse. Body cap content không phải upload cap Studio |
-| Viewer | Config600/min; [limiter](../../src/lib/viewer-limit.ts) là budget chung mỗi process, không tin forwarding header | Per-IP/replica/provider edge policy, trusted client-IP chain và fairness chưa được chứng minh |
+| Viewer | Config600/min; [limiter](https://github.com/cfotel2604/html-share-platform/blob/94d44ffef73035e71aac9a042397d3311958b298/src/lib/viewer-limit.ts) là budget chung mỗi process, không tin forwarding header | Per-IP/replica/provider edge policy, trusted client-IP chain và fairness chưa được chứng minh |
 | Cache/unpublish | Header no-store trên viewer/direct; không thấy `proxy_cache_path` | Chưa kiểm effective Cloudflare cache rules toàn pipeline hoặc chạy update/unpublish/preview expiry trên fixtures qua edge trong phiên này; owner-confirmed lifecycle và CI vẫn là hai nguồn riêng |
 | Crawler | Canonical viewer200/no-store với Mozilla, `facebookexternalhit/1.1`, `Zalo/1.0` giả lập | Không phải request từ hạ tầng crawler thật hoặc test Zalo in-app |
 

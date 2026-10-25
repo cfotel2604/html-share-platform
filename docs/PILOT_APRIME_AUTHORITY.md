@@ -1,5 +1,7 @@
 # Current A' pilot authority — consolidated owner instruction
 
+> **25/10 owner update:**59merged/38accepted/31closed. Owner scopes current10/19closeout to accepted A'pilot/lab, not production preparation; R2writer/reader separation is owner-confirmed. No new runtime/secret/token/DNS/ADRexception authority is inferred. [Current audit](validation/2026-10-25-aprime-pilot-security.md). Pending-signoff rows below describe their earlier checkpoints.
+
 2026-10-24; Refs38/31/10, DraftPR48. This supersedes Fast-track/preparation-only and per-Cloudflare-packet approval text in older handoffs/runbooks. Only A' remains: durable VM PostgreSQL/Node administration, transactional outbox, Node projector/recovery public-model writers, one application-read-only public Worker, private R2 and Node/VM preview. No D1-primary/API/preview Worker/token bridge, legacy import or compatibility path. Choose A' over old architecture and record why; do not ask the same architecture question again.
 
 | Action | Standing authority / boundary |
