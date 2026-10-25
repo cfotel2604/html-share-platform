@@ -19,7 +19,8 @@ Owner merged48at main1fbe19c; runtime source2a396ae/image d927742b passed4/4CI b
 | Controlled fault packet / PR56 | Actual PG/projector/D1ack-loss/retry:300s429cooldown preserved;503retry; first real write1change, replay0changes.314865.149msoutage separate from healthy measurements.429/503are Node transport injection, not provider-generated |
 | Warning channel | Actual signed-in AdminStudio showed overdue>60s/retrying and cleared automatically after drain, plus local/CI tests. No closed-tab/VM-outage/external notification guarantee |
 | Preservation / deletion | Old viewer4100and hsp-lab source/data/volumes retained,2sites/4versions, PGledger4unchanged;0R2deletions. Historical0005deleted11legacy D1tables/585rows once; never replay applied SQL |
-| Remaining owner/security gates | Owner pilot acceptance, old viewer retirement, full IAMscopeconfirmation, actual token-rotation/revoke and prolonged429/other uncovered remote fault drills, Employee/browser/mobile/cookie/release#10. Local/CI cases are not substituted for those live proofs |
+| Projector token scope | Owner confirms hsp-projector-pilot created per settled policy: existing pilot account, D1Edit only, no Workers/R2/account administration. Scope owner-confirmed; no token value/export collected. Rotation/revoke drill is separate |
+| Remaining owner/security gates | Owner pilot acceptance, old viewer retirement, actual token-rotation/revoke and prolonged429/other uncovered remote fault drills, Employee/browser/mobile/cookie/release#10. Local/CI cases are not substituted for those live proofs |
 
 ## Historical preparation scope — before consolidated authority
 

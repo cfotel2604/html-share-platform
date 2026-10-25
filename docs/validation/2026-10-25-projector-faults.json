@@ -254,6 +254,19 @@
     "429/503and acknowledgement loss are injected Node transport faults; not actual Cloudflare-generated errors.",
     "Actual PG/backoff/projector/D1write/idempotent retry and public/Studio responses are remote evidence.",
     "First supervisor run failed on container enumeration and invoked the existing PGmigration checker through Compose dependencies. No new SQL was applied; failure receipt retained.",
-    "Real Cloudflare prolonged429, token rotation/revoke, full IAMpolicy and remaining release10matrix are not proven here."
-  ]
+    "Real Cloudflare prolonged429, token rotation/revoke and remaining release10matrix are not proven here."
+  ],
+  "iam_scope": {
+    "status": "owner_confirmed",
+    "date": "2026-10-25",
+    "token_name": "hsp-projector-pilot",
+    "account": "existing approved pilot account",
+    "permission": "D1 Edit (read/write) only",
+    "workers_permission": false,
+    "r2_permission": false,
+    "account_administration_permission": false,
+    "basis": "Owner confirmed token was created according to the settled requirements",
+    "token_value_or_policy_export_collected": false,
+    "rotation_revoke_drill_completed": false
+  }
 }
