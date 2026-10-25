@@ -1,12 +1,26 @@
-# A' pilot acceptance preparation — Issue #38
+# A' pilot acceptance and retained preparation — Issue #38
 
-> **Execution now authorized under the consolidated owner instruction:** see [current authority](PILOT_APRIME_AUTHORITY.md) and [execution receipts](validation/2026-10-24-aprime-pilot-execution.md). Earlier preparation-only/per-Cloudflare-packet approval text below is historical and superseded for the named pilot scope. Rechecks and evidence remain mandatory; Owner25/10additionally approved the [bounded VM rollout](PILOT_APRIME_NODE_ROLLOUT.md), only after49merge/refreshed48CI and operator-loaded secrets. It remains unexecuted; wider runtime/private-file/token-policy actions and other retained owner gates are not granted. The old blank ledger records the preparation snapshot, not current operation status.
+> **Execution now authorized under the consolidated owner instruction:** see [current authority](PILOT_APRIME_AUTHORITY.md) and [execution receipts](validation/2026-10-24-aprime-pilot-execution.md). Earlier preparation-only/per-Cloudflare-packet approval text below is historical and superseded for the named pilot scope. Rechecks and evidence remain mandatory; Owner25/10additionally approved the [bounded VM rollout](PILOT_APRIME_NODE_ROLLOUT.md), only after49merge/refreshed48CI and operator-loaded secrets. Execution now has actual receipts: Node/PG/R2, public Worker/projector/recovery, healthy/outage drills and HTTPS/browser preview. Wider runtime/private-file/token-policy actions and retained owner gates are not granted. The old blank ledger records the preparation snapshot, not current operation status.
 
 Refs #38 / Epic #31 / release gate #10. Base freshly fetched main `76b38faf169477af480690f222123214f4d8c3c5` after owner reported PR45 merged. ADR-0006 is the accepted target; PR39/41/42/43/44/45 source is merged. This document prepares a reviewable pilot plan, not execution authority or a completed acceptance report.
 
 **Owner update25/10:** for this pilot, warnings may appear **inside Studio**; no external alert/collector setup is required now. Admin must see pending state, overdue revoke beyond60s and failure to refresh. The visible pending screen samples every15s with fresh Node authorization; the warning threshold is evaluated by PostgreSQL. It is not an alert-delivery guarantee when the tab is closed/hidden or VM/API unavailable. Earlier collector/watchdog delivery proposals below remain deferred, not evidence of outside notification. The healthy p95/outage separation and all security boundaries remain unchanged. [Current execution evidence](validation/2026-10-24-aprime-pilot-execution.md).
 
-## Authority and present state
+## Current evidence checkpoint — 2026-10-25
+
+Runtime source2a396ae/image d927742b passed4/4CI before rollout. [Detailed execution](validation/2026-10-24-aprime-pilot-execution.md), [preview readbacks](validation/2026-10-25-public-preview.json).
+
+| Gate | Actual evidence / remaining limitation |
+| --- | --- |
+| Node administration /500files | Owner authenticated HTTPpublish/copy/view succeeded;500manifest/R2readback PASS. Later12transfer operator update11.862s; not a new captured UIlatency sample |
+| Projection / recovery |20healthy500manifest revoke samples p95=5.298s; outage107.961s separately disclosed. Stale/duplicate replay0changes; audited rebuild/reconcile0differences |
+| Public serving / independence | Fixed-query Worker+privateR2 deployed; public200integrity/security while only new A'services stopped. Not whole-VM-off evidence |
+| Preview | Exact p-namespace, actual HTTPS200/integrity/sandbox/Studioancestor, forged actor403, invalid/no-grant/outside-manifest404, real180s expiry404. Real signed-in Admin iframe rendered fixture and script |
+| Warning channel | Owner-approved Studio pending/overdue/stale UI and tests. No closed-tab/VM-outage/external notification guarantee |
+| Preservation / deletion | Old viewer4100and hsp-lab source/data/volumes retained,2sites/4versions, PGledger4unchanged;0R2deletions. Historical0005deleted11legacy D1tables/585rows once; never replay applied SQL |
+| Remaining owner/security gates | Owner pilot acceptance, old viewer retirement, full IAMscopeconfirmation, actual token-rotation/revoke and prolonged429/other uncovered remote fault drills, Employee/browser/mobile/cookie/release#10. Local/CI cases are not substituted for those live proofs |
+
+## Historical preparation scope — before consolidated authority
 
 Authorized now: repository/source review, local empty tests and documentation, read-only Cloudflare CLI metadata where needed, new task-owned private config preparation. This task does not run pilot projector/rebuild, D1 migration/data cleanup, Worker deploy/retirement, VM/SSH/Docker, token creation/rotation/revoke, or owner-private-file inspection. No state/Draft/base/head changes or closure of legacy PRs/Issues follow from merging PR45. Their owner dispositions remain pending.
 
@@ -17,11 +31,11 @@ Prepare itemized evidence requirements, serial approval checkpoints, failure/rol
 ## Owner-confirmed thresholds — 2026-10-24, Issue38
 
 - **Healthy runs:** p95 PostgreSQL revoke COMMIT → public404 **≤60000ms**, when projector and REST are operating normally.
-- **Pending warning:** warn when any revoke remains pending **>60000ms**, with clear Admin “chưa đồng bộ” status. Verify the collector/recipient actually receives the warning; a log line alone is not an alert-delivery receipt.
+- **Pending warning:** warn when any revoke remains pending **>60000ms**, with clear Admin “chưa đồng bộ” status. Owner subsequently chose the Studio screen for this pilot: PostgreSQL overdue flag and visible pending Admin refresh/stale warning are implemented. No external collector/delivery is required or claimed.
 - These two thresholds do **not** apply or provide a60second blocking guarantee while projector/REST is stopped. Record incident latency, outbox depth, recovery duration and containment separately. Keep warnings/Admin pending visible where possible, restore projector; if needed, owner may authorize audited emergency projection through [#34 runbook](READ_MODEL_RECOVERY.md). With REST/token unavailable, the owner must choose serving containment; revoking the projector token does not block public D1/R2 reads.
 - Report healthy p95 and incident runs **separately and together in the report**, with every excluded run/reason disclosed. Do not hide outages, classify a slow healthy run as an outage after the fact, or mix incidents into a more flattering percentile. A threshold decision is not a measured PASS or remote-execution approval.
 
-The present code retains event name `projector.revoke_over_proposal` and benchmark field `revoke_threshold_status: proposal_only` from #33. They are historical diagnostic labels, not the current policy. Do not change or suppress those events to make evidence look accepted. Document the mapping. Metrics run once/minute; record actual pending age, detection/emission/delivery times and sampling gaps. No alert-delivery deadline was independently approved. A dead projector cannot emit metrics: an approved operator watchdog/missing-telemetry collector is a pilot gate, distinct from forbidden Codex merge monitoring. Nothing is installed here.
+The present code retains event name `projector.revoke_over_proposal` and benchmark field `revoke_threshold_status: proposal_only` from #33. They are historical diagnostic labels, not the current policy. Do not change or suppress those events to make evidence look accepted. Document the mapping. Metrics run once/minute; record actual pending age, detection/emission/delivery times and sampling gaps. No alert-delivery deadline was independently approved. A dead projector cannot emit metrics. The owner subsequently deferred an external watchdog/collector and chose Studio warnings; closed/hidden Studio or VM/API failure has no notification guarantee. No external collector or Codex merge monitoring is installed.
 
 ## Evidence baseline and dependencies
 
@@ -36,9 +50,9 @@ The present code retains event name `projector.revoke_over_proposal` and benchma
 
 [Historical transition inventory](ADR0006_TRANSITION.md) is the source for 24/10 read-only metadata showing three legacy Worker deployments and two API secret binding names. It does not show the new Worker deployed. Old Clerk/R2/500-small-file/browser/VM evidence remains scoped to its old source/environment; do not copy its PASS into this ledger. Live GitHub state must be rechecked at each future checkpoint.
 
-## Serial approval packets — execution is not authorized by this PR
+## Packet evidence checklist — original approval model superseded
 
-Each packet needs a named operator, exact source/artifact/config fingerprints, verified private target, start/stop window, workload/request budget, readback, abort/containment and owner authorization for **that packet**. Private identifiers stay in an operator receipt; checked-in evidence contains booleans/counts/hashes. A later packet does not inherit approval from an earlier one, a source merge, or the approval given to migration0004.
+The consolidated owner authority supersedes the earlier per-packet approval model for the named pilot, and the bounded VM scope was separately granted. Do not ask again for those same steps. Each packet still needs an exact source/artifact/config fingerprint, private target recheck, start/stop/workload budget, readback and abort/containment evidence. Private identifiers remain in protected receipts; production, merge, #10 and actions outside standing authority remain owner decisions. The following table retains the original preparation requirements and must be read alongside the current execution receipts.
 
 | Packet | Concrete action to prepare/review | Required entry evidence / exit gate |
 | --- | --- | --- |
