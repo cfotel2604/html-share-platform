@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-25",
+  "basis": "direct owner report in this chat",
+  "fixture": "A-prime browser boundary 2026-10-25",
+  "owner_confirmed": {
+    "fresh_link_viewable_before_revoke": true,
+    "gui_success_notice_after_revoke": true,
+    "old_link_not_found_after_refresh": true
+  },
+  "gui_revoke_gate": "owner_confirmed_pass_for_this_case",
+  "elapsed_ms": null,
+  "new_healthy_slo_sample": false,
+  "source_notice_stale": true,
+  "no_overall_pilot_or_release10_acceptance_inferred": true
+}
