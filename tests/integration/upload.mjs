@@ -120,9 +120,11 @@ try {
   const failed = await send(new File([zipBytes([{ name: "index.html" }, { name: "style.css" }])], "fixture.zip"), id);
   assert.equal(failed.status, 500); assert.ok(!(await failed.text()).includes("fixture audit failure"));
   assert.deepEqual(await snapshot(id), initial); assert.deepEqual(await listKeys(), initialKeys);
-  assert.match(await (await readGateway("/s/" + id + "/")).text(), /integration v1/);
+  const retained=await s3.send(new GetObjectCommand({Bucket:process.env.STORAGE_BUCKET,Key:`${id}/${initial.active_version_id}/index.html`}));
+  assert.match(await retained.Body.transformToString(),/integration v1/);
+  assert.equal((await readGateway('/s/'+id+'/')).status,404);
   await pool.query("DROP TRIGGER upload_test_fail_audit ON audit_events");
-  passed.push("post-storage DB failure rolls back and cleans new objects; old active version remains readable");
+  passed.push("post-storage DB failure rolls back/cleans new objects; old immutable asset remains intact, Node public route denied");
 
   // Pause within the upload transaction and prove concurrent delete/reassign cannot pass its row lock.
   await pool.query("CREATE OR REPLACE FUNCTION upload_test_pause_version() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN PERFORM pg_sleep(1.2); RETURN NEW; END $$");
@@ -155,13 +157,16 @@ try {
   const zip = await send(new File([zipBytes([{ name: "index.html", body: '<link rel="stylesheet" href="style.css"><p>ZIP fixture</p>' }, { name: "style.css", body: "body{color:navy}" }])], "valid.zip"), id);
   assert.equal(zip.status, 200);
   const served = await readGateway("/s/" + id + "/");
-  assert.equal(served.status, 200); assert.match(served.headers.get("content-security-policy"), /sandbox allow-scripts/);
+  assert.equal(served.status, 404);
   assert.equal(served.headers.get("cache-control"), "no-store");
-  assert.equal((await readGateway("/s/" + id + "/style.css")).status, 200);
+  assert.equal((await readGateway("/s/" + id + "/style.css")).status, 404);
+  const zipVersion=(await pool.query('SELECT active_version_id FROM sites WHERE id=$1',[id])).rows[0].active_version_id;
+  const zipAsset=await s3.send(new GetObjectCommand({Bucket:process.env.STORAGE_BUCKET,Key:`${id}/${zipVersion}/style.css`}));
+  assert.equal(await zipAsset.Body.transformToString(),'body{color:navy}');
   const disabled = await fetch(web + "/api/sites/" + id, { method: "PATCH", headers: { ...headers, "Content-Type": "application/json" }, body: JSON.stringify({ published: false }) });
   assert.equal(disabled.status, 200);
   assert.equal((await readGateway("/s/" + id + "/style.css")).status, 404);
-  passed.push("valid ZIP update, sandbox/no-store, assets and unpublish 404");
+  passed.push("valid ZIP immutable readback; Node public aliases stay404 before/after unpublish (public serving covered by Worker suite)");
   const largeEntries = [{ name: "index.html", body: "<p>500-file fixture</p>" },
     ...Array.from({ length: 499 }, (_, i) => ({ name: `assets/${i}.txt`, body: `synthetic asset ${i}` }))];
   const largeResponse = await send(new File([zipBytes(largeEntries)], "500-files.zip"), id);

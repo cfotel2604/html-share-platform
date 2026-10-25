@@ -1,5 +1,7 @@
 # Node/PostgreSQL administration — Issue #35
 
+Current A' candidate38/PR48: public links require HTTPS `PUBLIC_CONTENT_ORIGIN` on a different registrable domain from Studio (private suffixes included), and point directly to the public Worker. There is no `/view` or PG-public-gateway fallback; Node gateway is preview-grant-only. Bad public configuration rolls back before object effects/publish commit, while unpublish/revoke remain usable. [VM proposal](PILOT_APRIME_NODE_ROLLOUT.md) is not deployed; existing35validation below predates this source change and is not pilot acceptance.
+
 Refs #35 / Epic #31; [ADR-0006](adr/0006-postgresql-source-of-truth-d1-public-read-model.md), [implementation plan, Issue 4](D1_READ_MODEL_PLAN.md), [preview grants](adr/0003-server-rbac-and-preview-capabilities.md).
 
 ## Baseline and delivery scope

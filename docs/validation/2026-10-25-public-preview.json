@@ -1,0 +1,204 @@
+{
+  "date": "2026-10-25",
+  "runtime": {
+    "source_head": "2a396ae2d4b8a1e2feb3e14b7dc6d9fb88e78e64",
+    "node_image": "sha256:d927742b4d5aca35e11a0cce742939ea52cc62dc9087b9bd9ca3f850ea135025",
+    "services": [
+      {
+        "service": "db",
+        "state": "running",
+        "health": "healthy"
+      },
+      {
+        "service": "migrate",
+        "state": "exited",
+        "health": "none"
+      },
+      {
+        "service": "web",
+        "state": "running",
+        "health": "healthy"
+      },
+      {
+        "service": "preview",
+        "state": "running",
+        "health": "healthy"
+      },
+      {
+        "service": "projector",
+        "state": "running",
+        "health": "none"
+      }
+    ],
+    "postgres": {
+      "sites": 2,
+      "versions": 4,
+      "ledger_count": 4,
+      "pending": 0,
+      "errors": 0,
+      "overdue_revokes": 0,
+      "published_sites": 1
+    },
+    "old_hsp_lab_unchanged": true,
+    "old_source_unchanged": true,
+    "nginx_sha256": "19d6c7f0d583c4d7711c6783dc08e42ee24c0daabf0eba7249c1b10c3bdc5ab2",
+    "r2_objects_deleted": 0,
+    "private_values_disclosed": false,
+    "studio_https_from_operator_node": [
+      {
+        "path": "/api/health/live",
+        "status": 200,
+        "no_store": true
+      },
+      {
+        "path": "/api/health/ready",
+        "status": 200,
+        "no_store": true
+      }
+    ],
+    "vm_python_http_probe_403_retained_separately": true
+  },
+  "nginx": {
+    "source_head": "2a396ae2d4b8a1e2feb3e14b7dc6d9fb88e78e64",
+    "map_sha256": "0c13cdc6facd1aed5a485fd5cb0700d2a1f5bd409d09520426b0baac70f7b512",
+    "nginx_before_sha256": "569e33a905c18082bace53b19f15a740d10deb6e1d8c53604509b7c7b5b1236a",
+    "nginx_after_sha256": "19d6c7f0d583c4d7711c6783dc08e42ee24c0daabf0eba7249c1b10c3bdc5ab2",
+    "nginx_test_pass": true,
+    "controlled_reload_pass": true,
+    "fixed_destinations": [
+      4100,
+      4110
+    ],
+    "legacy_default_preserved": true,
+    "representative_legacy_http_baseline": [
+      {
+        "status": 404,
+        "body_sha256": "dynamic-viewer-body-not-compared"
+      },
+      {
+        "status": 404,
+        "body_sha256": "e3ebaa16dd9d9b9fc107c42183fb6cf9d22927e1af03dbbdfa0ccc38e4e4ac31"
+      }
+    ],
+    "representative_legacy_http_unchanged": true,
+    "host_forwarding_unchanged": true,
+    "content_access_logs_off": true,
+    "all_three_error_logs_protected": true,
+    "changed_proxy_directives": 1,
+    "dns_ufw_tunnel_changed": false,
+    "old_services_restarted": false,
+    "secret_or_grant_values_disclosed": false
+  },
+  "https_operator_receipt": {
+    "source_head": "2a396ae2d4b8a1e2feb3e14b7dc6d9fb88e78e64",
+    "bundle_sha256": "854d02d4febc901a6a2ee9c3d95cdf2c655038e6bd849088cc8c9add291c6e11",
+    "exit": 0,
+    "reports": [
+      {
+        "event": "pilot.public_preview_initial",
+        "operator_harness": true,
+        "session_auth_flow": false,
+        "actual_https_certificate_validation": true,
+        "public_dns_tls_gate": true,
+        "unpublished_fixture": true,
+        "synthetic_fixture_unpublished_via_node": true,
+        "manifest_files": 500,
+        "label_characters": 62,
+        "asset_probes": [
+          {
+            "path": "index.html",
+            "status": 200,
+            "integrity": true,
+            "no_store": true,
+            "no_cookie": true,
+            "nosniff": true,
+            "no_referrer": true,
+            "sandbox": true,
+            "studio_ancestor": true
+          },
+          {
+            "path": "assets/style.css",
+            "status": 200,
+            "integrity": true,
+            "no_store": true,
+            "no_cookie": true,
+            "nosniff": true,
+            "no_referrer": true,
+            "sandbox": true,
+            "studio_ancestor": true
+          },
+          {
+            "path": "assets/app.js",
+            "status": 200,
+            "integrity": true,
+            "no_store": true,
+            "no_cookie": true,
+            "nosniff": true,
+            "no_referrer": true,
+            "sandbox": true,
+            "studio_ancestor": true
+          }
+        ],
+        "negative_probes": [
+          {
+            "case": "outside_manifest",
+            "status": 404
+          },
+          {
+            "case": "forged_grant",
+            "status": 404
+          },
+          {
+            "case": "no_grant",
+            "status": 404
+          }
+        ],
+        "forged_actor_403": true,
+        "published_worker_readbacks": [
+          {
+            "path": "index.html",
+            "status": 200,
+            "integrity": true
+          },
+          {
+            "path": "assets/style.css",
+            "status": 200,
+            "integrity": true
+          },
+          {
+            "path": "assets/app.js",
+            "status": 200,
+            "integrity": true
+          }
+        ],
+        "sites_versions_links_unchanged_after_fixture_preparation": true,
+        "one_audited_preview_grant": true,
+        "expiry_wait_ms": 178255,
+        "grant_values_disclosed": false
+      },
+      {
+        "event": "pilot.public_preview_expired",
+        "status": 404,
+        "actual_3minute_ttl": true,
+        "no_ttl_row_edits": true,
+        "sites_versions_links_unchanged": true,
+        "grant_values_disclosed": false
+      }
+    ]
+  },
+  "authenticated_browser": {
+    "actual_admin_session": true,
+    "private_preview_rendered": true,
+    "script_ready_visible": true,
+    "iframe_sandbox": "allow-scripts",
+    "iframe_referrerpolicy": "no-referrer",
+    "p_namespace_src": true,
+    "screenshot": "task-local tmp/pilot-public-preview.png",
+    "grant_values_disclosed": false
+  },
+  "limitations": [
+    "Representative old-route readbacks and preserved closed map do not claim an exhaustive retest of every old viewer link.",
+    "HTTP/DOM/iframe evidence does not close mobile, parent-cookie or full release gate10.",
+    "The operator function is separate from the actual signed-in browser preview."
+  ]
+}

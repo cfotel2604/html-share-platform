@@ -47,6 +47,9 @@ export function Studio() {
             <span>{studio.notice}</span>
           </div>
         )}
+        {studio.syncWarning && <div className="studio-feedback studio-feedback-error" role="alert">
+          <AlertCircle size={17} aria-hidden="true" /><span>{studio.syncWarning}</span>
+        </div>}
         {studio.session === "checking" ? (
           <div className="studio-loading" role="status">
             <LoaderCircle

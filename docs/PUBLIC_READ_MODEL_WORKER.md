@@ -1,5 +1,7 @@
 # Public read-model Worker — Issue #36
 
+Current scope: [consolidated pilot authority](PILOT_APRIME_AUTHORITY.md) grants deployment of the merged public artifact to named `hsp-pilot`, plus old pilot Worker retirement, with immediate target/account/config/artifact recheck and readback. Older per-deploy approval statements below predate this instruction. Production/merge/VM-write gates and all code-only read-only/security constraints remain; current facts are in [execution receipts](validation/2026-10-24-aprime-pilot-execution.md).
+
 Refs #36 / Epic #31. Base main `f6c78340983060687b969d7aae0e2f7e80ebd381` after owner reported PR43 merged. Source is PostgreSQL; public serving reads only D1 primary and immutable private R2 assets. No API/preview Worker, Clerk, management secret, Node/VM/PostgreSQL request, projection write or UI change belongs here. Applied migrations and read-model SQL remain unchanged.
 
 ## Implementation scope

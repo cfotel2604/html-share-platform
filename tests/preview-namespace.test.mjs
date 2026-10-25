@@ -7,10 +7,10 @@ test('preview formatter retains full identity/entropy in the isolated p namespac
   const values={GATEWAY_MODE:'hostname',PUBLIC_SITE_DOMAIN:'matbao.test',PUBLIC_SITE_SCHEME:'https',PUBLIC_SITE_PORT:'',AUTH_TRUSTED_ORIGINS:'https://studio.ods.test'};
   const old=Object.fromEntries(Object.keys(values).map(k=>[k,process.env[k]]));Object.assign(process.env,values);
   t.after(()=>{for(const[k,v]of Object.entries(old)){if(v===undefined)delete process.env[k];else process.env[k]=v;}});
-  const {publicSiteUrl}=tsLoader()(new URL('../src/lib/public-url.ts',import.meta.url));
-  const id='a'.repeat(32),grant='c'.repeat(26),url=new URL(publicSiteUrl(id,grant));
+  const {previewSiteUrl}=tsLoader()(new URL('../src/lib/public-url.ts',import.meta.url));
+  const id='a'.repeat(32),grant='c'.repeat(26),url=new URL(previewSiteUrl(id,grant));
   assert.equal(url.origin,`https://p-${id}--${grant}.matbao.test`);assert.equal(url.hostname.split('.')[0].length,62);
-  assert.throws(()=>publicSiteUrl(id,grant.slice(1)),/Invalid/);
+  assert.throws(()=>previewSiteUrl(id,grant.slice(1)),/Invalid/);
 });
 
 test('nginx map has two fixed local destinations and namespaces new grants without fallback',()=>{

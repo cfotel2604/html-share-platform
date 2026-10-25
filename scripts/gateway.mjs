@@ -29,19 +29,18 @@ export function createGateway({db,s3,bucket,config}) {
     if(req.url==="/health/live" && loopbackHost(req.headers.host)) return respond(res,200,"ok");
     const parsed=config.mode==="hostname" ? mapHostRequest(req.headers.host,req.url??"",config)
       : loopbackHost(req.headers.host) ? mapRequest(req.url??"") : null;
-    if(!parsed) return respond(res,404,"Not found");
+    // ADR-0006: this Node gateway serves only scoped preview grants.
+    // Public delivery is exclusively the D1/R2 Worker, including local-path aliases.
+    if(!parsed?.grant) return respond(res,404,"Not found");
     try {
-      const result=await db.query(parsed.grant
-        ? `SELECT v.storage_prefix,v.asset_manifest FROM preview_grants g
+      const result=await db.query(`SELECT v.storage_prefix,v.asset_manifest FROM preview_grants g
            JOIN sites s ON s.id=g.site_id JOIN site_versions v ON v.site_id=s.id AND v.id=g.version_id
            JOIN users u ON u.id=g.actor_id LEFT JOIN auth_allowlist a ON a.email=u.email
            WHERE g.token_hash=$2 AND s.id=$1 AND s.status<>'deleted' AND g.expires_at>now()
              AND u.status='active' AND (u.external_identity='local-demo:owner' OR
                (u.external_identity LIKE 'clerk:%' AND a.status='active'))
-             AND (s.owner_id=u.id OR COALESCE(a.role,u.role)='admin')`
-        : `SELECT v.storage_prefix,v.asset_manifest FROM sites s JOIN site_versions v
-           ON s.id=v.site_id AND s.active_version_id=v.id WHERE s.id=$1 AND s.status='published'`,
-        parsed.grant ? [parsed.id,createHash("sha256").update(parsed.grant).digest("hex")] : [parsed.id]);
+             AND (s.owner_id=u.id OR COALESCE(a.role,u.role)='admin')`,
+        [parsed.id,createHash("sha256").update(parsed.grant).digest("hex")]);
       const version=result.rows[0];
       const entry=version && manifestEntry(version.asset_manifest,parsed.asset,parsed.type);
       if(!entry || !new RegExp(`^${parsed.id}/[a-f0-9-]{36}$`).test(version.storage_prefix)) return respond(res,404,"Not found");

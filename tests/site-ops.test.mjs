@@ -28,6 +28,7 @@ function fixture({ authorized = true, failAt, rollbackFails = false, cleanupFail
   let writes = 0;
   const confirmedKeys = [], unconfirmedKeys = [];
   const source = tsLoader({
+    "./public-url": {publicContentOrigin:()=>"https://content.example.test",shareUrl:code=>code?`https://content.example.test/${code}/`:null},
     "./auth-policy": {lockActor: async (_client,current) => current},
     "./db": { db: () => ({
       connect: async () => client,

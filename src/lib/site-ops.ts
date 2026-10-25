@@ -5,7 +5,7 @@ import { fingerprint, parseSite } from "./upload";
 import { UploadError } from "./upload-error";
 import { lockActor, type Actor } from "./auth-policy";
 import { createHash } from "node:crypto";
-import { shareUrl } from "./public-url";
+import { shareUrl, publicContentOrigin } from "./public-url";
 import { allocateShareCode } from "../../scripts/share-codes.mjs";
 
 const MAX_ASSET_TRANSFERS = 12;
@@ -44,6 +44,7 @@ export async function uploadVersion(actor: Actor, file: File, name: string, exis
       );
       await allocateShareCode(client, id);
     }
+    publicContentOrigin(); // Fail bad public configuration before any object side effect.
     // Existing-site ownership is locked before ZIP ingest and every storage side effect.
     let assets: Awaited<ReturnType<typeof parseSite>>;
     try { assets = await parseSite(file); } catch (error) {
@@ -130,11 +131,13 @@ export async function listSites(actor: Actor) {
   return (await db().query(
     `SELECT s.id,s.display_name,s.status,s.updated_at,s.active_version_id,l.code AS share_code,
      CASE WHEN $2='admin' THEN jsonb_build_object('pending',coalesce(p.pending_events,0)>0,
-       'pending_events',coalesce(p.pending_events,0),'oldest_pending_at',p.oldest_pending_at,'last_error',p.last_error) END AS projection
+       'pending_events',coalesce(p.pending_events,0),'oldest_pending_at',p.oldest_pending_at,'last_error',p.last_error,
+       'revoke_overdue',coalesce(p.revoke_overdue,false)) END AS projection
      FROM sites s
      LEFT JOIN site_share_links l ON l.site_id=s.id AND l.revoked_at IS NULL
      LEFT JOIN LATERAL (SELECT count(*)::int AS pending_events,min(enqueued_at) AS oldest_pending_at,
-       (array_agg(last_error ORDER BY last_attempt_at DESC NULLS LAST) FILTER(WHERE last_error IS NOT NULL))[1] AS last_error
+       (array_agg(last_error ORDER BY last_attempt_at DESC NULLS LAST) FILTER(WHERE last_error IS NOT NULL))[1] AS last_error,
+       bool_or(has_revoke AND enqueued_at<clock_timestamp()-interval '60 seconds') AS revoke_overdue
        FROM public_projection_outbox WHERE site_id=s.id AND state='pending' AND $2='admin') p ON true
      WHERE (s.owner_id=$1 OR $2='admin') AND s.status<>'deleted' ORDER BY s.updated_at DESC LIMIT 200`,
     [actor.id, actor.role],
@@ -156,6 +159,7 @@ export async function setPublished(actor: Actor, id: string, published: boolean)
       [id, current.id, status, current.role],
     );
     if (!result.rowCount) throw new UploadError("Không tìm thấy website", 404);
+    if (published) publicContentOrigin(); // Revoke/unpublish remain available during config failure.
     await client.query(`INSERT INTO audit_events(actor_id,action,target_type,target_id) VALUES($1,$2,'site',$3)`,
       [current.id, published ? "site.publish" : "site.unpublish", id]);
     await client.query("COMMIT");

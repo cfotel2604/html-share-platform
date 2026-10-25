@@ -24,8 +24,13 @@ function check(file) {
     files++;
   }
 }
-for (const file of ["/app/package.json", "/app/server.js", "/app/scripts", "/app/db"]) check(file);
-console.log(JSON.stringify({ result: "PASS", uid: process.getuid(), readableFiles: files }));
+for (const file of ["/app/package.json", "/app/server.js", "/app/scripts", "/app/db",
+  "/app/cloudflare/read-model/queries/project.sql"]) check(file);
+// Import the actual jobs' libraries: a missing contract must fail before rollout,
+// rather than crash the projector only after the new services have started.
+Promise.all([import("./scripts/lib/public-projector.mjs"), import("./scripts/lib/read-model-recovery.mjs")])
+  .then(() => console.log(JSON.stringify({ result: "PASS", uid: process.getuid(), readableFiles: files, projectionLibraries: true })))
+  .catch(() => { console.error("Runtime projection libraries are incomplete or unreadable"); process.exitCode = 1; });
 `;
 
 execFileSync("docker", [

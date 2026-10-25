@@ -1,5 +1,7 @@
 # Read-model rebuild and reconciliation — Issue #34
 
+Current scope: [consolidated pilot authority](PILOT_APRIME_AUTHORITY.md) authorizes named-pilot projector/recovery under the existing audited mechanism, without re-asking per Cloudflare packet. Target/source/fingerprint/policy checks and readback remain mandatory. Owner25/10approved the bounded [VM rollout](PILOT_APRIME_NODE_ROLLOUT.md) after49merge/refreshed48CI, with operator-loaded secrets. No VM write has run; wider runtime/private-file/token-policy actions remain owner gates. Earlier preparation-only remote-gate statements below are superseded to this extent, not an ADR exception or permission for another D1 row writer.
+
 Refs #34 / Epic #31. Base freshly fetched main `a98a1d62e9a2a51b841e548792979e712190774d` after PR42 merged. PostgreSQL is the sole source of truth under ADR-0006; the guarded D1 contract and applied migrations remain unchanged.
 
 ## Local rehearsal — safe without provider credentials

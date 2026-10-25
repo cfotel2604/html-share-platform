@@ -2,7 +2,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { db } from "./db";
 import { lockActor, type Actor } from "./auth-policy";
 import { UploadError } from "./upload-error";
-import { publicSiteUrl } from "./public-url";
+import { previewSiteUrl } from "./public-url";
 
 function base32(bytes: Buffer) {
   const alphabet="abcdefghijklmnopqrstuvwxyz234567";let out="",value=0,bits=0;
@@ -10,7 +10,7 @@ function base32(bytes: Buffer) {
   if(bits) out+=alphabet[(value<<(5-bits))&31];return out;
 }
 export async function createPreview(actor: Actor,id: string) {
-  const token=base32(randomBytes(16)),url=publicSiteUrl(id,token);
+  const token=base32(randomBytes(16)),url=previewSiteUrl(id,token);
   const client=await db().connect();
   try {
     await client.query("BEGIN");
