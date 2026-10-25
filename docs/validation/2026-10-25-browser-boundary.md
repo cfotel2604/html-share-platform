@@ -22,6 +22,46 @@ After operator reports completion, agent rechecks active deployment/source/image
 
 If validation fails, retain outbox/source/tombstones and stop only projector if necessary. Operator may restore the previous secret while old token is still valid; do not revoke it before successful drain. If already revoked, fail closed and follow the agreed replacement process. No production/wholeVM/DNS/UFW/oldviewer action or ownerpilot/#10acceptance follows.
 
-## Status
+## Actual browser and provider results
 
-Prepared; no pilotbrowser/R2PASS claimed yet. Keep Draft for review. Token rotation/revoke remains unrun until the specific early-drill approval and operator secret handoff.
+Prepared head7296e6c passed4/4CI before the recorded follow-up work: [application/public-outbox](https://github.com/cfotel2604/html-share-platform/actions/runs/40173580770), [auth-upload-origin](https://github.com/cfotel2604/html-share-platform/actions/runs/40173580735), [docs](https://github.com/cfotel2604/html-share-platform/actions/runs/40173580747). The runtime image remained2a396ae/d927742b during these browser observations.
+
+Created exactly one separate fixture through the real authenticated AdminStudio: “A-prime browser boundary2026-10-25”,1HTMLfile/3366bytes. Canonical Git and uploaded bytes both SHA256 `0a726ce1f1d93a0d7160ff23a10844c52a2814308a3ef9239f9ca4acead65b9e`. No existing site/version was overwritten. The fixture itself contains no external data transmission or auth access, and no actual cookie/storage values or URL were read into evidence.
+
+| Browser context | Cookie read/host write/parent-domain write | local/session storage | Popup/worker | Parent DOM |
+| --- | --- | --- | --- | --- |
+| Empty local direct |SecurityError |SecurityError |blocked |not applicable |
+| Empty local iframe |SecurityError |SecurityError |blocked |SecurityError |
+| Actual HTTPSpublic Worker direct |SecurityError |SecurityError |blocked |not applicable |
+| Actual HTTPSNode preview in Studioiframe |SecurityError |SecurityError |blocked |SecurityError |
+| Actual HTTPSNode preview direct |SecurityError |SecurityError |blocked |not applicable |
+
+All5contexts completed their visible probe with PASS. Preview on the actual cfvn.cloud domain denied the Domain=cfvn.cloud setter with SecurityError. The real iframe had sandbox=allow-scripts, no allow-same-origin, referrerpolicy=no-referrer and the exact p-namespace. Public/preview TLS validation was normal; no certificate bypass. Popup/worker outcomes are bounded observations, not exclusive attribution to sandbox when additional browser policy may apply. No mobile/Safari/Zalo/production or full#10PASS follows.
+
+Authenticated UIcreate and unpublish succeeded. Opening the revoke confirmation later timed out in CDP; do not count that GUIrevoke as PASS. Read-only PGguard showed the code was still active, so the trusted Nodeoperator called the existing audited revoke function exactly once. Owner closed the browser confirmation. Studio then showed “Cần đăng nhập”; cause was not diagnosed and no cookie/session/credential was extracted or authentication automated. Actual public404and PGprojectedrevoked state were independently checked. The two temporary tabs were closed, retaining the owner's Studio tab.
+
+Existing Node R2reader GETverified the new immutable object against3366bytes/SHA. Missing random key under that fixture prefix returned404; deliberately wrong If-Match returned412. Exactly3GetObject calls, no R2write/delete or manifest mutation in that provider probe. These responses do not claim that the deployed Worker was tested against a deliberately corrupted pinned object. Guest and spoofed-admin-header GET/api/sites both returned401 at Node.
+
+Final fixture events52published,57unpublished,61revoked allprojected/attempt1/last_errorNULL. Finalpublic404. Owner's separate500file published site and its HTML/CSS/JS remained200with matching size/SHA and no-store. New logical totals3sites/5versions/PGledger4, outboxpending/errors0,1publishedsite. New fixture/immutable asset retained,0R2objects deleted. [Safe structured browser/R2/readback receipt](2026-10-25-browser-boundary.json).
+
+## Approved token rotation — completed
+
+Owner explicitly approved one early90day-policy drill, then created and loaded **hsp-projector-pilot-1** directly in Node's secret store while old **hsp-projector-pilot** remained valid. The operator-supplied replacement name supersedes the same-name preparation text above; scope/account were already settled and not asked again. Agent validated protected file permissions, quiet config, exact source/image/target/disabledreplication and both old-running/new-handoff credential reads without outputting a value or fingerprint.
+
+Recreated only the new projector using --no-deps/--force-recreate at the unchanged pinned source2a396ae/image d927742b. DB/web/preview/migrate IDs and migration FinishedAt were preserved. New projector had D1only credentials, no Clerk/R2. A500manifest Nodeoperator cycle produced events54/55/56: publish→public200, revoke→404, all firstattempt/drained. The original500fixture was restored unpublished and other site fingerprints were unchanged.
+
+Only after that PASS, operator confirmed revoking old hsp-projector-pilot and retaining hsp-projector-pilot-1. Creation/secret handoff/old revocation are operator-confirmed evidence; no old token was retrieved to probe its rejection. Agent independently verified current credential/target after old revocation and another500manifest cycle58/59/60projected at firstattempt, public200then404, pending/errors0. No new healthy SLOsample was added or pooled. [Separate sanitized rotation receipt](2026-10-25-projector-token-rotation.json).
+
+Rotation date2026-10-25, next regular90day due2027-01-23, or earlier on the agreed incident triggers. No reminder/automation installed. Normal replacement rotation is complete; an emergency active-token revoke with a queued outbox remains a separate unrun fault scenario. No token value/policy export/Dockerenvironment dump entered Git/log/response/chat.
+
+## Minimal Studio copy correction and runtime gate
+
+Found3legacy explanations saying direct content remains accessible after revoke. A' public code routes become404after projection. Corrected only the explanatory paragraph and rotate/revoke confirmation strings in site-list.tsx: old links are blocked after public synchronization; already loaded tab bytes may remain visible. No handler, authorization, outbox, Worker, grant or sandbox change. This chooses A' semantics over legacy wording as the consolidated owner instruction requires.
+
+Local validation after the copy correction: lint/typecheck,176/176tests, productionbuild, docs/YAML/diff PASS. Those revised strings were not yet live during the browser tests above. Complete local/exact-headCI, then use the already authorized bounded Node rollout to pin a new image and update only web/preview/projector, preserving PG/migrate/oldservices/secrets/data. Record the deployed artifact separately from the final documentation head; no applied migration, Worker/DNS/UFW/tunnel change or R2deletion. Runtime readback after that copy rollout will be appended here.
+
+## Commands and remaining gates
+
+Actual commands/tools: repository/worktree/remote/fetch and live GitHub merge/check reads; credential-free Node local server plus browser DOM/results; authenticated Studio filechooser/upload/unpublish; task-private read-onlyR2probe, supervised projector rotation and post-revoke cycle, guarded Nodecleanup/finalreadbacks; local lint/typecheck/unit/build/docs/YAML/diff as recorded; exact-headCI inPR57. Protected operator/rotation receipts remain under /opt/hsp-aprime/runtime; values were never collected. One-shot scripts must not be blindly replayed against completed events or overwrite the rotation receipt.
+
+Remaining: real mobile/Safari/Zalo and Employee/session matrix, uncovered live D1drift/Worker-pinned-R2corruption/provider-generated prolonged429/emergency-auth-fault cases, owner-deferred legacy viewer retirement, ownerpilotacceptance/#10. Keep PRDraft; no owner signoff/production inference. Normal token scope and replacement rotation are no longer pending.
