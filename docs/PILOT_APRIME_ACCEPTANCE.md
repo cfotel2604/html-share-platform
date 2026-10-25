@@ -8,7 +8,7 @@ Refs #38 / Epic #31 / release gate #10. Base freshly fetched main `76b38faf16947
 
 ## Current evidence checkpoint — 2026-10-25
 
-Runtime source2a396ae/image d927742b passed4/4CI before rollout. [Detailed execution](validation/2026-10-24-aprime-pilot-execution.md), [preview readbacks](validation/2026-10-25-public-preview.json).
+Owner merged48at main1fbe19c; runtime source2a396ae/image d927742b passed4/4CI before rollout. [Remaining fault receipts](validation/2026-10-25-projector-faults.md). [Detailed execution](validation/2026-10-24-aprime-pilot-execution.md), [preview readbacks](validation/2026-10-25-public-preview.json).
 
 | Gate | Actual evidence / remaining limitation |
 | --- | --- |
@@ -16,9 +16,11 @@ Runtime source2a396ae/image d927742b passed4/4CI before rollout. [Detailed execu
 | Projection / recovery |20healthy500manifest revoke samples p95=5.298s; outage107.961s separately disclosed. Stale/duplicate replay0changes; audited rebuild/reconcile0differences |
 | Public serving / independence | Fixed-query Worker+privateR2 deployed; public200integrity/security while only new A'services stopped. Not whole-VM-off evidence |
 | Preview | Exact p-namespace, actual HTTPS200/integrity/sandbox/Studioancestor, forged actor403, invalid/no-grant/outside-manifest404, real180s expiry404. Real signed-in Admin iframe rendered fixture and script |
-| Warning channel | Owner-approved Studio pending/overdue/stale UI and tests. No closed-tab/VM-outage/external notification guarantee |
+| Controlled fault packet / PR56 | Actual PG/projector/D1ack-loss/retry:300s429cooldown preserved;503retry; first real write1change, replay0changes.314865.149msoutage separate from healthy measurements.429/503are Node transport injection, not provider-generated |
+| Warning channel | Actual signed-in AdminStudio showed overdue>60s/retrying and cleared automatically after drain, plus local/CI tests. No closed-tab/VM-outage/external notification guarantee |
 | Preservation / deletion | Old viewer4100and hsp-lab source/data/volumes retained,2sites/4versions, PGledger4unchanged;0R2deletions. Historical0005deleted11legacy D1tables/585rows once; never replay applied SQL |
-| Remaining owner/security gates | Owner pilot acceptance, old viewer retirement, full IAMscopeconfirmation, actual token-rotation/revoke and prolonged429/other uncovered remote fault drills, Employee/browser/mobile/cookie/release#10. Local/CI cases are not substituted for those live proofs |
+| Projector token scope | Owner confirms hsp-projector-pilot created per settled policy: existing pilot account, D1Edit only, no Workers/R2/account administration. Scope owner-confirmed; no token value/export collected. Rotation/revoke drill is separate |
+| Remaining owner/security gates | Owner pilot acceptance, old viewer retirement, actual token-rotation/revoke and prolonged429/other uncovered remote fault drills, Employee/browser/mobile/cookie/release#10. Local/CI cases are not substituted for those live proofs |
 
 ## Historical preparation scope — before consolidated authority
 

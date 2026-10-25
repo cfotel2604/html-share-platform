@@ -1,6 +1,6 @@
 # Kiến trúc và luồng dữ liệu
 
-## Đích A' — ADR-0006 Accepted, source đã merge, runtime chưa cutover
+## A' — ADR-0006 Accepted, runtime pilot và gate còn mở
 
 [ADR-0006](adr/0006-postgresql-source-of-truth-d1-public-read-model.md) quyết định PostgreSQL là nguồn sự thật quản trị duy nhất; Node ghi outbox cùng transaction, projector/recovery Node chiếu D1 public read model. Một Worker public đọc D1 primary + private R2 theo manifest, không về VM/Node/PostgreSQL, không quản trị/preview/Clerk/service secret. Preview chưa publish dùng Node/VM grant ADR-0003. Read-only ở code/test/review/gate deploy; native binding vẫn có khả năng ghi, không IAM read-only.
 
@@ -18,7 +18,7 @@ flowchart TD
   P --> R
 ```
 
-Source: PR39 schema, PR41 Node administration, PR42 outbox/projector, PR43 recovery, PR44 public Worker merged at main `85f39e2`. #32/35 closed; #33/34/36 remain open for pilot gates. Metadata read-only24/10 still sees legacy public/preview/API deployments and API secret binding names; no A' deployment/retirement was done. [Transition table and evidence provenance](ADR0006_TRANSITION.md) distinguish current source, old provider records, metadata and unverified runtime. Do not rerun legacy provision/migration scripts or merge old stack unchanged. #38 needs separate runtime approvals and actual end-to-end acceptance; production stays #10.
+Current pilot25/10: owner merged48at main1fbe19c. Application/config trees match deployed source2a396ae/image d927742b. Node/PostgreSQL administration, transactional outbox/projector/recovery, one public D1/R2 Worker and Node grant preview are running with actual readbacks. Old API/preview Workers and11legacy D1tables were retired under the approved guards; applied0004/0005are immutable. Old view-lab/testcontent4100remains owner-deferred, separated from p-prefixed Nodepreview4110without fallback. [Current receipts](validation/2026-10-24-aprime-pilot-execution.md), [remaining fault packet](validation/2026-10-25-projector-faults.md), [authority](PILOT_APRIME_AUTHORITY.md). Source merge is not owner pilot acceptance or #10/production approval. Do not rerun migrations/initial volume setup, legacy provision/import or old public administration paths.
 
 ## Nền MVP / lab hostname — lịch sử môi trường khác
 
