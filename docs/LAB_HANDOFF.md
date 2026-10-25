@@ -2,8 +2,6 @@
 
 Refs [PR #15](https://github.com/cfotel2604/html-share-platform/pull/15), #8/#10/#14/#16. Đây là baseline lab đã chạy, không phải phê duyệt production. [Bằng chứng](validation/2026-10-22-lab-acceptance.md), [kế hoạch merge](MERGE_PLAN.md), [share lifecycle/rollback](SHARE_LINKS.md).
 
-Audit chỉ đọc tiếp theo ngày 22/10 trong [Draft PR #19](https://github.com/cfotel2604/html-share-platform/pull/19), commit `ecb7f8b`, xác nhận source/images/services/loopback vẫn đúng; không recheck DB counts hoặc chạy lại cutover. [Báo cáo](validation/2026-10-22-prepilot-audit.md) bổ sung 3 nginx HTTPS vhost khác cùng cổng 443, content rate 30r/s/burst100, root MinIO credential dùng chung web/gateway và gap Open Graph/crawler/log pipeline. Inventory DNS/vhost mới một phần; không đổi runtime/SQL/env/DNS/UFW, ADR-0001/0003 vẫn Proposed. Các số lượng DB bên dưới thuộc lần kiểm baseline trước audit.
-
 ## Baseline đã kiểm trực tiếp
 
 SSH alias `lab-b`, source `/opt/hsp/src`, Compose project `hsp-lab`. Source detached tại `dc7560ea1c34cbe060779fbe69bb2f574e170431`, tracked files sạch; không đổi sang docs HEAD để build lại khi chưa cần.

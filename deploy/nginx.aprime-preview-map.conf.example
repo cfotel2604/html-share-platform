@@ -1,0 +1,12 @@
+# PILOT ONLY: include in nginx http context, with the existing HSP wildcard vhost.
+# A separate regex server_name would lose to that wildcard; use a closed map.
+map $host $hsp_lab_content_upstream {
+    default 127.0.0.1:4100;
+    "~^p-[a-f0-9]{32}--[a-z2-7]{26}\.lab-space-ods\.cfvn\.cloud$" 127.0.0.1:4110;
+}
+# In the existing HSP content TLS vhost replace its single fixed proxy_pass with:
+# proxy_pass http://$hsp_lab_content_upstream;
+# Retain the original Host forwarding, TLS certificate and all other directives.
+# Both content vhosts must have access_log off and protected error logs: grant
+# hostnames must not be written to access/error logs. No DNS/UFW change.
+# Never fall back to 4100 after a 404 from 4110: each namespace has one gateway.

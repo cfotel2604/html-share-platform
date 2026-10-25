@@ -8,10 +8,13 @@ export type SiteSummary = {
   active_version_id?: string | null;
   share_code: string | null;
   share_url: string | null;
+  projection?: { pending: boolean; pending_events: number; oldest_pending_at: string | null; last_error: string | null; revoke_overdue?: boolean };
 };
 export type AuthStatus = { signedIn: boolean; demoAvailable: boolean; available?: boolean; provider?: "clerk" | "local-demo" | "disabled"; role?: "employee" | "admin" | null; denied?: boolean };
 export type UploadResult = { id: string; fileCount: number };
+export type StudioWorkspace = { auth: AuthStatus; sites: SiteSummary[] };
 export interface StudioApi {
+  workspace(): Promise<StudioWorkspace>;
   auth(): Promise<AuthStatus>;
   listSites(): Promise<SiteSummary[]>;
   login(password: string): Promise<void>;

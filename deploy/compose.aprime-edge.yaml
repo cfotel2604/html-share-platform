@@ -1,0 +1,13 @@
+# HSP A' pilot only. Existing edge network is operator-managed.
+# Apply with compose.aprime-pilot.yaml; only web joins the shared ingress network.
+services:
+  web:
+    networks:
+      default: {}
+      edge:
+        aliases:
+          - hsp-aprime-studio
+networks:
+  edge:
+    external: true
+    name: edge

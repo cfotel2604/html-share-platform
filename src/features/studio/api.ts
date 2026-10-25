@@ -1,4 +1,4 @@
-import type { AuthStatus, SiteSummary, StudioApi, UploadResult } from "./types";
+import type { AuthStatus, SiteSummary, StudioApi, StudioWorkspace, UploadResult } from "./types";
 
 export class StudioApiError extends Error {
   constructor(
@@ -14,6 +14,8 @@ export class StudioApiError extends Error {
 export function createStudioApi(
   fetcher: typeof fetch = globalThis.fetch,
 ): StudioApi {
+  // Coalesce concurrent mounts only. Never cache a completed authorization result.
+  let workspaceInFlight: Promise<StudioWorkspace> | undefined;
   async function request<T>(path: string, init?: RequestInit): Promise<T> {
     const response = await fetcher(`/api${path}`, {
       cache: "no-store",
@@ -45,6 +47,10 @@ export function createStudioApi(
     return request<UploadResult>(path, { method, body });
   }
   return {
+    workspace: () => {
+      workspaceInFlight ??= request<StudioWorkspace>("/workspace").finally(() => { workspaceInFlight = undefined; });
+      return workspaceInFlight;
+    },
     auth: () => request<AuthStatus>("/auth"),
     listSites: async () =>
       (await request<{ sites: SiteSummary[] }>("/sites")).sites,

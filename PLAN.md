@@ -6,6 +6,8 @@
 
 **Mô hình truy cập:** A — nhân viên có tài khoản được upload/quản lý; người có link xem công khai, không cần đăng nhập.
 
+**Kiến trúc đích hiện hành (25/10):** [ADR-0006](docs/adr/0006-postgresql-source-of-truth-d1-public-read-model.md) Accepted: quản trị Node/PostgreSQL, outbox/projector/recovery chiếu public read model D1, một public Worker đọc ở code/test + private R2; preview grant ở Node/VM. Main71c57b9 có PR58, runtime2734de5/image2fd14ccc đang chạy. Issues50/40/33/34/36/52/54 hoàn tất;37 chốt tài liệu trong Draft59. Owner xác nhận mobile/Employee/Safari/Zalo; phần fault live bổ sung được bỏ qua có ghi rõ, không coi là PASS. Nghiệm thu38 và security/release10 vẫn là quyết định riêng. [Ledger](docs/validation/2026-10-25-aprime-closeout.md), [disposition](docs/ADR0006_TRANSITION.md). Roadmap/domain/lab bên dưới là nền lịch sử; không trở lại D1-primary/API/preview Worker hay nhập legacy.
+
 ## 1. Mục tiêu
 
 Biến một tệp HTML hoặc một website tĩnh đóng gói ZIP thành URL HTTPS ổn định để chia sẻ qua Zalo, Messenger, email và trình duyệt mobile. Nhân viên có thể xem trước, cập nhật phiên bản nhưng giữ nguyên URL, hoặc vô hiệu hóa nội dung. JavaScript do người upload tạo được chạy trong trình duyệt người xem, vì vậy cô lập origin là yêu cầu thiết kế cốt lõi.
@@ -35,7 +37,9 @@ Mọi đường dẫn public được coi là **công khai với bất kỳ ai c
 
 Chạy backend tùy ý của website upload (PHP, Node, Python), xử lý form server-side, xây dựng trang bằng AI, domain tùy chọn của từng nhân viên, phân tích truy cập nâng cao, mật khẩu/TTL cho link và CDN đa vùng. Các khả năng này có thể là phase 2.
 
-## 3. Kiến trúc đề xuất
+## 3. Kiến trúc nền MVP / lab hostname
+
+Mô tả dưới đây giữ bối cảnh lab và production domain theo ADR-0004, chưa phải topology A' đã triển khai. Với A', đường public là Worker→D1/R2 và không về PostgreSQL/VM; không chạy raw HTML cùng origin Studio. Native D1/R2 binding có khả năng ghi; read-only của Worker là fixed SELECT/get/head được kiểm ở code/test/review/deploy gate, không IAM. Production vẫn cần #10; không tự chọn domain production từ pilot path serving.
 
 - **Dashboard/API:** Next.js + TypeScript (Route Handlers `/api/*` cùng ứng dụng tại `studio.ods.vn`), UI với Tailwind CSS. Nội bộ Docker dùng service name, chưa cần `api.ods.vn`.
 - **Auth P2:** Clerk Development + Google login để lab; email allowlist do owner cấp/thu hồi, server kiểm tra quyền/role Employee/Admin. Trước production cần Clerk production instance + Google OAuth credentials riêng.
@@ -68,8 +72,6 @@ Xem [kiến trúc và luồng dữ liệu](docs/ARCHITECTURE.md), [ADR-0001](doc
 ### Chiến lược phân phối
 
 Mỗi issue có một phạm vi rõ, nhánh riêng, Draft PR để ghi tiến độ và kết quả test. Chỉ merge khi gate của phase đạt. Chạy staging và pilot trước production. Không tự merge/deploy từ tài liệu này.
-
-Kế hoạch tiếp #10 ngày 22/10 trong [Draft PR #19](https://github.com/cfotel2604/html-share-platform/pull/19): [audit/acceptance matrix](docs/validation/2026-10-22-prepilot-audit.md), commit `ecb7f8b` từ main `72e048e`. Ưu tiên inventory/origin access chung cổng 443 và preview log privacy; trusted Open Graph metadata + fixtures/evidence; R2/IAM/cleanup/Clerk staging sau khi được giao provider; browser/cookie/mobile/crawler, TLS failure/rollback và pilot trước release. Audit không đóng acceptance một phần hoặc đổi trạng thái Proposed của ADR-0001/0003.
 
 ## 5. Quyết định owner (2026-10-08; domain cập nhật 2026-10-09) và các gate còn mở
 

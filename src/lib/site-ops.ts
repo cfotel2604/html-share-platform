@@ -1,12 +1,14 @@
 import { randomBytes, randomUUID } from "node:crypto";
 import { db } from "./db";
-import { ensureBucket, removeFiles, storeFile } from "./storage";
+import { ensureBucket, readbackFile, removeFiles, storeFile } from "./storage";
 import { fingerprint, parseSite } from "./upload";
 import { UploadError } from "./upload-error";
 import { lockActor, type Actor } from "./auth-policy";
 import { createHash } from "node:crypto";
-import { shareUrl } from "./public-url";
+import { shareUrl, publicContentOrigin } from "./public-url";
 import { allocateShareCode } from "../../scripts/share-codes.mjs";
+
+const MAX_ASSET_TRANSFERS = 12;
 
 export async function assertSiteOwner(actor: Actor, id: string) {
   const result = await db().query(
@@ -42,8 +44,9 @@ export async function uploadVersion(actor: Actor, file: File, name: string, exis
       );
       await allocateShareCode(client, id);
     }
+    publicContentOrigin(); // Fail bad public configuration before any object side effect.
     // Existing-site ownership is locked before ZIP ingest and every storage side effect.
-    let assets;
+    let assets: Awaited<ReturnType<typeof parseSite>>;
     try { assets = await parseSite(file); } catch (error) {
       throw new UploadError(error instanceof Error ? error.message : "File không hợp lệ", 400);
     }
@@ -58,12 +61,39 @@ export async function uploadVersion(actor: Actor, file: File, name: string, exis
       })))],
     );
     await ensureBucket();
-    for (const asset of assets) {
-      const key = `${prefix}/${asset.path}`;
-      // Include the failing PUT: a lost response does not prove the object was not stored.
-      attempted.push(key);
-      await storeFile(key, asset.body, asset.type);
+    const verifiedManifest = new Array<{
+      path: string; type: string; size: number; sha256: string; etag: string;
+    }>(assets.length);
+    let nextAsset = 0, failed = false, failure: unknown;
+    async function transfer() {
+      while (!failed) {
+        const index = nextAsset++;
+        if (index >= assets.length) return;
+        const asset = assets[index];
+        try {
+          const key = `${prefix}/${asset.path}`;
+          // Only a successful conditional PUT proves we created this object. A failed/lost
+          // acknowledgment could be a collision: never delete that key speculatively.
+          let etag;
+          try { etag = await storeFile(key, asset.body, asset.type); }
+          catch (error) {
+            console.warn("upload.put_outcome_unconfirmed", { version, confirmedObjectCount: attempted.length });
+            throw error;
+          }
+          attempted.push(key);
+          const sha256 = createHash("sha256").update(asset.body).digest("hex");
+          const verifiedEtag = await readbackFile(key, { size: asset.body.length, sha256, etag });
+          verifiedManifest[index] = { path: asset.path, type: asset.type, size: asset.body.length, sha256, etag: verifiedEtag };
+        } catch (error) {
+          if (!failed) { failure = error; failed = true; }
+        }
+      }
     }
+    // Bounded I/O shortens large requests without increasing ZIP/RAM quotas.
+    // Drain every started transfer before rollback/cleanup, including late PUTs.
+    await Promise.all(Array.from({ length: Math.min(MAX_ASSET_TRANSFERS, assets.length) }, () => transfer()));
+    if (failed) throw failure;
+    await client.query("UPDATE site_versions SET asset_manifest=$2::jsonb WHERE id=$1", [version, JSON.stringify(verifiedManifest)]);
     await client.query(
       `UPDATE sites SET active_version_id = $2, display_name = $3, status = 'published',
        updated_at = now() WHERE id = $1`,
@@ -99,11 +129,22 @@ export async function uploadVersion(actor: Actor, file: File, name: string, exis
 
 export async function listSites(actor: Actor) {
   return (await db().query(
-    `SELECT s.id,s.display_name,s.status,s.updated_at,s.active_version_id,l.code AS share_code FROM sites s
+    `SELECT s.id,s.display_name,s.status,s.updated_at,s.active_version_id,l.code AS share_code,
+     CASE WHEN $2='admin' THEN jsonb_build_object('pending',coalesce(p.pending_events,0)>0,
+       'pending_events',coalesce(p.pending_events,0),'oldest_pending_at',p.oldest_pending_at,'last_error',p.last_error,
+       'revoke_overdue',coalesce(p.revoke_overdue,false)) END AS projection
+     FROM sites s
      LEFT JOIN site_share_links l ON l.site_id=s.id AND l.revoked_at IS NULL
+     LEFT JOIN LATERAL (SELECT count(*)::int AS pending_events,min(enqueued_at) AS oldest_pending_at,
+       (array_agg(last_error ORDER BY last_attempt_at DESC NULLS LAST) FILTER(WHERE last_error IS NOT NULL))[1] AS last_error,
+       bool_or(has_revoke AND enqueued_at<clock_timestamp()-interval '60 seconds') AS revoke_overdue
+       FROM public_projection_outbox WHERE site_id=s.id AND state='pending' AND $2='admin') p ON true
      WHERE (s.owner_id=$1 OR $2='admin') AND s.status<>'deleted' ORDER BY s.updated_at DESC LIMIT 200`,
     [actor.id, actor.role],
-  )).rows.map(site => ({ ...site, share_url: shareUrl(site.share_code) }));
+  )).rows.map(site => {
+    if (actor.role !== "admin") delete site.projection;
+    return { ...site, share_url: shareUrl(site.share_code) };
+  });
 }
 
 export async function setPublished(actor: Actor, id: string, published: boolean) {
@@ -118,6 +159,7 @@ export async function setPublished(actor: Actor, id: string, published: boolean)
       [id, current.id, status, current.role],
     );
     if (!result.rowCount) throw new UploadError("Không tìm thấy website", 404);
+    if (published) publicContentOrigin(); // Revoke/unpublish remain available during config failure.
     await client.query(`INSERT INTO audit_events(actor_id,action,target_type,target_id) VALUES($1,$2,'site',$3)`,
       [current.id, published ? "site.publish" : "site.unpublish", id]);
     await client.query("COMMIT");

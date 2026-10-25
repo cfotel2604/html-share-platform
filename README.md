@@ -6,12 +6,22 @@ Nền tảng nội bộ để nhân viên tải lên HTML/CSS/JavaScript hoặc 
 
 ## Trạng thái
 
+**Pilot A' — cập nhật25/10, Draft59:** main71c57b9 đã có PR58; runtime2734de5/image2fd14ccc vẫn hoạt động theo Node/PostgreSQL→outbox/projector→D1/R2 Worker, preview grant ở Node. Owner đã xác nhận matrix mobile/Employee/Safari/Zalo và GUIrevoke đạt. Các fault drill live bổ sung được owner cho bỏ qua; test local và bằng chứng thực tế giữ đúng phạm vi, không ghi việc chưa chạy thành PASS. Issues50/40/33/34/36/52/54 đã đóng hoàn tất; tài liệu37 chốt trong59, sau đó owner quyết nghiệm thu38. #10/audit19 và production tách riêng. [Ledger hiện hành](docs/validation/2026-10-25-aprime-closeout.md), [authority](docs/PILOT_APRIME_AUTHORITY.md). Oldviewer4100 giữ theo yêu cầu owner; không đổi dữ liệu, token hay runtime trong đợt dọn này. Phần MVP/lab bên dưới là lịch sử.
+
+**Lịch sử chuẩn bị #38 sau PR45 merge:** [acceptance plan/approval packets](docs/PILOT_APRIME_ACCEPTANCE.md), [validation và remote ledger còn trống](docs/validation/2026-10-24-aprime-pilot-preparation.md), Draft PR46. Owner đã chốt healthy revoke→404 p95≤60giây/cảnh báo pending>60giây; sự cố báo riêng, không bảo đảm60giây lúc projector/REST dừng. Chưa chạy pilot/cutover/nghiệm thu; mọi bước remote cần duyệt riêng. Các snapshot trước38 ghi "proposal" giữ giá trị lịch sử theo head.
+
+**Đích hiện hành A' (24/10):** [ADR-0006](docs/adr/0006-postgresql-source-of-truth-d1-public-read-model.md) Accepted; quản trị Node/PostgreSQL, D1 chỉ public read model qua outbox/projector/recovery, một public Worker + R2, private preview Node/VM. PR39/41/42/43/44 đã merge source; #33/#34/#36 còn pilot gates, chưa cutover runtime. [Disposition #37 / Draft PR45](docs/ADR0006_TRANSITION.md) ghi đề xuất từng PR/Issue cũ, bằng chứng lịch sử và metadata hiện tại; owner quyết đóng riêng. **Thông tin lab bên dưới là snapshot 22/10**, không bằng chứng A' đã deploy. Production chưa được duyệt.
+
 **P0/P1, MVP/upload, Studio, auth/origin và short links đã vào main**: #5, recovery UI#17, #13 và #15 (mốc code `0c17a09`) đã merge theo owner giao. #8/#9/#11/#14/#16 CLOSED; #10 còn security/release gates. Ngày **2026-10-22**, lab giữ web `share-dc7560ea1c34`, migration0003/backfill đã hoàn tất; owner xác nhận iframe từ bên ngoài và detailed session/link lifecycle cases đều đạt. Merge source không deploy hoặc chạy lại migration. [Commit/CI/acceptance](docs/reviews/2026-10-22-stack-merged.md) phân biệt owner-confirmed và agent checks; production chưa được phê duyệt. [Tiến độ](docs/PROJECT_STATUS.md), [lab handoff và env mẫu](docs/LAB_HANDOFF.md), [thứ tự review/merge](docs/MERGE_PLAN.md).
 
 - [PLAN và roadmap P0–P7](PLAN.md)
 - [Kiến trúc và luồng upload/publish](docs/ARCHITECTURE.md)
 - [ADR-0001 — cô lập origin HTML được upload](docs/adr/0001-public-site-origin-isolation.md)
 - [Quy trình GitHub Issue → Branch → Draft PR → Review](docs/WORKFLOW.md)
+- [Node/PostgreSQL administration, workspace và upload readback (#35)](docs/NODE_POSTGRES_ADMIN.md)
+- [Transactional outbox / Node projector, token policy và remote gate (#33)](docs/PUBLIC_PROJECTOR.md)
+- [Read-model rebuild/reconciliation, local rehearsal và incident runbook (#34)](docs/READ_MODEL_RECOVERY.md)
+- [Worker public: code chỉ đọc, sandbox và kiểm thử local/CI (#36)](docs/PUBLIC_READ_MODEL_WORKER.md)
 - [Hướng dẫn cho coding agents](AGENTS.md)
 - [Tiến độ dự án và các hạng mục còn mở](docs/PROJECT_STATUS.md)
 - [Bàn giao công việc giữa các phiên AI Agent](docs/AI_HANDOFF.md)

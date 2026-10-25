@@ -24,6 +24,7 @@ UI mới có thể dùng lại adapter/hook hoặc tự hiện thực client the
 | POST `/api/auth`       | JSON `{ password }`, same-origin | `{ signedIn: true }`          |
 | DELETE `/api/auth`     | Same-origin                      | `{ signedIn: false }`         |
 | GET `/api/sites`       | Session                          | `{ sites: SiteSummary[] }`    |
+| GET `/api/workspace` | Session, same-origin bootstrap | `{ auth: AuthStatus, sites: SiteSummary[] }` |
 | POST `/api/sites`      | Multipart `file`, `name`         | `{ id, fileCount }`           |
 | PUT `/api/sites/:id`   | Multipart `file`, `name`         | `{ id, fileCount }`           |
 | PATCH `/api/sites/:id` | JSON `{ published: boolean }`    | `{ id, status }`              |
@@ -31,6 +32,10 @@ UI mới có thể dùng lại adapter/hook hoặc tự hiện thực client the
 | DELETE `/api/sites/:id/share` | Session + same-origin | `{ id, share_code: null, share_url: null }` |
 
 Errors dùng HTTP status phù hợp và JSON `{ error: string }`. Demo auth là contract local hiện tại, không trở thành thiết kế production. P2 #8 sẽ thay auth với migration contract rõ ràng. Types chỉ mô tả API; backend vẫn chịu trách nhiệm validation và quyền.
+
+Issue #35 / PR #41 thay bootstrap auth→list bằng một workspace request Node/PostgreSQL theo ADR-0006. Adapter chỉ coalesce request đang chạy, không cache kết quả quyền; explicit refresh/mutations giữ list endpoint. Presentation không đổi. [Contract và kiểm chứng](../NODE_POSTGRES_ADMIN.md).
+
+Issue #33 / PR #42 thêm trường `SiteSummary.projection` chỉ cho Admin trong list/workspace: `{ pending, pending_events, oldest_pending_at, last_error }`; Employee không nhận trường này. Studio chỉ hiện nhãn chờ chiếu/thử lại qua DTO, không import projector hoặc thêm idle polling. Xem [contract projector](../PUBLIC_PROJECTOR.md); pending=false không thay thế reconciliation dữ liệu lịch sử.
 
 PR #13 đã thêm Clerk auth và POST `/api/sites/:id/preview` → `{ url, expiresAt }`. PR #15 thêm share lifecycle; `SiteSummary` có `share_code: string | null` và `share_url: string | null` canonical do server sinh. UI không tự dùng host ID làm link thay thế. Revoke/rotate không sửa trạng thái published; backend giữ mapping, ownership/audit và transaction. Xem [SHARE_LINKS](../SHARE_LINKS.md).
 

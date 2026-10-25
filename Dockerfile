@@ -17,9 +17,10 @@ RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/scripts ./scripts
 COPY --from=build /app/db ./db
+COPY --from=build /app/cloudflare/read-model/queries/project.sql ./cloudflare/read-model/queries/project.sql
 # Git checkouts under umask 077 can leave new files root-only after COPY.
 # Runtime helpers/migrations are application code, not writable user data.
-RUN chmod -R a+rX /app/scripts /app/db
+RUN chmod -R a+rX /app/scripts /app/db /app/cloudflare
 USER node
 EXPOSE 3000
 CMD ["node", "server.js"]

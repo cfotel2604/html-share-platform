@@ -26,7 +26,7 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Reproduce restrictive Git checkout permissions
-        run: chmod -R go-rwx scripts db
+        run: chmod -R go-rwx scripts db cloudflare/read-model/queries
       - run: docker build -t html-share-security:ci .
       - name: Verify runtime files as the image non-root user
         run: node scripts/check-runtime-image.mjs html-share-security:ci

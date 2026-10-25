@@ -1,6 +1,7 @@
 import {
-  CreateBucketCommand, DeleteObjectsCommand, HeadBucketCommand, PutObjectCommand, S3Client,
+  CreateBucketCommand, DeleteObjectsCommand, GetObjectCommand, HeadBucketCommand, PutObjectCommand, S3Client,
 } from "@aws-sdk/client-s3";
+import { createHash } from "node:crypto";
 
 const globalStore = globalThis as typeof globalThis & { __htmlShareS3?: S3Client };
 
@@ -37,9 +38,30 @@ export async function ensureBucket() {
 }
 
 export async function storeFile(key: string, body: Buffer, type: string) {
-  await storage().send(new PutObjectCommand({
-    Bucket: bucket, Key: key, Body: body, ContentType: type,
+  const result = await storage().send(new PutObjectCommand({
+    Bucket: bucket, Key: key, Body: body, ContentType: type, IfNoneMatch: "*",
   }));
+  return result.ETag;
+}
+
+export async function readbackFile(key: string, expected: { size: number; sha256: string; etag: string | undefined }) {
+  if (!expected.etag || !/^"[a-zA-Z0-9-]{1,128}"$/.test(expected.etag)) throw new Error("Missing immutable object ETag");
+  const result = await storage().send(new GetObjectCommand({ Bucket: bucket, Key: key, IfMatch: expected.etag }));
+  const stream = result.Body as (AsyncIterable<Uint8Array> & { destroy?: () => void }) | undefined;
+  try {
+    if (!stream || result.ContentLength !== expected.size || result.ETag !== expected.etag) {
+      throw new Error("Immutable object metadata mismatch");
+    }
+    const digest = createHash("sha256");
+    let size = 0;
+    for await (const chunk of stream) {
+      size += chunk.length;
+      if (size > expected.size) throw new Error("Immutable object readback exceeded size");
+      digest.update(chunk);
+    }
+    if (size !== expected.size || digest.digest("hex") !== expected.sha256) throw new Error("Immutable object readback mismatch");
+    return expected.etag.slice(1, -1);
+  } finally { stream?.destroy?.(); }
 }
 
 export async function removeFiles(keys: string[]) {

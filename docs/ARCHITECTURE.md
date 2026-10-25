@@ -1,4 +1,26 @@
-# Kiến trúc và luồng dữ liệu (đề xuất)
+# Kiến trúc và luồng dữ liệu
+
+## A' — ADR-0006 Accepted, runtime pilot và gate còn mở
+
+[ADR-0006](adr/0006-postgresql-source-of-truth-d1-public-read-model.md) quyết định PostgreSQL là nguồn sự thật quản trị duy nhất; Node ghi outbox cùng transaction, projector/recovery Node chiếu D1 public read model. Một Worker public đọc D1 primary + private R2 theo manifest, không về VM/Node/PostgreSQL, không quản trị/preview/Clerk/service secret. Preview chưa publish dùng Node/VM grant ADR-0003. Read-only ở code/test/review/gate deploy; native binding vẫn có khả năng ghi, không IAM read-only.
+
+```mermaid
+flowchart TD
+  E[Employee/Admin] -->|Clerk + Node RBAC/ownership| N[Studio / Node]
+  N -->|one transaction: state + ordered outbox| PG[(PostgreSQL source of truth)]
+  N -->|validate immutable upload + readback| R[(Private R2)]
+  PG -->|pending outbox| J[Node projector / recovery]
+  J -->|Cloudflare REST guarded batch, async| D[(D1 public read model)]
+  G[Public guest] --> W[One public Worker]
+  W -->|fixed parameterized SELECT, primary| D
+  W -->|manifest-pinned get/head| R
+  E -->|short-lived authorized preview grant| P[Node/VM isolated preview]
+  P --> R
+```
+
+Current pilot25/10: main71c57b9 includes owner-merged58; runtime2734de5/image2fd14ccc is unchanged and read-only rechecked healthy. Node/PG→outbox/projector/recovery→D1/R2 publicWorker and Node grant preview remain the sole A' architecture. Applied0004/0005 stay immutable; old API/previewWorkers and11legacyD1tables were retired under earlier guards. Owner-retained oldviewer4100 is separate from exact p-grant4110; no fallback/import. Owner confirms mobile/Employee/Safari/Zalo; optional extra live fault drills are omitted for this pilot, not tested PASS. [Current decisions/limits](validation/2026-10-25-aprime-closeout.md). Issues50/40/33/34/36/52/54 completed;37 awaits final docs59merge, then38 owner acceptance.10/production separate; no runtime, migration or data changes in this cleanup.
+
+## Nền MVP / lab hostname — lịch sử môi trường khác
 
 Trạng thái: **Proposed** cho release/security; domain và thiết kế link **Accepted** theo [ADR-0004](adr/0004-domains-and-share-codes.md). Triển khai vẫn theo [ADR-0001](adr/0001-public-site-origin-isolation.md).
 
@@ -20,9 +42,15 @@ flowchart TD
 
 ## Ranh giới UI có thể thay thế
 
+Theo [ADR-0006](adr/0006-postgresql-source-of-truth-d1-public-read-model.md), PostgreSQL/Node là đường quản trị duy nhất; D1 chỉ public read model. Issue35/PR41 khóa backendcloudflare, gộp workspacebootstrap ở Node, giữ VMpreviewgrant và thêm conditionalPUT/readback trước PostgreSQLcommit. Issue33/PR42 bổ sung outbox PostgreSQL cùng transaction và job Node chiếu async, một REST batch có guard cho mỗi sự kiện; quản trị không gọi D1. [Node contract](NODE_POSTGRES_ADMIN.md), [projector/runbook](PUBLIC_PROJECTOR.md). Job mặc định tắt, pilot chưa được chạy; Worker36 source đã merge PR44, public cutover vẫn là bước riêng.
+
 Theo [ADR-0002](adr/0002-replaceable-studio-ui.md), Studio dùng component presentation → workflow hook → typed HTTP adapter → `/api/*` Route Handlers → server services. Components/features không import database, storage hoặc server auth; ESLint enforce ranh giới này. Vì vậy có thể thay giao diện hoặc client mà không viết lại ingest/publish/storage. Backend vẫn cùng container Next.js ở lab; tách process/service về sau là quyết định deployment riêng, giữ session/CSRF và origin isolation.
 
+Issue36/PR44 bổ sung source Worker public đọc exactresolve.sql ở D1 primary và R2get/head theo manifest pin size/ETag, HTTPsandbox cho HTML, không callback Node/VM/Clerk. Owner làm rõ read-only được kiểm soát ở code/test/review/deploygate, native bindings vẫn có khả năng ghi và không là IAM-read-only. [Contract/local-CI evidence](PUBLIC_READ_MODEL_WORKER.md); chưa deploy hoặc thay runtime lab. Preview vẫn ở Node/VM theo ADR0003.
+
 ## Data model dự kiến
+
+Các bảng quản trị dưới đây thuộc PostgreSQL. Outbox/version guard theo [projector](PUBLIC_PROJECTOR.md); D1 chỉ projection tối thiểu theo [public contract](D1_PUBLIC_READ_MODEL.md), không chứa user/allowlist/audit/session. Không dùng các bảng quản trị D1 legacy làm nguồn song song.
 
 - `users`: id, external_identity, email, role, status, created_at; identity từ Clerk Google nhưng quyền từ DB.
 - `auth_allowlist`: email đã chuẩn hóa, role, status, updated_at; operator quản lý server-side, không JWT/UI metadata.

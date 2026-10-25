@@ -1,9 +1,11 @@
 import { createHash } from "node:crypto";
 import { S3Client,ListObjectsV2Command,GetObjectCommand } from "@aws-sdk/client-s3";
 import pg from "pg";
+import { assertPostgresBackend } from "./metadata-backend.mjs";
 import { validAsset,TYPES } from "./gateway-policy.mjs";
 
 export async function backfill(pool,s3,bucket) {
+  assertPostgresBackend();
   const versions=await pool.query("SELECT id,site_id,storage_prefix,manifest_hash FROM site_versions WHERE asset_manifest IS NULL ORDER BY created_at");
   let verified=0;
   for(const version of versions.rows) {

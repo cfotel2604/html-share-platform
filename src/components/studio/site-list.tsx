@@ -71,6 +71,12 @@ function SiteRow({
           <span className="studio-meta-separator">·</span>
           <span title={site.id}>{site.id.slice(0, 8)}</span>
         </p>
+        {site.projection?.pending && (
+          <p className="studio-site-meta" role={site.projection.revoke_overdue ? "alert" : "status"}>
+            {site.projection.revoke_overdue ? "Thu hồi link chưa đồng bộ quá 60 giây" : "Chờ đồng bộ public"} · {site.projection.pending_events} sự kiện
+            {site.projection.last_error ? " · đang thử lại" : ""}
+          </p>
+        )}
         <div className="studio-site-actions">
           {!published && (
             <a className="studio-button" href={`/preview/${site.id}`} target="_blank" rel="noopener noreferrer">
@@ -136,13 +142,13 @@ function SiteRow({
         </span>
         <details className="studio-description">
           <summary>Link chia sẻ</summary>
-          <p>Đổi hoặc thu hồi link xem sẽ vô hiệu hóa link cũ. Nội dung trực tiếp vẫn mở khi website đang xuất bản; dùng Tắt xuất bản để chặn nội dung.</p>
+          <p>Đổi hoặc thu hồi link sẽ chặn link cũ sau khi đồng bộ public. Nội dung đã tải trong tab có thể vẫn hiển thị.</p>
           <div className="studio-site-actions">
             <button className="studio-button" type="button" disabled={busy} onClick={() => {
-              if (!preview || window.confirm("Đổi link xem? Link cũ sẽ hết hiệu lực, bạn cần gửi lại link mới.")) void onRotateShare(site);
+              if (!preview || window.confirm("Đổi link xem? Link cũ sẽ bị chặn sau khi đồng bộ public; bạn cần gửi lại link mới.")) void onRotateShare(site);
             }}>{preview ? "Đổi link xem" : "Tạo link xem"}</button>
             {preview && <button className="studio-button" type="button" disabled={busy} onClick={() => {
-              if (window.confirm("Thu hồi link xem? Nội dung trực tiếp vẫn mở khi website đang xuất bản.")) void onRevokeShare(site);
+              if (window.confirm("Thu hồi link xem? Link này sẽ bị chặn sau khi đồng bộ public.")) void onRevokeShare(site);
             }}>Thu hồi link xem</button>}
           </div>
           {!preview && <p role="status">Chưa có link xem đang hoạt động.</p>}

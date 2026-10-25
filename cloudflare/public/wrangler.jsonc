@@ -1,0 +1,29 @@
+// LOCAL/BUILD TEMPLATE ONLY. Remote deployment requires a separately approved
+// private config/verified target. Native bindings are NOT IAM read-only; code
+// permits only the fixed SELECT/get/head, enforced by CI and deploy review.
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "hsp-pilot",
+  "main": "../../dist/public-worker/worker.mjs",
+  "compatibility_date": "2026-07-29",
+  "no_bundle": true,
+  "build": { "command": "npm run build:public-worker" },
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": { "enabled": false },
+  "d1_databases": [
+    {
+      "binding": "PUBLIC_READ_MODEL",
+      "database_name": "hsp-public-local-only",
+      "database_id": "00000000-0000-0000-0000-000000000036",
+      "remote": false
+    }
+  ],
+  "r2_buckets": [
+    { "binding": "ASSETS", "bucket_name": "hsp-public-local-only", "remote": false }
+  ],
+  "vars": {
+    "PUBLIC_ORIGIN": "https://content.example.test",
+    "STUDIO_ORIGIN": "https://studio.example.org"
+  }
+}

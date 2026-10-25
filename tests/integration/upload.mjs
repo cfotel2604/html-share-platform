@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import http from "node:http";
 import { once } from "node:events";
 import pg from "pg";
-import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
+import { S3Client, ListObjectsV2Command, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { createHash } from "node:crypto";
 import { zipBytes, hostileZips } from "../helpers/zip.mjs";
 import {virtualFetch as fetch} from "../helpers/http.mjs";
 
@@ -22,6 +23,14 @@ const cookie = login.headers.get("set-cookie").split(";")[0];
 const headers = { Cookie: cookie, Origin: origin,Host:host };
 assert.equal((await fetch(web+"/api/auth",{headers})).status,200); // Provision the identity on a fresh database.
 assert.equal((await pool.query("UPDATE users SET role='employee' WHERE external_identity='local-demo:owner' RETURNING id")).rowCount,1);
+const workspace = await fetch(web + "/api/workspace", { headers });
+assert.equal(workspace.status, 200); assert.equal(workspace.headers.get("cache-control"), "no-store");
+const bootstrap = await workspace.json(); assert.equal(bootstrap.auth.signedIn, true); assert.equal(bootstrap.auth.role, "employee");
+assert.ok(Array.isArray(bootstrap.sites));
+const guestWorkspace = await fetch(web + "/api/workspace", { headers: { Host: host } });
+assert.equal((await guestWorkspace.json()).auth.signedIn, false);
+assert.equal((await fetch(web + "/api/workspace", { headers: { Host: "viewer.invalid" } })).status, 404);
+passed.push("same-origin local workspace returns auth+sites in one request; guest lists nothing and viewer host404");
 async function listKeys() {
   const keys = []; let token;
   do {
@@ -111,9 +120,11 @@ try {
   const failed = await send(new File([zipBytes([{ name: "index.html" }, { name: "style.css" }])], "fixture.zip"), id);
   assert.equal(failed.status, 500); assert.ok(!(await failed.text()).includes("fixture audit failure"));
   assert.deepEqual(await snapshot(id), initial); assert.deepEqual(await listKeys(), initialKeys);
-  assert.match(await (await readGateway("/s/" + id + "/")).text(), /integration v1/);
+  const retained=await s3.send(new GetObjectCommand({Bucket:process.env.STORAGE_BUCKET,Key:`${id}/${initial.active_version_id}/index.html`}));
+  assert.match(await retained.Body.transformToString(),/integration v1/);
+  assert.equal((await readGateway('/s/'+id+'/')).status,404);
   await pool.query("DROP TRIGGER upload_test_fail_audit ON audit_events");
-  passed.push("post-storage DB failure rolls back and cleans new objects; old active version remains readable");
+  passed.push("post-storage DB failure rolls back/cleans new objects; old immutable asset remains intact, Node public route denied");
 
   // Pause within the upload transaction and prove concurrent delete/reassign cannot pass its row lock.
   await pool.query("CREATE OR REPLACE FUNCTION upload_test_pause_version() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN PERFORM pg_sleep(1.2); RETURN NEW; END $$");
@@ -146,13 +157,34 @@ try {
   const zip = await send(new File([zipBytes([{ name: "index.html", body: '<link rel="stylesheet" href="style.css"><p>ZIP fixture</p>' }, { name: "style.css", body: "body{color:navy}" }])], "valid.zip"), id);
   assert.equal(zip.status, 200);
   const served = await readGateway("/s/" + id + "/");
-  assert.equal(served.status, 200); assert.match(served.headers.get("content-security-policy"), /sandbox allow-scripts/);
+  assert.equal(served.status, 404);
   assert.equal(served.headers.get("cache-control"), "no-store");
-  assert.equal((await readGateway("/s/" + id + "/style.css")).status, 200);
+  assert.equal((await readGateway("/s/" + id + "/style.css")).status, 404);
+  const zipVersion=(await pool.query('SELECT active_version_id FROM sites WHERE id=$1',[id])).rows[0].active_version_id;
+  const zipAsset=await s3.send(new GetObjectCommand({Bucket:process.env.STORAGE_BUCKET,Key:`${id}/${zipVersion}/style.css`}));
+  assert.equal(await zipAsset.Body.transformToString(),'body{color:navy}');
   const disabled = await fetch(web + "/api/sites/" + id, { method: "PATCH", headers: { ...headers, "Content-Type": "application/json" }, body: JSON.stringify({ published: false }) });
   assert.equal(disabled.status, 200);
   assert.equal((await readGateway("/s/" + id + "/style.css")).status, 404);
-  passed.push("valid ZIP update, sandbox/no-store, assets and unpublish 404");
+  passed.push("valid ZIP immutable readback; Node public aliases stay404 before/after unpublish (public serving covered by Worker suite)");
+  const largeEntries = [{ name: "index.html", body: "<p>500-file fixture</p>" },
+    ...Array.from({ length: 499 }, (_, i) => ({ name: `assets/${i}.txt`, body: `synthetic asset ${i}` }))];
+  const largeResponse = await send(new File([zipBytes(largeEntries)], "500-files.zip"), id);
+  assert.equal(largeResponse.status, 200); assert.equal((await largeResponse.json()).fileCount, 500);
+  const version = (await pool.query("SELECT v.storage_prefix,v.asset_manifest FROM sites s JOIN site_versions v ON v.id=s.active_version_id WHERE s.id=$1 AND s.status='published'", [id])).rows[0];
+  assert.equal(version.asset_manifest.length, 500);
+  const expected = new Map(largeEntries.map(entry => [entry.name, Buffer.from(entry.body)]));
+  for (const asset of version.asset_manifest) {
+    assert.match(asset.etag, /^[a-f0-9]{32}$/);
+    const object = await s3.send(new GetObjectCommand({ Bucket: process.env.STORAGE_BUCKET, Key: `${version.storage_prefix}/${asset.path}`, IfMatch: `"${asset.etag}"` }));
+    const bytes = Buffer.from(await object.Body.transformToByteArray());
+    assert.deepEqual(bytes, expected.get(asset.path)); assert.equal(object.ContentLength, asset.size);
+    assert.equal(createHash("sha256").update(bytes).digest("hex"), asset.sha256);
+  }
+  const key = `${version.storage_prefix}/index.html`;
+  await assert.rejects(s3.send(new PutObjectCommand({ Bucket: process.env.STORAGE_BUCKET, Key: key, Body: "must not overwrite", IfNoneMatch: "*" })), error => error.$metadata?.httpStatusCode === 412);
+  assert.deepEqual(Buffer.from(await (await s3.send(new GetObjectCommand({ Bucket: process.env.STORAGE_BUCKET, Key: key }))).Body.transformToByteArray()), expected.get("index.html"));
+  passed.push("500-file Node ZIP finalize commits PostgreSQL manifest/pointer after S3 size/SHA256/ETag readback; conditional overwrite412 preserves bytes; no Worker/D1 service exists in this stack");
   console.log(JSON.stringify({ result: "PASS", passed }, null, 2));
 } finally {
   await pool.query("DROP TRIGGER IF EXISTS upload_test_fail_audit ON audit_events");

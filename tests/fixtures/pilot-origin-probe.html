@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A-prime browser boundary probe</title>
+<style>
+body{font:16px system-ui,sans-serif;margin:24px;color:#172033;background:#f4f7fb}
+main{max-width:760px;margin:auto}pre{white-space:pre-wrap;overflow-wrap:anywhere;padding:16px;background:white;border:1px solid #d8e0ea;border-radius:8px}
+</style>
+<main id="probe" data-probe-status="running">
+<h1>A-prime browser boundary probe</h1>
+<p id="summary">Running bounded sandbox checks...</p>
+<pre id="results"></pre>
+<p>Synthetic fixture. No authentication data, cookie value, storage value or URL is collected.</p>
+</main>
+<script>
+(async()=>{
+  const blocked=operation=>{try{operation();return {blocked:false,error:null};}catch(error){return {blocked:true,error:error.name==='SecurityError'?'SecurityError':'other'};}};
+  const marker='hsp_aprime_boundary_probe_20261025=1;Path=/;Secure;SameSite=None;Max-Age=30';
+  const checks={
+    cookie_read:blocked(()=>{void document.cookie;}),
+    cookie_host_write:blocked(()=>{document.cookie=marker;}),
+    cookie_parent_write:blocked(()=>{document.cookie=marker+';Domain=cfvn.cloud';}),
+    local_storage:blocked(()=>{void localStorage.length;}),
+    session_storage:blocked(()=>{void sessionStorage.length;})
+  };
+  // Remove only this short-lived synthetic marker if the boundary unexpectedly failed.
+  if(!checks.cookie_host_write.blocked){try{document.cookie=marker.replace('Max-Age=30','Max-Age=0');}catch{}}
+  if(!checks.cookie_parent_write.blocked){try{document.cookie=marker.replace('Max-Age=30','Max-Age=0')+';Domain=cfvn.cloud';}catch{}}
+  let popup;
+  try{popup=window.open('about:blank','hsp-aprime-boundary-popup');checks.popup={blocked:popup===null};popup?.close();}
+  catch{checks.popup={blocked:true};}
+  const framed=window.top!==window;
+  checks.parent_dom=framed?blocked(()=>{void window.parent.document.documentElement;}):{blocked:null,not_applicable:true};
+  checks.worker=await new Promise(resolve=>{
+    let worker,url,finished=false;
+    const done=result=>{if(finished)return;finished=true;worker?.terminate();if(url)URL.revokeObjectURL(url);resolve(result);};
+    try{
+      url=URL.createObjectURL(new Blob(["postMessage('synthetic-worker-started')"],{type:'text/javascript'}));
+      worker=new Worker(url);worker.onmessage=()=>done({blocked:false});worker.onerror=event=>{event.preventDefault();done({blocked:true,error:'blocked_or_unavailable'});};
+      setTimeout(()=>done({blocked:false,inconclusive:true}),1500);
+    }catch(error){done({blocked:true,error:error.name==='SecurityError'?'SecurityError':'other'});}
+  });
+  const pass=Object.values(checks).every(check=>check.not_applicable||check.blocked===true);
+  const result={schema:1,framed,secure_context:window.isSecureContext,checks,pass,no_sensitive_values_collected:true};
+  document.getElementById('results').textContent=JSON.stringify(result,null,2);
+  document.getElementById('summary').textContent=pass?'PASS: tested browser APIs are blocked.':'FAIL or inconclusive: inspect before continuing.';
+  document.getElementById('probe').dataset.probeStatus=pass?'passed':'failed';
+})().catch(()=>{
+  document.getElementById('summary').textContent='Probe inconclusive.';
+  document.getElementById('probe').dataset.probeStatus='failed';
+});
+</script>
+</html>

@@ -33,7 +33,9 @@ export function mapHostRequest(host,rawUrl,config) {
   if(!hostname.endsWith(suffix)) return null;
   const label=hostname.slice(0,-suffix.length);
   if(config.reserved?.includes(label) || label.includes(".")) return null;
-  const match=/^([a-f0-9]{32})(?:--([a-z2-7]{26}))?$/.exec(label);
+  // A' grants use a distinct namespace; old lab grants never fall through here.
+  const match=label.startsWith("p-") ? /^p-([a-f0-9]{32})--([a-z2-7]{26})$/.exec(label)
+    : /^([a-f0-9]{32})$/.exec(label);
   const raw=rawUrl.split("?")[0];
   if(!match || !raw.startsWith("/")) return null;
   const info=assetInfo(raw.slice(1));
