@@ -137,7 +137,7 @@ export function useStudio(client: StudioApi = studioApi) {
     }),
     revokeShare: (site: SiteSummary) => mutate(site.id, async () => {
       await client.revokeShare(site.id);
-      return `Đã thu hồi link xem của “${site.display_name}”. Nội dung trực tiếp còn mở nếu website đang xuất bản.`;
+      return `Đã thu hồi link xem của “${site.display_name}”. Link cũ sẽ bị chặn sau khi đồng bộ public.`;
     }),
   };
 }

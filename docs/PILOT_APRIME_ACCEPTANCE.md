@@ -8,7 +8,7 @@ Refs #38 / Epic #31 / release gate #10. Base freshly fetched main `76b38faf16947
 
 ## Current evidence checkpoint — 2026-10-25
 
-Owner merged56at maine50cbeb; current runtime55b99d1/image c3549538passed4/4CI/176tests before rollout. Actual browser observations were on2a396aewith unchanged backend/serving code. [Remaining fault receipts](validation/2026-10-25-projector-faults.md). [Detailed execution](validation/2026-10-24-aprime-pilot-execution.md), [preview readbacks](validation/2026-10-25-public-preview.json).
+Owner merged57at main3eff4e1; current runtime2734de5/image2fd14ccc passed4/4CI/176tests/build before the one-line success-notice rollout in Draft58. Earlier automated browser observations were on2a396ae with unchanged backend/serving code; owner25/10 additionally confirmed actual GUIrevoke and refreshed-oldlink404. [Remaining fault receipts](validation/2026-10-25-projector-faults.md). [Detailed execution](validation/2026-10-24-aprime-pilot-execution.md), [preview readbacks](validation/2026-10-25-public-preview.json).
 
 | Gate | Actual evidence / remaining limitation |
 | --- | --- |
@@ -22,6 +22,7 @@ Owner merged56at maine50cbeb; current runtime55b99d1/image c3549538passed4/4CI/1
 | Projector token scope | Owner confirms hsp-projector-pilot created per settled policy: existing pilot account, D1Edit only, no Workers/R2/account administration. Scope owner-confirmed; no token value/export collected. Normal replacement rotation now completed in57; emergency active-token fault is separate |
 | Browser/R2packet57 |5local/desktopIABcontexts pass tested APIs; real Nodepreview parentcookie setter/storage SecurityError. Actual R2reader404/412and correctSHA200; full live Worker corrupt-pin case remains distinct |
 | Normal token rotation57 | Owner approved early drill/loaded hsp-projector-pilot-1/revoked oldtoken; agent verified metadata+500manifest publish/revoke/drain before/after. Completed25/10,next90day2027-01-23; emergency active-token fault unrun |
+| GUIrevoke owner retest | Owner confirmed freshlinkviewable, GUIrevoke success and refreshedoldlink Not found25/10; case PASS, no elapsedtime/numericalSLOsample. [Receipt](validation/2026-10-25-gui-revoke-retest.md). Missed successnotice fixed and verified in deployed bundle at2734de5; independent PG/public readback agrees, state unchanged |
 | Remaining owner/security gates | Owner pilot acceptance, old viewer retirement, emergency active-token revoke and prolonged429/other uncovered remote fault drills, remaining Employee/browser/mobile/cookie/release#10. Local/CI cases are not substituted for those live proofs |
 
 ## Historical preparation scope — before consolidated authority
