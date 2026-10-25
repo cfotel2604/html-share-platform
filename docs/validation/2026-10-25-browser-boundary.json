@@ -403,5 +403,187 @@
     "Worker corruption with a missing/wrong pinned object was not created; read-only R2provider404/412is separate evidence.",
     "Popup/worker blocks may also involve general browser policy; cookie/storage errors are SecurityError.",
     "Live emergency revoke of an active token with queued events remains unrun; normal approved replacement rotation completed."
-  ]
+  ],
+  "runtime_after_copy_rollout": {
+    "source_head": "55b99d153818b5db0bf30c55c2ec997ae90e5871",
+    "node_image": "sha256:c3549538754f7c51f07098f4c71198623a81672b3b850c4af8a44404a498c6a2",
+    "services": [
+      {
+        "service": "db",
+        "state": "running",
+        "health": "healthy"
+      },
+      {
+        "service": "migrate",
+        "state": "exited",
+        "health": "none"
+      },
+      {
+        "service": "web",
+        "state": "running",
+        "health": "healthy"
+      },
+      {
+        "service": "preview",
+        "state": "running",
+        "health": "healthy"
+      },
+      {
+        "service": "projector",
+        "state": "running",
+        "health": "none"
+      }
+    ],
+    "postgres": {
+      "sites": 3,
+      "versions": 5,
+      "ledger_count": 4,
+      "pending": 0,
+      "errors": 0,
+      "overdue_revokes": 0,
+      "published_sites": 1
+    },
+    "old_hsp_lab_unchanged": true,
+    "old_source_unchanged": true,
+    "nginx_sha256": "19d6c7f0d583c4d7711c6783dc08e42ee24c0daabf0eba7249c1b10c3bdc5ab2",
+    "r2_objects_deleted": 0,
+    "private_values_disclosed": false,
+    "studio_https_from_operator_node": [
+      {
+        "path": "/api/health/live",
+        "status": 200,
+        "no_store": true
+      },
+      {
+        "path": "/api/health/ready",
+        "status": 200,
+        "no_store": true
+      }
+    ]
+  },
+  "post_rollout_read_only_readback": {
+    "bundle_sha256": "c0640fecc39955efe2db55a26bcac8e64049379238866a35158046612936c622",
+    "runtime_source": "55b99d153818b5db0bf30c55c2ec997ae90e5871",
+    "report": {
+      "event": "browser.final_readback",
+      "fixture_uploaded_once": true,
+      "fixture_final_unpublished": true,
+      "already_revoked_before_operator": true,
+      "operator_revoke_performed": false,
+      "browser_revoke_click_outcome_inconclusive": true,
+      "fixture_final_public_status": 404,
+      "events": [
+        {
+          "id": "52",
+          "state": "projected",
+          "attempts": 1,
+          "last_error": null,
+          "has_revoke": false,
+          "statuses": [
+            "published"
+          ]
+        },
+        {
+          "id": "57",
+          "state": "projected",
+          "attempts": 1,
+          "last_error": null,
+          "has_revoke": false,
+          "statuses": [
+            "unpublished"
+          ]
+        },
+        {
+          "id": "61",
+          "state": "projected",
+          "attempts": 1,
+          "last_error": null,
+          "has_revoke": true,
+          "statuses": [
+            "revoked"
+          ]
+        }
+      ],
+      "owner_published_500_manifest_preserved": true,
+      "owner_asset_probes": [
+        {
+          "path": "index.html",
+          "status": 200,
+          "integrity": true,
+          "no_store": true
+        },
+        {
+          "path": "assets/style.css",
+          "status": 200,
+          "integrity": true,
+          "no_store": true
+        },
+        {
+          "path": "assets/app.js",
+          "status": 200,
+          "integrity": true,
+          "no_store": true
+        }
+      ],
+      "totals": {
+        "sites": 3,
+        "versions": 5,
+        "ledger": 4,
+        "pending": 0,
+        "errors": 0,
+        "published_sites": 1
+      },
+      "r2_assets_deleted": 0,
+      "token_values_or_capabilities_disclosed": false
+    }
+  },
+  "post_rollout_r2_reader": {
+    "bundle_sha256": "abc3436a08a3517a9e4c6c09703ace435b516f939c2ad280e4ecab74c5516f6b",
+    "runtime_source": "55b99d153818b5db0bf30c55c2ec997ae90e5871",
+    "report": {
+      "event": "browser.r2_read_probe",
+      "actual_r2": true,
+      "reader_role_separated": true,
+      "fixture_files": 1,
+      "correct_get_status": 200,
+      "correct_get_integrity": true,
+      "negative_probes": [
+        {
+          "case": "missing_key",
+          "status": 404,
+          "expected": 404
+        },
+        {
+          "case": "wrong_if_match",
+          "status": 412,
+          "expected": 412
+        }
+      ],
+      "write_or_delete_calls": 0,
+      "metadata_not_modified": true,
+      "snapshot": {
+        "sites": 3,
+        "versions": 5,
+        "ledger": 4,
+        "pending": 0
+      },
+      "capability_or_secret_values_disclosed": false
+    }
+  },
+  "post_rollout_copy_and_credential": {
+    "runtime_source": "55b99d153818b5db0bf30c55c2ec997ae90e5871",
+    "node_image": "sha256:c3549538754f7c51f07098f4c71198623a81672b3b850c4af8a44404a498c6a2",
+    "deployed_copy": {
+      "all_three_current_strings_in_deployed_bundle": true,
+      "legacy_direct_url_claim_present": false
+    },
+    "new_projector_metadata": {
+      "current_credential_valid": true,
+      "target_replication_match": true,
+      "d1_only_role": true
+    },
+    "no_oneoff_runners_left": true,
+    "browser_authenticated_render_after_copy_not_claimed": true
+  },
+  "local_probe_listener_closed": true
 }

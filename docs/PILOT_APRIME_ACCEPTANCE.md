@@ -8,7 +8,7 @@ Refs #38 / Epic #31 / release gate #10. Base freshly fetched main `76b38faf16947
 
 ## Current evidence checkpoint — 2026-10-25
 
-Owner merged48at main1fbe19c; runtime source2a396ae/image d927742b passed4/4CI before rollout. [Remaining fault receipts](validation/2026-10-25-projector-faults.md). [Detailed execution](validation/2026-10-24-aprime-pilot-execution.md), [preview readbacks](validation/2026-10-25-public-preview.json).
+Owner merged56at maine50cbeb; current runtime55b99d1/image c3549538passed4/4CI/176tests before rollout. Actual browser observations were on2a396aewith unchanged backend/serving code. [Remaining fault receipts](validation/2026-10-25-projector-faults.md). [Detailed execution](validation/2026-10-24-aprime-pilot-execution.md), [preview readbacks](validation/2026-10-25-public-preview.json).
 
 | Gate | Actual evidence / remaining limitation |
 | --- | --- |
@@ -18,7 +18,7 @@ Owner merged48at main1fbe19c; runtime source2a396ae/image d927742b passed4/4CI b
 | Preview | Exact p-namespace, actual HTTPS200/integrity/sandbox/Studioancestor, forged actor403, invalid/no-grant/outside-manifest404, real180s expiry404. Real signed-in Admin iframe rendered fixture and script |
 | Controlled fault packet / PR56 | Actual PG/projector/D1ack-loss/retry:300s429cooldown preserved;503retry; first real write1change, replay0changes.314865.149msoutage separate from healthy measurements.429/503are Node transport injection, not provider-generated |
 | Warning channel | Actual signed-in AdminStudio showed overdue>60s/retrying and cleared automatically after drain, plus local/CI tests. No closed-tab/VM-outage/external notification guarantee |
-| Preservation / deletion | Old viewer4100and hsp-lab source/data/volumes retained,2sites/4versions, PGledger4unchanged;0R2deletions. Historical0005deleted11legacy D1tables/585rows once; never replay applied SQL |
+| Preservation / deletion | Old viewer4100and hsp-lab source/data/volumes retained; current3sites/5versionsincludes one new syntheticbrowserfixture, PGledger4unchanged;0R2deletions. Historical0005deleted11legacy D1tables/585rows once; never replay applied SQL |
 | Projector token scope | Owner confirms hsp-projector-pilot created per settled policy: existing pilot account, D1Edit only, no Workers/R2/account administration. Scope owner-confirmed; no token value/export collected. Normal replacement rotation now completed in57; emergency active-token fault is separate |
 | Browser/R2packet57 |5local/desktopIABcontexts pass tested APIs; real Nodepreview parentcookie setter/storage SecurityError. Actual R2reader404/412and correctSHA200; full live Worker corrupt-pin case remains distinct |
 | Normal token rotation57 | Owner approved early drill/loaded hsp-projector-pilot-1/revoked oldtoken; agent verified metadata+500manifest publish/revoke/drain before/after. Completed25/10,next90day2027-01-23; emergency active-token fault unrun |
