@@ -6,7 +6,7 @@ export function previewSiteUrl(id: string, grant: string) {
   if (!/^[a-f0-9]{32}$/.test(id) || !/^[a-z2-7]{26}$/.test(grant ?? "")) throw new Error("Invalid preview identifier");
   if (process.env.GATEWAY_MODE === "hostname") {
     const {domain,scheme,port} = publicOriginConfig();
-    return `${scheme}://${id}--${grant}.${domain}${port ? ":" + port : ""}/`;
+    return `${scheme}://p-${id}--${grant}.${domain}${port ? ":" + port : ""}/`;
   }
   throw new Error("Private preview requires hostname mode");
 }

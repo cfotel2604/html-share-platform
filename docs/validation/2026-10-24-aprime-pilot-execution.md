@@ -197,3 +197,10 @@ Identical500file ZIP through the newly built Node upload function returned succe
 | Twelve transfers, artifact792 |11837.713ms |Operator function returned success; independent R2readback; not a fresh UIlatency trace |
 
 These are observed runs, not a new latencySLO or a guarantee for every ZIP/network condition. Integrity, quotas, ownership, rollback/drain and atomic publish remain unchanged. Studio needs a page refresh to load the new client bundle; overdue/stale notices apply while it is open/visible with pending Admin work. Existing old viewer links/content4100 remain preserved. PR55's public preview namespace is independently CI-validated but not deployed at this checkpoint; real public preview/retirement and10review remain separate gates.
+
+
+### Owner merged55; combined preview rollout preparation
+
+Owner reported55merged on2026-10-25. GitHub verified merge `d7f98f056aa78dd4d0d5344c9e3777d7f6f7b8df`, source head `1e6072168097fae57745266a0d99e61daa45b050`, all4checks SUCCESS. Integrated into48, retaining the required-grant `previewSiteUrl` and preview-only Node gateway; public links still use the Worker. Resolved formatter and documentation conflicts; updated48's existing gateway fixtures to the new p-prefixed namespace without removing no-grant/old-host denial or manifest integrity tests.
+
+Combined local lint/typecheck,176tests, productionbuild, docs/YAML/diff checks PASS. Initial combined test run caught two48fixtures still using old grant hostnames; corrected those fixtures and reran the full suite. Exact-head CI must pass before build/update. Current live artifact remains792e949/image637e0392; fresh read-only VM check confirms it and nginx fingerprint `569e33a905c18082bace53b19f15a740d10deb6e1d8c53604509b7c7b5b1236a`. No remote mutation at this preparation checkpoint. Next: canonical archive/pinned image, update only new web/preview/projector, then guarded HSP-only closed map and real public HTTPS/TTL/integrity readbacks. Existing viewer/test links stay on4100; no DNS/UFW/tunnel/Worker/D1migration or R2deletion.

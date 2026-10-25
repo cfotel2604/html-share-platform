@@ -29,7 +29,7 @@ const server=createServer(createGateway({db:pool,s3,bucket:process.env.STORAGE_B
 await new Promise(resolve=>server.listen(0,"0.0.0.0",resolve));
 const gateway=`http://127.0.0.1:${server.address().port}`;
 const headers=host=>({Host:host});
-const read=(id,path="/",grant)=>virtualFetch(gateway+path,{headers:headers(`${id}${grant?"--"+grant:""}.matbao.test:4443`)});
+const read=(id,path="/",grant)=>virtualFetch(gateway+path,{headers:headers(`${grant?"p-":""}${id}${grant?"--"+grant:""}.matbao.test:4443`)});
 const html=()=>new File(["<!doctype html><p>auth fixture</p>"],"fixture.html");
 async function keys() {const all=[];let token;do{const listing=await s3.send(new ListObjectsV2Command({Bucket:process.env.STORAGE_BUCKET,ContinuationToken:token}));all.push(...(listing.Contents??[]).map(item=>item.Key));token=listing.NextContinuationToken;}while(token);return all.sort();}
 let raceTrigger=false;
