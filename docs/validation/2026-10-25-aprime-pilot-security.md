@@ -22,12 +22,12 @@ Scope chosen explicitly by owner25/10: **the current A' pilot/lab**, not product
 | Worker capability and public lifecycle | Fixed single parameterized primarySELECT + manifest-pinned GET/HEAD; no admin secret/callback/write API in code. Native bindings retain platform write capability as owner already clarified; no IAMread-only claim. Existing real revoke/unpublish/rotate/serving and services-off receipts |
 | Node preview |128-bit hashed grant,3minuteTTL, actor/ownership/immutableversion checks; HTTPS/expiry/denials/Adminiframe passed. No grant/session forwarding into public Worker |
 | Revoke/incident operation | Healthy20sample500manifest revoke p95=5.298s; outages separate/no60soutage guarantee. Owner chose Studio pending/overdue/stale warnings; extra elaborate live fault drills explicitly omitted, not PASS. Approved normal token rotation completed |
-| Logging | Node/Worker static sanitized errors; both nginx accesslogs off/all3errorlogs protected. External DNS/SNI/analytics/collector status is a pending owner fact, not assumed safe |
+| Logging | Node/Worker static sanitized errors; both nginx accesslogs off/all3errorlogs protected. Owner-authorized SSH inspection found protected HSPnginx, local Dockerjson-file, no recognized logshipper/rsyslogforwarder, no tunneldebug and zero rawpreviewhostname matches in bounded samples. Provider control-plane/DNSanalytics is outside SSH visibility, not assumed disabled |
 | Dependency/source/deployment discipline | PR49patched Next/Zod; fresh prior full+production audits0; current accepted source/CI/provenance and rollback receipts retained. This docs review performs no deploy or data cleanup |
 
 ## Remaining review record
 
-Fresh read-only receipts are recorded below. One required fact remains: the owner's external DNS/analytics/collector logging configuration, not inferred from nginx. Provider DNS/SNI visibility is not a guarantee of grant secrecy; preview capability remains short-lived and scoped. Production is a different decision; ADR0001/0003 retain their broader Proposed release scope without altering implemented A' invariants.
+Fresh read-only receipts are recorded below. The owner did not know the external logging setting and explicitly requested SSH inspection. The VM-controlled surfaces are now inspected below; provider-managed account/DNS/analytics settings remain unverified by this method. Provider DNS/SNI visibility is not a guarantee of grant secrecy; preview capability remains short-lived and scoped. Production is a different decision; ADR0001/0003 retain their broader Proposed release scope without altering implemented A' invariants.
 
 Prior evidence: [accepted-pilot ledger](2026-10-25-aprime-closeout.md), [actual execution](2026-10-24-aprime-pilot-execution.md), [preview](2026-10-25-public-preview.json), [browser/rotation](2026-10-25-browser-boundary.md), and [owner acceptance38](https://github.com/cfotel2604/html-share-platform/issues/38#issuecomment-6398587876). No device traces, live fault PASS or production approval is invented.
 
@@ -47,4 +47,21 @@ Before an actual production change, review its real domains/routes/certificates 
 
 Used repository/worktree/remotes/fetch/live GitHub/accepted59+38 checks; pinned Wrangler4.152.0 r2dev-url get/domain list/deployments list/versions view (read-only, target-pinned); task-owned read probes via existing Node preview process; external guest HTTP checks; docs/YAML/local-link/diff validation. Source/auth/gateway/Worker/security tests and accepted receipts were reviewed rather than mutating the accepted pilot to repeat them. Final exact-head CI belongs in PR19.
 
-Pending before recommending owner merge/closure10: answer the single external-logging question already asked in this chat. R2writer/reader policy and pilot scope are confirmed and must not be re-asked. Keep Draft; owner merges. Do not claim production release or re-open accepted38/31.
+PR19 now presents the completed, bounded pilot/VM review for owner review/merge and closure10, with provider control-plane visibility explicitly unverified. This is not an assertion that Cloudflare/DNS systems log nothing. R2policy/pilot scope remain confirmed; do not ask the owner to guess logging settings or re-open38/31. Keep Draft; owner decides merge/closure, production remains separate.
+
+## Owner-authorized SSH logging inspection — 25/10
+
+The owner asked us to inspect because they did not know the settings. No configuration/service/credential was changed; no secret file, raw log content, issued grant or other application's details were exported. [Sanitized snapshot](2026-10-25-aprime-logging.json).
+
+| Surface on lab-b | Actual read-only finding |
+| --- | --- |
+| HSP nginx |2access directives, both off;3error directives, all `/dev/null crit`; no nested include; effective `nginx -T` passes and config fingerprint unchanged |
+| A' Docker services and tunnel |Local `json-file` logging; no remote logging-driver configuration observed for these containers. Logging is not globally disabled |
+| cloudflared |No debug/logfile flag, debug/file env setting or debug/logfile setting in its mounted config. The inspected config has Studio hostname, not the preview wildcard/hostname |
+| Host collectors/syslog |journald and rsyslog run locally. Four rsyslog configs inspected: no recognized forwarding directive or imfile input for Docker/nginx. No active recognized Fluent/Vector/Promtail/Filebeat/Alloy/OTel shipper in the inspected service/process/image inventory |
+| Local DNS |systemd-resolved active at info log level; no separate recognized query-logging DNS daemon found. This does not inspect authoritative/provider DNS logs |
+| Bounded samples |5running-container logs (last24h/tail10000),4journals (last24h/tail2000) and2global nginx log tails:0A'previewhostname-pattern matches in every sample. Only counts exported; nginx files were empty |
+
+A zero count is a sampled observation, not proof that no past/future request or custom collector can ever contain a hostname. Initial inventory helper template errors stopped before any state change and were corrected; only the final complete snapshot is used for conclusions.
+
+**Boundary:** SSH cannot reveal the Cloudflare account's Logpush/DNSanalytics settings or an external resolver/collector. They are **not verified and not marked OFF/PASS**. DNS/SNI visibility remains inherent to hostname-based grants; TTL/scope and app-controlled logging protection remain as designed. To establish those provider settings, use separately accessible provider control-plane evidence rather than guessing from the VM. The owner reviews this explicit limit when deciding to merge the current pilot-only audit; no global secrecy or production approval follows.

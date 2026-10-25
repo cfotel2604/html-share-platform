@@ -11,7 +11,6 @@
     "reader_read_only": true,
     "basis": "direct owner reply in this chat; no credential value requested"
   },
-  "external_logging_owner_fact": "PENDING",
   "cloudflare_read_only_metadata": {
     "checked_date": "2026-10-25",
     "r2_dev_disabled": true,
@@ -71,5 +70,13 @@
   "production_approval": false,
   "runtime_changes": 0,
   "r2_deletions": 0,
-  "new_tokens_or_grants": 0
+  "new_tokens_or_grants": 0,
+  "external_logging_assessment": {
+    "vm_ssh_checked": true,
+    "evidence": "2026-10-25-aprime-logging.json",
+    "raw_preview_pattern_matches_in_bounded_samples": 0,
+    "provider_control_plane_unverified": true,
+    "global_logging_disabled_claim": false,
+    "closure_scope": "owner review/merge of current pilot-only audit with explicit SSH boundary; no production or whole-provider proof"
+  }
 }

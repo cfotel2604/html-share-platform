@@ -1,0 +1,180 @@
+{
+  "runtime_source": "2734de5f6b345050f95b0db75bab9ac71b908de7",
+  "node_image": "sha256:2fd14cccc9bfd9e3402b968c4eebeff664d0519cd069e55e88bf95cd768c1a8b",
+  "nginx": {
+    "config_sha256": "19d6c7f0d583c4d7711c6783dc08e42ee24c0daabf0eba7249c1b10c3bdc5ab2",
+    "access_directives": 2,
+    "access_all_off": true,
+    "error_directives": 3,
+    "errors_all_devnull_crit": true,
+    "include_directives": 0,
+    "effective_config_test_pass": true
+  },
+  "container_logging": [
+    {
+      "scope": "aprime",
+      "role": "projector",
+      "state": "running",
+      "log_driver": "json-file",
+      "log_option_keys": []
+    },
+    {
+      "scope": "aprime",
+      "role": "web",
+      "state": "running",
+      "log_driver": "json-file",
+      "log_option_keys": []
+    },
+    {
+      "scope": "aprime",
+      "role": "preview",
+      "state": "running",
+      "log_driver": "json-file",
+      "log_option_keys": []
+    },
+    {
+      "scope": "logging_or_proxy_candidate",
+      "role": "cloudflared",
+      "state": "running",
+      "log_driver": "json-file",
+      "log_option_keys": [],
+      "debug_argument_present": false,
+      "log_file_flag_present": false,
+      "env_debug_logging": false,
+      "env_logfile_setting": false,
+      "mounted_config_files_inspected": 1,
+      "config_debug_logging": false,
+      "config_logfile_directive": false,
+      "config_has_studio_hostname": true,
+      "config_has_preview_wildcard_or_host": false
+    },
+    {
+      "scope": "aprime",
+      "role": "migrate",
+      "state": "exited",
+      "log_driver": "json-file",
+      "log_option_keys": []
+    },
+    {
+      "scope": "aprime",
+      "role": "db",
+      "state": "running",
+      "log_driver": "json-file",
+      "log_option_keys": []
+    }
+  ],
+  "transient_containers_unavailable": 0,
+  "docker_default_log_driver": "json-file",
+  "related_active_services": [
+    "rsyslog.service",
+    "systemd-journald.service",
+    "systemd-resolved.service"
+  ],
+  "related_process_names": [
+    "cloudflared",
+    "rsyslogd",
+    "systemd-journal"
+  ],
+  "rsyslog": {
+    "configs_inspected": 4,
+    "remote_forward_directive": false,
+    "imfile_input": false,
+    "docker_or_nginx_file_input": false
+  },
+  "journald_explicit_settings": {},
+  "resolved_log_level": "info",
+  "bounded_container_log_samples": [
+    {
+      "role": "projector",
+      "scope": "aprime",
+      "window": "last24h_tail10000",
+      "bytes_scanned": 47970,
+      "preview_hostname_pattern_count": 0,
+      "read_success": true
+    },
+    {
+      "role": "web",
+      "scope": "aprime",
+      "window": "last24h_tail10000",
+      "bytes_scanned": 414,
+      "preview_hostname_pattern_count": 0,
+      "read_success": true
+    },
+    {
+      "role": "preview",
+      "scope": "aprime",
+      "window": "last24h_tail10000",
+      "bytes_scanned": 29,
+      "preview_hostname_pattern_count": 0,
+      "read_success": true
+    },
+    {
+      "role": "cloudflared",
+      "scope": "logging_or_proxy_candidate",
+      "window": "last24h_tail10000",
+      "bytes_scanned": 7353,
+      "preview_hostname_pattern_count": 0,
+      "read_success": true
+    },
+    {
+      "role": "db",
+      "scope": "aprime",
+      "window": "last24h_tail10000",
+      "bytes_scanned": 15798,
+      "preview_hostname_pattern_count": 0,
+      "read_success": true
+    }
+  ],
+  "bounded_global_nginx_log_samples": [
+    {
+      "scope": "nginx_global_access",
+      "last_bytes_scanned": 0,
+      "preview_hostname_pattern_count": 0
+    },
+    {
+      "scope": "nginx_global_error",
+      "last_bytes_scanned": 0,
+      "preview_hostname_pattern_count": 0
+    }
+  ],
+  "bounded_journal_samples": [
+    {
+      "unit": "nginx.service",
+      "window": "last24h_tail2000",
+      "bytes_scanned": 695,
+      "preview_hostname_pattern_count": 0,
+      "read_success": true
+    },
+    {
+      "unit": "docker.service",
+      "window": "last24h_tail2000",
+      "bytes_scanned": 67716,
+      "preview_hostname_pattern_count": 0,
+      "read_success": true
+    },
+    {
+      "unit": "systemd-resolved.service",
+      "window": "last24h_tail2000",
+      "bytes_scanned": 0,
+      "preview_hostname_pattern_count": 0,
+      "read_success": true
+    },
+    {
+      "unit": "rsyslog.service",
+      "window": "last24h_tail2000",
+      "bytes_scanned": 897,
+      "preview_hostname_pattern_count": 0,
+      "read_success": true
+    }
+  ],
+  "read_only": true,
+  "private_values_or_raw_logs_disclosed": false,
+  "date": "2026-10-25",
+  "authorization": "owner explicitly requested read-only SSH logging inspection",
+  "provider_control_plane_checked": false,
+  "provider_logpush_dns_analytics_state": "not observable from VM; not asserted disabled",
+  "sample_limit": "bounded last24h/container tail10000, journal tail2000 and global-nginx last1MiB; pattern counts do not prove every past/future request",
+  "collector_inventory_limit": "recognized running process/service/image families and rsyslog/config/log-driver surfaces; not a forensic proof against custom or external collectors",
+  "configuration_or_runtime_writes": 0,
+  "raw_logs_tokens_grants_or_other_app_details_exported": false
+}
