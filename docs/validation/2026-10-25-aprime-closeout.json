@@ -1,0 +1,181 @@
+{
+  "date": "2026-10-25",
+  "reviewed_main": "71c57b9dcd5710b87a9d49526aa251787cf81390",
+  "draft_pr": 59,
+  "owner_confirmed_matrix": {
+    "mobile": true,
+    "Employee": true,
+    "Safari": true,
+    "Zalo": true,
+    "basis": "direct owner report; no device versions or agent traces supplied"
+  },
+  "live_fault_drills_omitted_by_owner": [
+    "intentional D1 drift on real pilot",
+    "deliberate R2 corrupt pin on deployed Worker",
+    "provider-generated prolonged429",
+    "emergency active-projector-token revocation"
+  ],
+  "omitted_drills_are_tested_pass": false,
+  "pilot_acceptance38_granted": false,
+  "release10_granted": false,
+  "closed_completed_issues": [
+    {
+      "closedAt": "2026-10-25T12:19:08Z",
+      "number": 50,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "receipt_url": "https://github.com/cfotel2604/html-share-platform/issues/50#issuecomment-6397545985"
+    },
+    {
+      "closedAt": "2026-10-25T12:19:13Z",
+      "number": 40,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "receipt_url": "https://github.com/cfotel2604/html-share-platform/issues/40#issuecomment-6397546798"
+    },
+    {
+      "closedAt": "2026-10-25T12:19:18Z",
+      "number": 33,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "receipt_url": "https://github.com/cfotel2604/html-share-platform/issues/33#issuecomment-6397547722"
+    },
+    {
+      "closedAt": "2026-10-25T12:19:24Z",
+      "number": 34,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "receipt_url": "https://github.com/cfotel2604/html-share-platform/issues/34#issuecomment-6397548599"
+    },
+    {
+      "closedAt": "2026-10-25T12:19:29Z",
+      "number": 36,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED",
+      "receipt_url": "https://github.com/cfotel2604/html-share-platform/issues/36#issuecomment-6397549482"
+    }
+  ],
+  "issue37": "close on owner merge of PR59",
+  "superseded_draft47": "closed without merge; historical receipt preserved",
+  "source_prs": [
+    {
+      "number": 51,
+      "head": "2db499fb1c2e05b4dccc38a88182769a9f309610",
+      "merge": "b8ae10f89f0760e5607bdf7e9b442630a32463ba",
+      "ci_success": 4
+    },
+    {
+      "number": 49,
+      "head": "45515b32504bbfe8245affd4a131fbf6382cca87",
+      "merge": "5d6045afde6194239317f0dad77303c15a69bf3a",
+      "ci_success": 4
+    },
+    {
+      "number": 42,
+      "head": "0c046612fa29faef885adb44207aec7ab8ed91f1",
+      "merge": "a98a1d62e9a2a51b841e548792979e712190774d",
+      "ci_success": 4
+    },
+    {
+      "number": 43,
+      "head": "db6ca386292c9648b0eba0211957e1535fc288f7",
+      "merge": "f6c78340983060687b969d7aae0e2f7e80ebd381",
+      "ci_success": 4
+    },
+    {
+      "number": 44,
+      "head": "60f1f74682a93a1626eac862c7059c42161c4f72",
+      "merge": "85f39e21f2dfda8f50239ecfa172369cc98f5845",
+      "ci_success": 4
+    },
+    {
+      "number": 45,
+      "head": "eecf6cc86b5e6fdfd4cc7273071e4cabe57885d6",
+      "merge": "76b38faf169477af480690f222123214f4d8c3c5",
+      "ci_success": 3
+    }
+  ],
+  "focused_local_tests": {
+    "command": "node --test tests/read-model-recovery.test.mjs tests/public-outbox.test.mjs tests/public-worker-serving.test.mjs tests/projector-security.test.mjs tests/public-worker-runtime.test.mjs",
+    "pass": 41,
+    "fail": 0,
+    "environment": "disposable local PGlite/Miniflare/workerd and injected providers; no real Cloudflare mutation"
+  },
+  "audit": {
+    "production": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "all": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "healthy_metrics": {
+    "samples": 20,
+    "manifest_files": [
+      500
+    ],
+    "commit_to_public404_ms": {
+      "p50": 4928.0,
+      "p95": 5298.0
+    },
+    "commit_to_projected_ms": {
+      "p50": 4195.561,
+      "p95": 4691.001
+    }
+  },
+  "read_only_live_receipt": {
+    "source_head": "2734de5f6b345050f95b0db75bab9ac71b908de7",
+    "node_image": "sha256:2fd14cccc9bfd9e3402b968c4eebeff664d0519cd069e55e88bf95cd768c1a8b",
+    "services": [
+      {
+        "service": "db",
+        "state": "running",
+        "healthy": "healthy"
+      },
+      {
+        "service": "web",
+        "state": "running",
+        "healthy": "healthy"
+      },
+      {
+        "service": "preview",
+        "state": "running",
+        "healthy": "healthy"
+      },
+      {
+        "service": "projector",
+        "state": "running",
+        "healthy": null
+      }
+    ],
+    "postgres": {
+      "sites": 3,
+      "versions": 5,
+      "pending": 0,
+      "errors": 0,
+      "overdue": 0,
+      "ledger_count": 4
+    },
+    "ledger_checksums_match": true,
+    "web_preview_no_d1_credentials": true,
+    "projector_metadata": {
+      "current_credential_valid": true,
+      "target_replication_match": true,
+      "d1_only_role": true
+    },
+    "old_lab_and_nginx_preserved": true,
+    "runtime_mutations": 0,
+    "r2_deletions": 0,
+    "new_token_actions": 0
+  }
+}

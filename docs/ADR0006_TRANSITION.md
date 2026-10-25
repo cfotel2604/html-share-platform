@@ -1,5 +1,15 @@
 # ADR-0006 transition / PR and Issue disposition — Issue #37
 
+## Current disposition — 2026-10-25 / Draft59
+
+Owner-authorized obsolete PR21/22/23/24/27/29 are CLOSED unmerged; Issues20/25/26/28 are CLOSED not_planned. [Exact historical receipt](validation/2026-10-24-legacy-closeout.md) is preserved from47head87566b2; fresh GitHub reads confirm the states. Draft47 is now CLOSED superseded by59, without merge/ref deletion. Useful serving requirements are in merged44; Node administration41, outbox42 and recovery43 replaced the old management architecture. No old data/code path is imported.
+
+Issues50/40/33/34/36/52/54 are CLOSED completed, not discarded. This Draft59 finishes37's current docs/handoff; owner merge closes37. Owner confirms mobile/Employee/Safari/Zalo and permits omitting optional extra live fault drills, with precise local/injected/actual labels. [Decisions/evidence](validation/2026-10-25-aprime-closeout.md). Issue38/31 stay open pending pilot acceptance after this cleanup;10/audit19 stay open and separate. Oldviewer4100 remains owner-retained; no resource/data deletion or runtime change follows from tracker closure.
+
+## Historical proposal snapshot — before owner disposition and cutover
+
+Everything below, including pending/prepare-only/SLO-proposal language, is historical to PR45. Current authority/thresholds are [here](PILOT_APRIME_AUTHORITY.md); current dispositions are above. No need to ask the owner again about the obsolete stack, matrix or extra fault drills.
+
 > Snapshot of Issue37 before PR45 merged. Owner subsequently confirmed healthy revoke p95≤60s/pending warning>60s for #38, with incidents reported separately and no outage guarantee; current policy/preparation is in [PILOT_APRIME_ACCEPTANCE](PILOT_APRIME_ACCEPTANCE.md). The proposal-only threshold and Draft45 wording below are historical. Per-item legacy dispositions remain pending; no remote cutover follows from merge45.
 
 Refs #37 / Epic #31. Base freshly fetched main `85f39e21f2dfda8f50239ecfa172369cc98f5845` after owner reported PR44 merged. PostgreSQL/Node is the sole administration source; D1 is a public read model through outbox/projector/recovery; one public Worker, preview remains Node/VM. Native bindings are application-read-only by code/test/review/deploy gate, not IAM read-only.

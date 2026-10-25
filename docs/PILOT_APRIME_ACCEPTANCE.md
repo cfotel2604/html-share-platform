@@ -6,9 +6,15 @@ Refs #38 / Epic #31 / release gate #10. Base freshly fetched main `76b38faf16947
 
 **Owner update25/10:** for this pilot, warnings may appear **inside Studio**; no external alert/collector setup is required now. Admin must see pending state, overdue revoke beyond60s and failure to refresh. The visible pending screen samples every15s with fresh Node authorization; the warning threshold is evaluated by PostgreSQL. It is not an alert-delivery guarantee when the tab is closed/hidden or VM/API unavailable. Earlier collector/watchdog delivery proposals below remain deferred, not evidence of outside notification. The healthy p95/outage separation and all security boundaries remain unchanged. [Current execution evidence](validation/2026-10-24-aprime-pilot-execution.md).
 
+## Owner closeout decisions — 2026-10-25 / Draft59
+
+Owner confirms mobile/Employee/Safari/Zalo matrix OK (owner-confirmed PASS, no invented device versions/traces). Extra live D1drift/R2corrupt-pin/provider-generated prolonged429/emergency active-token drills may be omitted for this pilot, not marked tested PASS. Fresh local41/41 covers those fault mechanisms; prior actual/injected receipts remain separate. Thresholds/ADR/security/token policy do not change. [Decision and disposition ledger](validation/2026-10-25-aprime-closeout.md).
+
+Issues50/40/33/34/36/52/54 are closed completed. Draft59 finishes37 documentation; owner merge then pilot38acceptance remain sequential decisions. No #38sign-off, #10decision or production approval is inferred. Oldviewerretirement remains owner-deferred.
+
 ## Current evidence checkpoint — 2026-10-25
 
-Owner merged57at main3eff4e1; current runtime2734de5/image2fd14ccc passed4/4CI/176tests/build before the one-line success-notice rollout in Draft58. Earlier automated browser observations were on2a396ae with unchanged backend/serving code; owner25/10 additionally confirmed actual GUIrevoke and refreshed-oldlink404. [Remaining fault receipts](validation/2026-10-25-projector-faults.md). [Detailed execution](validation/2026-10-24-aprime-pilot-execution.md), [preview readbacks](validation/2026-10-25-public-preview.json).
+Owner merged58at main71c57b9; current runtime2734de5/image2fd14ccc passed4/4CI/176tests/build before the one-line success-notice rollout in Draft58. Earlier automated browser observations were on2a396ae with unchanged backend/serving code; owner25/10 additionally confirmed actual GUIrevoke and refreshed-oldlink404. [Remaining fault receipts](validation/2026-10-25-projector-faults.md). [Detailed execution](validation/2026-10-24-aprime-pilot-execution.md), [preview readbacks](validation/2026-10-25-public-preview.json).
 
 | Gate | Actual evidence / remaining limitation |
 | --- | --- |
@@ -23,7 +29,7 @@ Owner merged57at main3eff4e1; current runtime2734de5/image2fd14ccc passed4/4CI/1
 | Browser/R2packet57 |5local/desktopIABcontexts pass tested APIs; real Nodepreview parentcookie setter/storage SecurityError. Actual R2reader404/412and correctSHA200; full live Worker corrupt-pin case remains distinct |
 | Normal token rotation57 | Owner approved early drill/loaded hsp-projector-pilot-1/revoked oldtoken; agent verified metadata+500manifest publish/revoke/drain before/after. Completed25/10,next90day2027-01-23; emergency active-token fault unrun |
 | GUIrevoke owner retest | Owner confirmed freshlinkviewable, GUIrevoke success and refreshedoldlink Not found25/10; case PASS, no elapsedtime/numericalSLOsample. [Receipt](validation/2026-10-25-gui-revoke-retest.md). Missed successnotice fixed and verified in deployed bundle at2734de5; independent PG/public readback agrees, state unchanged |
-| Remaining owner/security gates | Owner pilot acceptance, old viewer retirement, emergency active-token revoke and prolonged429/other uncovered remote fault drills, remaining Employee/browser/mobile/cookie/release#10. Local/CI cases are not substituted for those live proofs |
+| Remaining decisions / explicit omissions | Owner merge59 finishes docs37; then owner pilot38acceptance. Mobile/Employee/Safari/Zalo owner-confirmed. Extra live fault drills owner-omitted, not PASS. Oldviewerretirement deferred; release10/audit19/production separate |
 
 ## Historical preparation scope — before consolidated authority
 
