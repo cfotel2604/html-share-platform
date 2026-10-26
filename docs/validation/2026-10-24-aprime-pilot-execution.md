@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Issue38 — consolidated-authority pilot execution
 
 Refs #38 / Epic31 / #10. Base main `9010dc56957a34f74d8cf7f8b4e35792b26bfcf2`. The owner's consolidated A' instruction supersedes the previous per-packet remote-approval/preparation-only gates: named pilot D1 projector/rebuild, public Worker deployment, old pilot Worker retirement and narrowly scoped legacy D1/R2 cleanup are authorized. Recheck account/target/config/artifact immediately before each mutation and retain inventory fingerprints/counts/schema plus readback. Never delete PostgreSQL, public read model, manifest-referenced R2 objects or production resources.

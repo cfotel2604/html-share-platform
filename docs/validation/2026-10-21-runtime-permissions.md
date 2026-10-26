@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Khắc phục EACCES khi migrate lab — 2026-10-21
 
 Refs [Issue #16](https://github.com/cfotel2604/html-share-platform/issues/16), [PR #15](https://github.com/cfotel2604/html-share-platform/pull/15), [runbook share links](../SHARE_LINKS.md).

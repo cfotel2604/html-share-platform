@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # A-prime issue cleanup and pilot decision record — 2026-10-25
 
 Refs #37 / #38. Base main `71c57b9dcd5710b87a9d49526aa251787cf81390`, after owner merged PR58. Documentation-only closeout; no application, applied SQL, deployment, credential, data or runtime change.

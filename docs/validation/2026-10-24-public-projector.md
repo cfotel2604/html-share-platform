@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Issue #33 — local / CI outbox validation, 2026-10-24
 
 Refs #33 / [Draft PR #42](https://github.com/cfotel2604/html-share-platform/pull/42). Base fetched `origin/main` `40b0dd9f03d951ae8d98064e265f953e250b4a75` (PR39/41 merged; Issues32/35 closed). Implementation `9a0b1f6ec47de5b31b4a78a8469f0d3b64b136c2`; additional dispatch regression guard `004792a4c8326e6b24cbc8708cf7dc4b8ca5c352`. [Contract/runbook](../PUBLIC_PROJECTOR.md).

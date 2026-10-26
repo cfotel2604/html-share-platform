@@ -1,32 +1,23 @@
-# Quy trình làm việc với GitHub
+# Workflow GitHub và kiểm chứng
 
-**Repository:** private `cfotel2604/html-share-platform`
+Repository: private `cfotel2604/html-share-platform`. Main là nguồn merge; checkout main của owner có thể cũ. Không sửa trực tiếp hoặc reset/clean worktree của owner.
 
-**Main:** nhánh ổn định; phát triển qua issue, branch và pull request.
+## Issue → branch → Draft → owner merge
 
-## Nhịp phát triển
+1. Fetchorigin/prune, kiểm status/worktrees/remotes và liveGitHub; đọc [map](DOCUMENTATION_MAP.md)/AGENTS/ADR của scope.
+2. Issue ghi vấn đề/acceptance; branch từ fresh main: feat/<issue>-scope, fix/<issue>-scope hoặc docs/<issue>-scope. Labels chọn phù hợp, không buộc feature mới vào roadmap P0cũ.
+3. Draft PR sớm, Refs issue; Closes khi scope hoàn tất. Tiếp independentwork đã được giao khi PR khác chờ, không gộp implementationissues không liên quan.
+4. Code/test/docs đủ review; PR title/body phản ánh thay đổi cuối, exact head/checks/commands/evidence/limits/rollback, không lịch sử chat dài hoặc secret.
+5. Owner review/Ready/merge. Không agent auto Ready/merge/productiondeploy; owner báo merge trong chat rồi kiểm source mới khi task phụ thuộc. Không merge polling/automation.
 
-1. Tạo GitHub Issue với bối cảnh, user story, acceptance criteria; label `phase:P0`…`phase:P7`, `security`, `bug` nếu phù hợp.
-2. Tạo branch từ `main`: `feat/<issue-id>-<scope>`, `fix/<issue-id>-<scope>` hoặc `docs/<scope>`.
-3. Commit nhỏ, thông điệp rõ; không commit `.env`, secrets hoặc nội dung HTML riêng tư của nhân viên.
-4. Push branch và mở **Draft PR** sớm; link Issue bằng `Refs #N`, chỉ dùng `Closes #N` khi PR hoàn tất scope.
-5. PR ghi vấn đề, thay đổi, rủi ro, hướng dẫn test và bằng chứng; cập nhật PR trong lúc giải quyết review comments.
-6. Chỉ đổi sang Ready for review khi lint/typecheck/build/test phù hợp pass và checklist xong.
-7. Review, merge vào `main` sau khi đạt gate. Release production yêu cầu quyết định triển khai riêng; dùng staging và canary/pilot.
+## Kiểm tra theo thay đổi
 
-Stack lab đã merge theo owner giao: #5, recovery UI#17, #13 rồi #15 sau retarget main/CI. [Merge record](MERGE_PLAN.md) và [bàn giao VM](LAB_HANDOFF.md) ghi exact commits/checks và Issue closure theo acceptance. Tiếp tục dùng merge commit giữ ancestry, kiểm live base/head/CI ở mỗi dependency. Quyền merge source không tự phê duyệt production hoặc thay runtime lab.
+- Docs: `python scripts/check_docs.py`, `python scripts/check_yaml.py` nếu liên quan YAML, mọi local Markdownlink và `git diff --check`. Không chạy runtime/drill để test chữ.
+- Code: lint/typecheck/tests/build và integration đúng lớp. Không thêm test lặp implementation cho sửa lowimpact.
+- Remote: authority/target/config/artifact guards ngay trước mutation và actualreadback; CI không thay pilot/provider proof. Không sửa applied SQL hoặc chạy lại initialization vì source/docs mới merge.
 
-## Quy ước kiểm tra
+## Trạng thái, evidence và quyết định
 
-- Docs only: đọc lại đường dẫn nội bộ, syntax Markdown/YAML, `git diff --check`.
-- Code: lint + typecheck + unit test; API permissions, upload validation, gateway isolation có integration test.
-- Release: mobile/Zalo compatibility, cookie/origin isolation và rollback chứng minh trên staging; backup/restore ngoài MVP theo lựa chọn owner, phải ghi rõ rủi ro mất dữ liệu.
-- Merge/deploy: không tự động merge hay deploy production từ agent nếu chưa có chỉ dẫn rõ.
+PROJECT_STATUS/AI_HANDOFF ngắn, current; chi tiết từng run vào validation có ngày/head. Tách owner-confirmed, agentobserved, local/CI, omitted và unverified. Không gọi ownerpilotacceptance là production approval; [authority](PILOT_APRIME_AUTHORITY.md) giữ scope.
 
-## Ghi chép và theo dõi
-
-Một PR phải giúp người không tham gia cuộc chat hiểu yêu cầu, cách triển khai, test nào đã chạy và điểm còn mở. Phát hiện mới thành GitHub Issue, không để chỉ trong lịch sử chat. ADR dùng cho quyết định ảnh hưởng sâu đến bảo mật, kiến trúc, dữ liệu hoặc hạ tầng. Đánh dấu trạng thái: Proposed / Accepted / Superseded.
-
-## Cấu hình khuyến nghị sau P0
-
-Cấu hình GitHub branch protection trên `main`: bắt buộc PR trước merge và status checks (khi CI tồn tại); chỉ yêu cầu review từ người khác nếu thực tế có reviewer. Với repo 1 maintainer, đảm bảo workflow vận hành được. Bật secret scanning theo khả năng plan.
+Không hardcode nhãn Draft/pending của PR docs vào README như gate sản phẩm; không mở PR nối tiếp chỉ để đổi nhãn sau merge. Historical source/commands ở [history](history/README.md), không dùng chúng làm currentworkflow.

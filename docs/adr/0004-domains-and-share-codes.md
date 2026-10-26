@@ -1,3 +1,5 @@
+> **Phạm vi đọc26/10/2026:** Accepted domain/link decision record của labhostname trước A'. Publicpilot hiện dùng Worker/<share-code>/; oldviewer/testhosts được giữ riêng. Nhận xét revoke chỉ chặn viewer/directURL còn mở chỉ mô tả legacytopology, không override current share-link contract. Không chọn hay đổi domainproduction trong đợt docs này. Xem [bản đồ](../DOCUMENTATION_MAP.md) và [share contract](../SHARE_LINKS.md).
+
 # ADR-0004: Domain Studio/viewer/content và mã chia sẻ độc lập
 
 - **Status:** Accepted — quyết định domain và thiết kế link được owner chốt; không phải phê duyệt release.

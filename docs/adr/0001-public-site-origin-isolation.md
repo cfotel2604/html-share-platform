@@ -1,3 +1,5 @@
+> **Phạm vi đọc26/10/2026:** Decision record về origin/sandbox; các mô tả VMviewer/per-site published hostname là topology lab cũ. A' publicWorker/path serving theo ADR-0006 và code đã nghiệm thu; isolation/sandbox invariants không nới. Proposed broader release status không là pilot đang chờ. Xem [bản đồ](../DOCUMENTATION_MAP.md) và [share contract](../SHARE_LINKS.md).
+
 # ADR-0001: Cô lập origin cho HTML được upload
 
 > **A' scope clarification25/10:** ADR-0006 governs current Node/PostgreSQL administration, public code-path Worker and Nodegrant preview. Trusted VMviewer/public-hostname descriptions here remain historical for the retained oldlab, not a parallel A' serving path. Isolation/sandbox/actor/grant/security invariants stay unchanged. Owner accepted38pilot; the Proposed broader release status does not imply production approval. [Current pilot-only review](../validation/2026-10-25-aprime-pilot-security.md).

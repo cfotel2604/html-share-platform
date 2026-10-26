@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Security closeout for the accepted A-prime pilot — Issue10 / PR19
 
 Scope chosen explicitly by owner25/10: **the current A' pilot/lab**, not production preparation. Main5e05e4d includes owner-merged59;38 and Epic31 are CLOSED completed following explicit owner acceptance. This review changes docs only and updates the existing Draft19; no code/runtime/credential/DNS/SQL change or legacy code import.

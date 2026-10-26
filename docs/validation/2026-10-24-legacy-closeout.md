@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Issue37 — owner-authorized legacy disposition closeout
 
 Refs #37 / Epic31. Base main `9010dc56957a34f74d8cf7f8b4e35792b26bfcf2` after PR46 merged. Owner's consolidated A' instruction supersedes the earlier proposal-only disposition: close PR21/22/23/24/27/29 and Issues20/25/26/28 as superseded/abandoned. Keep Issue10 and its auditPR19; no automatic merge/production release.

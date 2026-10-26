@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Chốt merge auth/origin/share và lab handoff — 2026-10-22
 
 Refs [#13](https://github.com/cfotel2604/html-share-platform/pull/13), [#15](https://github.com/cfotel2604/html-share-platform/pull/15), #8/#10/#14/#16; [review trước merge](2026-10-22-auth-and-share-retarget.md), [status](../PROJECT_STATUS.md), [handoff](../AI_HANDOFF.md).

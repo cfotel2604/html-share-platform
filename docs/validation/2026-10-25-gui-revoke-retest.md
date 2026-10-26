@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Owner GUI revoke retest and success notice —2026-10-25
 
 Refs #38. Owner reported PR57merged; GitHub verified merge3eff4e12514f5b568306007a4fc23cd318958a49, head9454633/4CI. Current pilot at start is source55b99d1/image c3549538. This is a one-line notice correction and an evidence update, not a serving/authorization change.

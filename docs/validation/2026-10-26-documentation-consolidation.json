@@ -1,0 +1,302 @@
+{
+  "date": "2026-10-26",
+  "issue": 60,
+  "pr": 61,
+  "reviewed_main": "3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3",
+  "docs_only": true,
+  "history_preserved_by_pinned_git_links": {
+    "README.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/README.md",
+      "previous_sha256": "edff41b95a8b2bb20f552956bfe865d51b0708b57e5ff4ed0affdc51213c4b8e"
+    },
+    "docs/DOCUMENTATION_MAP.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": null,
+      "previous_sha256": null
+    },
+    "AGENTS.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/AGENTS.md",
+      "previous_sha256": "27b2dc40d124999efdedf25955614edac327df88fe85d62a6247bed6513ad697"
+    },
+    "PLAN.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/PLAN.md",
+      "previous_sha256": "aaddbbaede785edc5a1bf4bdc808bc25bc39c516ae0eb21543baaaf31369829d"
+    },
+    "docs/ARCHITECTURE.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/docs/ARCHITECTURE.md",
+      "previous_sha256": "c406ec45d3243c01e709e4483722fea44281531cf70b87af0611fa4ef3423e05"
+    },
+    "docs/PROJECT_STATUS.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/docs/PROJECT_STATUS.md",
+      "previous_sha256": "343bc0e9b1e1688ff75b1553567ed2c7d2934d160c1b2cb6e183df05d74d01b6"
+    },
+    "docs/AI_HANDOFF.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/docs/AI_HANDOFF.md",
+      "previous_sha256": "57fe88c57aff897e3379794845a1743867c5f4473b3c1e5a70542dccb8d37374"
+    },
+    "docs/DEVELOPMENT.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": null,
+      "previous_sha256": null
+    },
+    "docs/SHARE_LINKS.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/docs/SHARE_LINKS.md",
+      "previous_sha256": "bd77cdfb05956539790ddf3a0967eae2f35518c6b2b23188a89393378296ac0b"
+    },
+    "docs/D1_READ_MODEL_AGENT_GUIDE.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/docs/D1_READ_MODEL_AGENT_GUIDE.md",
+      "previous_sha256": "42908201ef5c0b6b9da782cf48936886c7a653fcb9d7e8e8e7eb58fc326ec4c8"
+    },
+    "docs/PILOT_APRIME_ACCEPTANCE.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/docs/PILOT_APRIME_ACCEPTANCE.md",
+      "previous_sha256": "43299e96fc4af1c51a6131df371bd68b4192eb5d72bcfd589a581a656563fcb4"
+    },
+    "docs/ADR0006_TRANSITION.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/docs/ADR0006_TRANSITION.md",
+      "previous_sha256": "6800d21f0b1998c0a71579ef96f36ae1b5d5bb57865f3ae9c9022d1765c2097d"
+    },
+    "docs/PILOT_APRIME_AUTHORITY.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/docs/PILOT_APRIME_AUTHORITY.md",
+      "previous_sha256": "fb8e26033b9c9bd1d1eb3983eadd6048a987fbb7ef4507cee2ceecaa8f98b6d3"
+    },
+    "docs/PILOT_APRIME_NODE_ROLLOUT.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/docs/PILOT_APRIME_NODE_ROLLOUT.md",
+      "previous_sha256": "8e1fe4a7a6a3295fff216e15f706c65f30bc5890f9372c2a1aa3ac492b4092a7"
+    },
+    "docs/PILOT_APRIME_SECRET_SETUP.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/docs/PILOT_APRIME_SECRET_SETUP.md",
+      "previous_sha256": "016406c6054dee1f6792e74e23e90ddf9a12f187f836e7369d2a329cb3a0ad65"
+    },
+    "docs/PUBLIC_PROJECTOR.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/docs/PUBLIC_PROJECTOR.md",
+      "previous_sha256": "a4c70cdaea1d006ad93938c18c5643fd6e10c499304244cb730b4aa01e4898ef"
+    },
+    "docs/READ_MODEL_RECOVERY.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/docs/READ_MODEL_RECOVERY.md",
+      "previous_sha256": "de5197d7fee27125fd95cbfb94d8cbb93d4bcaa277ae4c87c05add2d42536134"
+    },
+    "docs/PUBLIC_READ_MODEL_WORKER.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/docs/PUBLIC_READ_MODEL_WORKER.md",
+      "previous_sha256": "dd60bbff7547c5f0238ab29e5e763e98afc0ce4adaf5f1c8a7727e6006034d68"
+    },
+    "docs/NODE_POSTGRES_ADMIN.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/docs/NODE_POSTGRES_ADMIN.md",
+      "previous_sha256": "5e9eb50ba6326a8e5f8e33f67f23b21cd575733ae29905212c1b3108c1812358"
+    },
+    "docs/D1_PUBLIC_READ_MODEL.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/docs/D1_PUBLIC_READ_MODEL.md",
+      "previous_sha256": "43f348007be2e48722af729b52b5e1d44b33fe0895a154987f63e3988f16bd0d"
+    },
+    "docs/LAB_HANDOFF.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/docs/LAB_HANDOFF.md",
+      "previous_sha256": "e6a162c1875262fb6eb93b07f160a76d3e62bee26524ca681d948f009a6589f8"
+    },
+    "docs/SECURITY_LAB.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/docs/SECURITY_LAB.md",
+      "previous_sha256": "26e615802faf94aae67a8fd05d1eac04d3c879cf6db25b95a511a45f6671e3bf"
+    },
+    "docs/MERGE_PLAN.md": {
+      "kind": "current_guidance",
+      "previous_snapshot": "https://github.com/cfotel2604/html-share-platform/blob/3c965b53f6d8dbed5715dbdccb8e6463b96b2ce3/docs/MERGE_PLAN.md",
+      "previous_sha256": "036ba292c84e3bea2a5f0f3d2be1ce5861d772d7c1d2fc515c692357cb85a526"
+    }
+  },
+  "evidence_scope_banners_body_preservation": [
+    {
+      "path": "docs/validation/2026-10-08-studio-ui.md",
+      "body_normalized_sha256": "f56288d43c01d534db22ba6787f2a5a6103d1287321ce7aed3f55821c858ab12"
+    },
+    {
+      "path": "docs/validation/2026-10-09-auth-origin-gates.md",
+      "body_normalized_sha256": "68993463796b55a8dd40eaa46ed1932dff48565c6f76ff4a96f589bc84c1388a"
+    },
+    {
+      "path": "docs/validation/2026-10-09-lab-domain-tls.md",
+      "body_normalized_sha256": "da04d9a469f76a7be813a58ea4fa2695ff587abdf9e47c969d816acecbbdd006"
+    },
+    {
+      "path": "docs/validation/2026-10-09-short-viewer-links.md",
+      "body_normalized_sha256": "e577a2cd940ddeabc870b011bb0f6a65f9648400d1e14e26a8a0d4e71fe0e17e"
+    },
+    {
+      "path": "docs/validation/2026-10-09-upload-hardening.md",
+      "body_normalized_sha256": "8ada2580a9ca4465f15188582290db7610ab40426c174a2e83337819c0290811"
+    },
+    {
+      "path": "docs/validation/2026-10-21-lab-public-origins.md",
+      "body_normalized_sha256": "091e020172840c4a20035f5605ac05aba7790379299c6721bc244200026a2df1"
+    },
+    {
+      "path": "docs/validation/2026-10-21-pr15-build-review.md",
+      "body_normalized_sha256": "aa18f43e3dbed916081188004cec4e386959f7be30f05109f606942a04fefb1b"
+    },
+    {
+      "path": "docs/validation/2026-10-21-runtime-permissions.md",
+      "body_normalized_sha256": "cbd08414ac91930fdd6e7464f389263096febdce3eeed4addd0393bed3b15a87"
+    },
+    {
+      "path": "docs/validation/2026-10-22-lab-acceptance.md",
+      "body_normalized_sha256": "64cb0f6050d0bb95ab82d8949cb977b42208ee61801e1269d70737d2ad878cea"
+    },
+    {
+      "path": "docs/validation/2026-10-22-prepilot-audit.md",
+      "body_normalized_sha256": "cb17c89a294f62f3b77928f3f9910a9199e948c826df32c4d06da7c664c3c37b"
+    },
+    {
+      "path": "docs/validation/2026-10-24-adr0006-transition.md",
+      "body_normalized_sha256": "25758a5aac2693508c819f23ae055c9ef2c2d6293f5560fee87a93a08ab33a56"
+    },
+    {
+      "path": "docs/validation/2026-10-24-aprime-pilot-execution.md",
+      "body_normalized_sha256": "69492758786cabac093442c67f8582bd41e655ea7cbc82166813c88927e2354b"
+    },
+    {
+      "path": "docs/validation/2026-10-24-aprime-pilot-preparation.md",
+      "body_normalized_sha256": "7968dd3723b43cc9ebc79f862e3d2c8ae78aea885cf5d937ba30ee2719458f6f"
+    },
+    {
+      "path": "docs/validation/2026-10-24-d1-read-model.md",
+      "body_normalized_sha256": "4091f14a33099cc5a5d2be5f488da85e49dffa92db5db20e7fdf16f4e95e25f9"
+    },
+    {
+      "path": "docs/validation/2026-10-24-legacy-closeout.md",
+      "body_normalized_sha256": "30734de5e0eeaca17cf86000bb0bde5963b64f938ddc3bf0fdd8ea2ea0a2832a"
+    },
+    {
+      "path": "docs/validation/2026-10-24-node-postgres-admin.md",
+      "body_normalized_sha256": "81ad04a4f05ee859ec1cda3f7ecc90ed495ec873077ac740daf2f57d8a305a8c"
+    },
+    {
+      "path": "docs/validation/2026-10-24-public-projector.md",
+      "body_normalized_sha256": "2251f9d5bf0099a3162ecdbd4d17ecca2e7dcab1cce67bd08c4a7a196947e10f"
+    },
+    {
+      "path": "docs/validation/2026-10-24-public-read-model-worker.md",
+      "body_normalized_sha256": "401ef42f7fa5e11a09252157f5fb2317b52ec8505569b2a2ae638ada95c03026"
+    },
+    {
+      "path": "docs/validation/2026-10-24-read-model-recovery.md",
+      "body_normalized_sha256": "da1fd7d1af0bf4fe2c3850e55c09b2ca55856ecbfd5babf2fbc1fa431eafb284"
+    },
+    {
+      "path": "docs/validation/2026-10-25-aprime-closeout.md",
+      "body_normalized_sha256": "bea5a6331dd7a6c9fdcb628ddcd2e986b98f4bf7769d962665cd3a0b7e25a0b5"
+    },
+    {
+      "path": "docs/validation/2026-10-25-aprime-pilot-security.md",
+      "body_normalized_sha256": "6d71c31b38cf3f788f395cb65e2426d173e30b1706b90af1f2ff1b07ddd3f562"
+    },
+    {
+      "path": "docs/validation/2026-10-25-bounded-upload.md",
+      "body_normalized_sha256": "fca3a2c22ad86e046277cf935a3bbd0550a983accdd17758513b67ff9b8336d2"
+    },
+    {
+      "path": "docs/validation/2026-10-25-browser-boundary.md",
+      "body_normalized_sha256": "8b819af719476ff5e328e9958754fee2cfb8fb8cfc931ff05e8a2c95c93dee72"
+    },
+    {
+      "path": "docs/validation/2026-10-25-gui-revoke-retest.md",
+      "body_normalized_sha256": "3627d47cebba1cb4449725a69c8592fdeb48b0e9c1334abd1252a3be01658229"
+    },
+    {
+      "path": "docs/validation/2026-10-25-preview-namespace.md",
+      "body_normalized_sha256": "4ba72adf3265d798a1e831aa8f79a797c90ea044cf28e6955708dda96538613d"
+    },
+    {
+      "path": "docs/validation/2026-10-25-projector-faults.md",
+      "body_normalized_sha256": "7f26934426663220987d0dcc43e1992359599d7a8d53de63d34e2ef5de1234ac"
+    },
+    {
+      "path": "docs/validation/2026-10-25-security-dependencies.md",
+      "body_normalized_sha256": "628ec7cd3db91f904433a89ad71dd5847162a91c8d0b832f19b0fddfacea0dd4"
+    },
+    {
+      "path": "docs/validation/2026-10-25-upload-throughput.md",
+      "body_normalized_sha256": "64e5cf7ca50b0d319027e1c68cfbc5ad4edc1cc137a9cc62170d4628e0f3b93f"
+    },
+    {
+      "path": "docs/reviews/2026-10-08-pr5.md",
+      "body_normalized_sha256": "8656234fd7b2325305481fa2a9b2c1743061043efb9befbaaa45263d477d8aaa"
+    },
+    {
+      "path": "docs/reviews/2026-10-22-auth-and-share-retarget.md",
+      "body_normalized_sha256": "1709b3c975cdccc0b8da3009dff8bff00fee046ccb81edb127745d4579be0ee9"
+    },
+    {
+      "path": "docs/reviews/2026-10-22-pr13-retarget.md",
+      "body_normalized_sha256": "2d9c10754ec1c8626c97056cc2bff4f920e91e5b381f7c1dfa644a9afc907a66"
+    },
+    {
+      "path": "docs/reviews/2026-10-22-pr5-and-studio-merge.md",
+      "body_normalized_sha256": "53d3a0b13c399834cfeb29a8d3c2050676fb8ec813a276c5bc4b3ff30afe49b6"
+    },
+    {
+      "path": "docs/reviews/2026-10-22-stack-merged.md",
+      "body_normalized_sha256": "c72be6f3c16d2e91c0fee79ad4cc64571ffc58d42aa888f26c176c1e0084fdf7"
+    },
+    {
+      "path": "docs/D1_READ_MODEL_PLAN.md",
+      "body_normalized_sha256": "f2409928e4989f9b16b102dda4356e05c27488ff14284741f332cbec82691e77",
+      "kind": "design_record_scope_note"
+    },
+    {
+      "path": "docs/adr/0001-public-site-origin-isolation.md",
+      "body_normalized_sha256": "8dc50aaa69bfd964689ca71147bfdc8eab1def579714c7ec5f5985ee15954e0d",
+      "kind": "design_record_scope_note"
+    },
+    {
+      "path": "docs/adr/0003-server-rbac-and-preview-capabilities.md",
+      "body_normalized_sha256": "fa3a9fdd9fb45e15e4014537c63d09250a9dd138619f865796cebdb00d090d49",
+      "kind": "design_record_scope_note"
+    },
+    {
+      "path": "docs/adr/0004-domains-and-share-codes.md",
+      "body_normalized_sha256": "c444b1bf32145e6a1d81240a0a80eca6bdab16fc5fd2a7ae8ae21e0d017655a0",
+      "kind": "design_record_scope_note"
+    },
+    {
+      "path": "docs/adr/0006-postgresql-source-of-truth-d1-public-read-model.md",
+      "body_normalized_sha256": "fc249a7f0bd5f71e7250bb9ad85681e76c39f7aabe00373b78325231dd4552d1",
+      "kind": "design_record_scope_note"
+    },
+    {
+      "path": "docs/adr/0002-replaceable-studio-ui.md",
+      "body_normalized_sha256": "72cb56adb2acc8f8bc43f105901d35d3d355be7067da35407a5b76d7368cbb23",
+      "kind": "design_record_scope_note"
+    }
+  ],
+  "runtime_operations": 0,
+  "secret_or_private_file_reads": 0,
+  "applied_sql_or_contract_changes": 0,
+  "feature_shell_og_raw_implemented": false,
+  "validation": {
+    "docs": "PASS",
+    "yaml": "PASS",
+    "all_tracked_markdown_links": "PASS",
+    "preserved_normalized_evidence_bodies": 39,
+    "application_sql_config_runtime_changes": 0,
+    "markdown_files_checked": 67,
+    "local_links_checked": 344,
+    "evidence_body_suffix_checks": "39/39 PASS"
+  }
+}

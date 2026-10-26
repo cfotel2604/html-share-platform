@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Issue #35 — Node/PostgreSQL administration validation
 
 2026-10-24 (Asia/Saigon), [Draft PR #41](https://github.com/cfotel2604/html-share-platform/pull/41), `Refs #35`. Base `664e6c07af59b56fea421ec00cce639c7b3487d8`; implementation `da92385d4531d07884aafa228d7fec135c207891`. [Contract/runbook](../NODE_POSTGRES_ADMIN.md), [ADR-0006](../adr/0006-postgresql-source-of-truth-d1-public-read-model.md).

@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Issue38 — preparation evidence and unrun pilot ledger
 
 2026-10-24, Asia/Saigon. Refs38/31/10, [Draft PR46](https://github.com/cfotel2604/html-share-platform/pull/46). [Acceptance plan / approval packets](../PILOT_APRIME_ACCEPTANCE.md). This is a **preparation receipt**, not pilot acceptance. Baseline main `76b38faf169477af480690f222123214f4d8c3c5` (PR45 owner-reported merge independently checked13:58:40UTC, head `eecf6cc86b5e6fdfd4cc7273071e4cabe57885d6`, three CI checks SUCCESS). Early scope commit `1549b17`; final exact head/check URLs recorded in PR46 after commit. No self-referential final hash embedded in its own commit.

@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Public origins lab sẵn sàng — 2026-10-21
 
 > Cập nhật22/10: owner đã mở443/tcp any và xác nhận bên ngoài tải iframe/dùng thử OK; SSH xác nhận rule IPv4/IPv6, web #15/DB0003 đã chạy. Finding UFW chặn content dưới đây thuộc mốc21/10 trước xử lý, không còn là trạng thái hiện tại. Xem [bằng chứng mới](2026-10-22-lab-acceptance.md) và [handoff](../LAB_HANDOFF.md).

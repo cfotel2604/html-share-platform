@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Remaining A-prime projector fault evidence —2026-10-25
 
 Refs #38 / Draft PR56. Owner merged48at main `1fbe19ce70ab52630223f7d30ebb15d5dbb77e23`, head6809656/4CI. Application/config trees match deployed source `2a396ae2d4b8a1e2feb3e14b7dc6d9fb88e78e64`, image `sha256:d927742b4d5aca35e11a0cce742939ea52cc62dc9087b9bd9ca3f850ea135025`. No image redeployment or D1migration was needed. This packet adds evidence and corrects stale runtime handoff text, not an application branch or second D1writer.

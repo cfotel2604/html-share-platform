@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Issue #32 — D1 public read model validation
 
 2026-10-24 (Asia/Saigon), Issue #32 / Epic #31 / [Draft PR #39](https://github.com/cfotel2604/html-share-platform/pull/39). Base `origin/main` is PR #30 merge `8ce25b1eacb69ee6b9d938b80a04033920f8c71f`; branch `feat/32-d1-public-read-model`, implementation `b18d2a23d5ee9de4b55b195daf1d96fbb8215ea4`. [Contract/migration](../D1_PUBLIC_READ_MODEL.md), [ADR-0006](../adr/0006-postgresql-source-of-truth-d1-public-read-model.md).

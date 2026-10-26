@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Issue37 — architecture disposition and metadata validation
 
 Date: 2026-10-24 (Asia/Saigon). Refs37/31, [Draft PR45](https://github.com/cfotel2604/html-share-platform/pull/45). Docs/metadata only; [itemized proposal](../ADR0006_TRANSITION.md). Fresh base main `85f39e21f2dfda8f50239ecfa172369cc98f5845`, owner-reported merge44 independently verified. Draft opened at `65207aac426d5c5da189aa785ebe5ac53947fded`; final exact head and CI run URLs are recorded in PR45 after the final commit to avoid a self-referential commit hash.

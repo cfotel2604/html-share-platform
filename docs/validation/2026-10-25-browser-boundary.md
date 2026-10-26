@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # A-prime browser boundary and read-only R2 packet —2026-10-25
 
 Refs #38. Owner reported56merged; GitHub confirms merge `e50cbebe220f48d1860b2c511b8dd2954991c6dc`, headac646f7/3CI. Main application/config still matches deployed2a396ae/image d927742b. Token scope is owner-confirmed; no repeated account/scope question.

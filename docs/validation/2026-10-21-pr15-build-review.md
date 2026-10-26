@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Review PR #15 để bắt đầu build lab — 2026-10-21
 
 > Cập nhật sau sự cố 8.2.2: pin/image b1e dưới đây chỉ là lịch sử. Review và label check ban đầu thiếu kiểm quyền file với user runtime; image build dưới umask077 đã EACCES. Thay bằng fix/candidate `dc7560ea1c34cbe060779fbe69bb2f574e170431`, đã kiểm non-root actual image và CI restrictive-mode regression. [Hồ sơ #16](2026-10-21-runtime-permissions.md) ghi kết quả khắc phục/SQL checksums/rollback record. Không dùng lại image b1e; mapping DB chưa migrate/backfill.

@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Nghiệm thu lab và chuẩn bị merge — 2026-10-22
 
 Refs [PR #15](https://github.com/cfotel2604/html-share-platform/pull/15), Issues #8/#10/#14/#16; [handoff](../LAB_HANDOFF.md), [merge plan](../MERGE_PLAN.md). Mốc này cập nhật tài liệu/env mẫu, không build/restart/migrate/merge hoặc đổi UFW/DNS.

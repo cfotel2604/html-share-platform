@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Auth/RBAC và public origin gates — #8 / #10
 
 Ngày kiểm chứng: **2026-10-09**. Implementation/Docker local đã cập nhật; **chưa xác nhận release public hoặc Google end-to-end**. [Draft PR #13](https://github.com/cfotel2604/html-share-platform/pull/13), refs [#8](https://github.com/cfotel2604/html-share-platform/issues/8), [#10](https://github.com/cfotel2604/html-share-platform/issues/10).

@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Issue50 — bounded verified Node uploads
 
 Refs #50 / #38. Base main5d6045afde6194239317f0dad77303c15a69bf3a. During actual pilot38the authenticated500file ZIP committed exactly one PGsite/version/outbox event and500R2objects, but its146815.991ms transaction outlasted the UI response. Refresh recovered the committed state; no upload retry/duplicate was made. HTTP524was not captured, so the exact edge error is unconfirmed.
