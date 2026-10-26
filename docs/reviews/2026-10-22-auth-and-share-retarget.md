@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Review #13/#15 sau đồng bộ main — 2026-10-22
 
 > Sau report này, owner đã giao merge; #13/#15 nay MERGED, #8/#14/#16 CLOSED, #10 OPEN. [Report sau merge](2026-10-22-stack-merged.md) là trạng thái mới; các gate/quyền chờ ở dưới là snapshot lúc review.

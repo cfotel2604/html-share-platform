@@ -1,3 +1,5 @@
+> **Phạm vi đọc26/10/2026:** UI boundary vẫn hiện hành; route/serving đọc theo code A' và architecture, không suy viewer implementation từ mô tả MVP cũ. Xem [bản đồ](../DOCUMENTATION_MAP.md) và [share contract](../SHARE_LINKS.md).
+
 # ADR-0002: Giao diện Studio có thể thay thế qua API contract
 
 - **Status:** Accepted

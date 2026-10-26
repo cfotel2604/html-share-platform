@@ -1,77 +1,37 @@
-# Hướng dẫn cho Agent — triển khai A' (PostgreSQL nguồn sự thật, D1 public read model)
+# Hướng dẫn agent làm việc với A'
 
-**Owner consolidated authority (2026-10-24):** [current scope](PILOT_APRIME_AUTHORITY.md) supersedes earlier preparation-only/per-packet Cloudflare gates and per-item legacy decisions below. Named pilot CLI projection/rebuild/deploy/retirement and tightly guarded legacy cleanup are authorized; recheck each time, no repeated approval questions. Owner25/10approved bounded lab-b VM writes under the [rollout plan](PILOT_APRIME_NODE_ROLLOUT.md), conditional on49merge and refreshed48CI; operator supplies secrets. No repeated approval for that same scope. Wider runtime/private-file/token-policy actions, production/merge/#10/ADR-security exceptions still need owner. Keep durable Node/PostgreSQL source; no legacy import/parallel path/local ephemeral substitute. Continue independent work while Drafts await owner merge.
+Epic #31 và issues #32–38 đã thực hiện/owner-accepted; audit #10/PR #19 đóng cho pilot/lab. Trang này dùng cho thay đổi/bảo trì mới, không là lệnh tiếp tục chuỗi issue đã đóng. [Map](DOCUMENTATION_MAP.md) và [AGENTS](../AGENTS.md) là lối vào.
 
-Tài liệu này dành cho coding agent bắt đầu làm việc trên hướng kiến trúc A'. Đọc tài liệu này **sau** [ADR-0006](adr/0006-postgresql-source-of-truth-d1-public-read-model.md) và **trước** khi chạm vào bất kỳ Issue con nào trong [D1_READ_MODEL_PLAN](D1_READ_MODEL_PLAN.md). Nếu có xung đột giữa tài liệu này và ADR-0006, ADR-0006 thắng; nếu xung đột với `AGENTS.md` ở thư mục gốc về quy trình chung, `AGENTS.md` thắng và phải báo lại cho owner.
+## Thứ tự đọc
 
-## 1. Bối cảnh trong 60 giây
+AGENTS → README/map → ADR-0006 → PLAN/ARCHITECTURE/WORKFLOW → contract/runbook của khu vực thay đổi → PROJECT_STATUS/AI_HANDOFF → code/SQL và liveGitHub. [Plan A' gốc](D1_READ_MODEL_PLAN.md) là record requirements đã thực hiện. Không bắt đọc branch/PR21 đãabandoned để port code; servingcontract đã có trên main.
 
-- Owner đã chốt (2026-10-24): **PostgreSQL trên Docker VM = nguồn sự thật duy nhất; D1 = public read model; chỉ một Worker public `hsp-pilot`; toàn bộ quản trị ở Studio/Node trên VM.**
-- Kiến trúc 3 Worker + D1-primary của Issue #20 / ADR-0005 (Draft PR #21–#24, #27, #29) **không còn là đích**. Đừng tiếp tục xây theo hướng đó và đừng merge các PR đó nguyên trạng.
-- Việc phải làm đã chia sẵn thành Epic + 7 Issue trong [D1_READ_MODEL_PLAN](D1_READ_MODEL_PLAN.md). Làm đúng một Issue trong một branch/PR.
+## Invariant
 
-## 2. Thứ tự đọc bắt buộc trước phiên làm việc đầu tiên
+1. PG duy nhất cho quản trị, status/audit/outbox cùng transaction; no dual-write handler.
+2. D1 tối thiểu public model, không PII/RBAC/session/audit; chỉ Node projector/recovery ghi qua guardedproject.sql.
+3. Projectionversion/tombstones không đảo ngược; FIFOtheosite/revokepriority không cho event cũ sống lại.
+4. Public Worker fixed primary SELECT + R2 get/head pinnedmanifest, không admin/preview/callback/secret. Nativebinding capability rộng hơn code-read-only; không claim IAM read-only.
+5. HTTP sandbox mọi HTML direct/nested, no allow-same-origin, no-store/nosniff/no-referrer, manifest boundary. Node preview grant 128-bit/3 phút/actor-policy-version; không Worker preview.
+6. Codepublic hiện là `/<share-code>/` asset trực tiếp, chưa shell OG/rawroute. Muốn thêm metadata công khai/route phải review source/outbox/D1 contract/serving/tests theo scope mới, không tự sửa docs thành feature đã có.
+7. Applied PG/D1 migrations immutable, D1 pilot 0004/0005 không apply lại; không reset source/target history hoặc import legacy.
+8. Secrets ở operatorstore/process env, không CLI args/Git/log/chat/response. Runtime/target hiện hành phải đọc lại trước mutation; không dùng pin cũ trong snapshot.
 
-1. `AGENTS.md` (gốc repo) — quy trình bắt đầu phiên, ranh giới kỹ thuật, cách cập nhật handoff.
-2. [ADR-0006](adr/0006-postgresql-source-of-truth-d1-public-read-model.md) — quyết định đích, đọc kỹ 10 điểm trong mục Decision.
-3. [D1_READ_MODEL_PLAN](D1_READ_MODEL_PLAN.md) — Issue bạn được giao, các Issue phụ thuộc, acceptance.
-4. `PLAN.md`, `docs/ARCHITECTURE.md`, `docs/WORKFLOW.md` — bối cảnh tổng thể và nhịp Issue → branch → Draft PR.
-5. [ADR-0001](adr/0001-public-site-origin-isolation.md), [ADR-0004](adr/0004-domains-and-share-codes.md) — ranh giới origin/domain/mã chia sẻ vẫn còn hiệu lực.
-6. ADR-0005 (`docs/adr/0005-path-sandbox-cloudflare-pilot.md`, trong Draft PR #21) — chỉ còn giá trị ở phần *serving*; các phần về API Worker/D1-primary/preview Worker đã bị ADR-0006 thay thế. Nếu ADR-0005 chưa có trên `main` (nó đang ở Draft PR #21), đọc nó từ branch của PR #21 và ghi rõ nguồn trong PR của bạn.
-7. `docs/PROJECT_STATUS.md` và `docs/AI_HANDOFF.md` — trạng thái snapshot; **luôn** kiểm chứng lại bằng GitHub (`gh pr list`, `gh issue list`, trạng thái CI tại head chính xác) trước khi kết luận, theo đúng hướng dẫn trong `AGENTS.md`.
+## Workflow và câu cần hỏi
 
-Trước khi viết code, hãy nêu ngắn gọn trong PR (hoặc báo owner nếu chưa có PR): bạn hiểu đích kiến trúc là gì, Issue của bạn chạm vào phần nào, phần nào bạn **không** đụng tới.
+Issue/branch/Draft từ fresh main, tests đúng scope, exact-head CI, handoff có nhãn bằng chứng, owner merge. Không poll/schedulemerge. [Authority](PILOT_APRIME_AUTHORITY.md) đã thay prepare-only gates cũ; không hỏi lại account/token/threshold/matrix hay bắt chạy extra fault đã owneromitted.
 
-## 3. Các bất biến — không được phá, kể cả để "làm cho nhanh"
+Hỏi khi thay target/account/token policy, publicproduction domain, ngưỡng khỏe/cảnh báo, ADR/security boundary, deletion hoặc runtime ngoài authority. Không lấy giá trị secret để “kiểm tra”. Không tự gọi unevidenced case là PASS hoặc owner pilot approval là production approval.
 
-1. PostgreSQL là nguồn sự thật duy nhất. Mọi trạng thái quản trị chỉ commit ở PostgreSQL.
-2. D1 chỉ chứa danh mục read model của ADR-0006 điểm 3. Không email, allowlist, role, audit, session, dữ liệu định danh.
-3. Đường ghi D1 duy nhất: projector từ outbox (và công cụ rebuild/reconcile). Không ghi D1 trực tiếp trong request handler, trong Worker, hay trong script ad-hoc không qua hai cơ chế này.
-4. Outbox event nằm **trong cùng transaction PostgreSQL** với thay đổi trạng thái. Cấm dual-write kiểu "commit PostgreSQL xong rồi gọi REST D1 luôn trong request".
-5. Mọi bản ghi read model có `projection_version` đơn điệu; ghi D1 luôn có guard chỉ áp dụng khi mới hơn hiện tại. Revoke là tombstone, không xóa dòng, không sự kiện cũ nào được làm code đã revoke xuất hiện lại.
-6. Worker `hsp-pilot` là Worker public duy nhất: chỉ đọc D1 (primary) + đọc R2, không code path ghi, không secret quản trị, không Clerk, không service token, không route quản trị, không gọi về VM/Node/PostgreSQL dưới bất kỳ hình thức nào (HTTP, Tunnel, Workers VPC/Hyperdrive đều không) trên đường phục vụ public. Owner làm rõ cho #36 ngày2026-10-24: native binding vẫn có khả năng ghi; “chỉ đọc” là fixed SELECT từ resolve.sql + R2GET/HEAD, được bảo đảm ở code/test/review/gate deploy, không IAM read-only và không phải ngoại lệ ADR0006. CI quét chặn API ghi và test negative bắt buộc.
-7. Serving giữ nguyên kỷ luật của ADR-0005: kiểm tra published/manifest ở mọi request, CSP sandbox `allow-scripts` không `allow-same-origin` cho mọi HTML kể cả nested/direct, `no-store`/`nosniff`/`no-referrer`, ngoài manifest là 404, tối đa 1 truy vấn D1 mỗi request.
-8. Preview chưa publish ở phía VM/Studio (grant ngắn hạn, ADR-0003). Không tự thêm preview vào Worker public.
-9. Token Cloudflare REST là secret quản trị: chỉ trong secret store của Node, không log, không response, không Git, không đưa vào prompt/báo cáo. Không dùng token này cho việc ngoài projector/rebuild/migration read model.
-10. Không sửa migration đã áp dụng (cả PostgreSQL 0001–0003 và dãy migration D1 đã dùng trên pilot). Thay đổi schema = migration additive mới.
-11. Không merge/deploy tự động. Mọi PR để Draft cho owner review; merge source, provision/deploy Cloudflare và production là các quyết định riêng của owner, theo `WORKFLOW.md` và gate #10.
-12. Không ghi secret, nội dung HTML upload, hay dữ liệu người dùng vào tài liệu, log kiểm chứng, hay PR.
-
-## 4. Cách làm một Issue
-
-1. Đọc Issue và acceptance của nó trong [D1_READ_MODEL_PLAN](D1_READ_MODEL_PLAN.md); kiểm tra source phụ thuộc đã merge và acceptance nào còn mở. Issue33/34/36 có source merged nhưng giữ OPEN cho pilot gate; Fast-track owner cho phép tiếp source sau báo merge, không coi pilot đã đạt. Nếu source phụ thuộc chưa merge hoặc cần phá bất biến, dừng báo owner.
-2. Tạo branch từ `main` mới nhất theo `WORKFLOW.md` (`feat/<issue>-<scope>`, `fix/<issue>-<scope>` hoặc `docs/<scope>`), mở Draft PR sớm, liên kết bằng `Refs #<issue>` (chỉ dùng `Closes` khi PR hoàn tất toàn bộ scope).
-3. Giữ thay đổi trong phạm vi Issue. Phát hiện việc ngoài phạm vi → tạo Issue mới hoặc ghi vào PR để owner quyết, không tự mở rộng.
-4. Viết test tương ứng với từng acceptance trước/song song với code; acceptance nào chưa kiểm được thì ghi rõ "chưa xác minh" và lý do trong PR — không đánh dấu đạt theo suy đoán, không dùng bằng chứng của môi trường khác (local ≠ pilot ≠ production).
-5. Chạy kiểm tra theo loại thay đổi:
-   - Tài liệu: `python scripts/check_docs.py`, `python scripts/check_yaml.py` (nếu chạm YAML), `git diff --check`.
-   - Code: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build` và các nhóm integration liên quan (auth/upload/serving) như CI của repo.
-   - Ghi trong PR: lệnh đã chạy, kết quả tại **head chính xác**, bằng chứng đo lường nếu acceptance yêu cầu số liệu (độ trễ chiếu, revoke propagation, số request).
-6. Cuối mỗi mốc (merge, đổi trạng thái PR/Issue liên quan, hoàn tất một Issue), cập nhật `docs/PROJECT_STATUS.md` và `docs/AI_HANDOFF.md` **trong chính branch/PR đang làm**, theo quy định ở `AGENTS.md`: ngày, commit, PR/Issue, kết quả kiểm tra, việc còn lại. Không sửa trực tiếp `main`.
-
-## 5. Các câu hỏi phải hỏi owner — không tự đoán
-
-**Owner đã chốt #38 ngày2026-10-24:** p95 commit revoke PostgreSQL→public404≤60giây khi projector/REST khỏe; cảnh báo bất kỳ revoke pending>60giây, Admin hiện chưa đồng bộ. Hai ngưỡng không bảo đảm khi projector/REST dừng: báo riêng độ trễ thực tế/outbox/recovery/containment, không trộn hoặc giấu các khoảng sự cố trong p95 khỏe. [Hồ sơ chuẩn bị](PILOT_APRIME_ACCEPTANCE.md) ghi measurement/serial approval packets. Không hỏi lại quyết định ngưỡng này; đây không phải remote approval. Các snapshot33–37 ghi "proposal" là lịch sử trước quyết định38.
-
-**Cập nhật owner sau merge PR42, ngày2026-10-24:** chỉ tiếp issue phụ thuộc khi owner báo đã merge trong chat rồi kiểm chứng GitHub/main. Không cài hoặc giữ lịch theo dõi/poll merge; heartbeat cũ đã xóa. Chuỗi34→36→37→chuẩn bị38, mỗi issue branch/Draft riêng và không tự merge/deploy, vẫn giữ nguyên.
-
-**Owner đã trả lời ngày2026-10-24 cho #33:** giữ account pilot hiện tại; token riêng `hsp-projector-pilot`, D1 Read/Write only, chỉ secret store Node/VM; rotate90ngày hoặc ngay khi nghi rò rỉ/đổi quản trị/VM bị nghi xâm nhập. Trình tự và revoke khẩn cấp ở [PUBLIC_PROJECTOR](PUBLIC_PROJECTOR.md). Không yêu cầu lại quyết định này hoặc giá trị token. Remote projector vẫn cần duyệt riêng; ở thời điểm #33 ngưỡng60giây chưa chốt, sau đó owner đã chốt có điều kiện cho #38 như mục cập nhật trên. Fast-track Draft #33→#34→#36→#37 rồi chuẩn bị#38: chỉ chuyển issue kế sau khi owner merge PR phụ thuộc, mỗi issue branch/Draft riêng, không tự merge/deploy. CLI chỉ đọc/D1 local/chuẩn bị config private mới được phép; không suy ra quyền ghi D1/VM/Docker.
-
-Dừng và hỏi owner (ghi câu hỏi trong PR/Issue) khi gặp các điểm sau, thay vì tự chọn:
-
-- Thay đổi ngưỡng khỏe/cảnh báo đã chốt #38 hoặc yêu cầu bảo đảm tức thời trong sự cố; không tự nới acceptance hoặc gọi60giây là bảo đảm khi projector/REST dừng.
-- Thay đổi account/scope/storage/rotation đã chốt ở trên (không hỏi lại quyết định hiện hành, không yêu cầu giá trị token).
-- Hostname public chính thức của `hsp-pilot` ngoài môi trường pilot (thuộc gate domain của #10/ADR-0004, không tự chọn domain).
-- Quyết định đóng/thu hẹp từng PR trong nhóm #19/#21–#24/#27/#29 và Issues10/20/25/26/28 (Issue6 chỉ chuẩn bị [bảng đề xuất và ghi chú](ADR0006_TRANSITION.md); không tự đóng, retarget, merge hoặc retire runtime).
-- Bất kỳ nhu cầu nào đòi phá một bất biến ở mục 3 — những việc đó cần ADR mới hoặc sửa ADR-0006, không giải quyết bằng ngoại lệ trong code.
-
-## 6. Mẫu bàn giao cuối phiên (dán vào PR hoặc AI_HANDOFF)
+## Mẫu handoff
 
 ```text
-Phiên: <ngày, Asia/Saigon> — Issue #<n> / PR #<n> @ <head sha>
-Đã làm: <1–3 dòng, đúng phạm vi Issue>
-Kiểm chứng: <lệnh/test + kết quả tại head; tách rõ owner-confirmed / agent-checked / chưa xác minh>
-Trạng thái đồng bộ (nếu liên quan): <độ trễ chiếu đo được, outbox tồn đọng, kết quả reconcile>
-Còn mở: <acceptance chưa đạt, gate liên quan, câu hỏi chờ owner>
-Không đụng tới: <lab VM / production / PR khác — xác nhận giữ nguyên>
+Ngày/scope/Issue/PR: ...
+Reviewed main / tested head / deployed artifact (nếu có): ...
+Lệnh và kết quả tại head: ...
+Evidence: agent-observed / owner-confirmed / local-CI / omitted / unverified
+Runtime/data/token changes: ...
+Việc còn lại và owner decision: ...
 ```
+
+Giữ PROJECT_STATUS/AI_HANDOFF ngắn; receipt dài vào validation có ngày/head. Không thêm một backlog lịch sử vào hướng dẫn hiện hành sau mỗi merge.

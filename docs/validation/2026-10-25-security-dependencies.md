@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Issue40 — dependency remediation, separate from pilot38
 
 Refs #40 / #10 / #38. Base main `9010dc56957a34f74d8cf7f8b4e35792b26bfcf2`. Preparing this independent remediation while pilot/source Draft48 awaits review; no source from abandoned legacy PR23 is ported. Owner merges; no VM/Docker/Cloudflare/runtime/production action belongs here.

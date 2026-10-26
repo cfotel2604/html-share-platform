@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Review PR #5 và khôi phục đường merge Studio — 2026-10-22
 
 Refs [#5](https://github.com/cfotel2604/html-share-platform/pull/5), [#12](https://github.com/cfotel2604/html-share-platform/pull/12), [Issue #11](https://github.com/cfotel2604/html-share-platform/issues/11). Owner giao review/merge #5 và báo đã merge #12 trước retarget. Khi kiểm, #5 đã được owner merge, nên review này đối chiếu commit đã vào main; agent không thực hiện lại merge #5.

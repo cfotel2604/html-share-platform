@@ -1,74 +1,53 @@
-# Read-model rebuild and reconciliation — Issue #34
+# Runbook rebuild/reconciliation A'
 
-Current scope: [consolidated pilot authority](PILOT_APRIME_AUTHORITY.md) authorizes named-pilot projector/recovery under the existing audited mechanism, without re-asking per Cloudflare packet. Target/source/fingerprint/policy checks and readback remain mandatory. Owner25/10approved the bounded [VM rollout](PILOT_APRIME_NODE_ROLLOUT.md) after49merge/refreshed48CI, with operator-loaded secrets. No VM write has run; wider runtime/private-file/token-policy actions remain owner gates. Earlier preparation-only remote-gate statements below are superseded to this extent, not an ADR exception or permission for another D1 row writer.
+PG source of truth; D1 publicmodel chỉ được chiếu qua Node projector/recovery. Công cụ 34/PR #43 đã merge, localindependent-reader và actualpopulatedpilot có receipts. Quyền namedpilot theo [authority](PILOT_APRIME_AUTHORITY.md), không prepare-onlygate cũ; rechecktarget/source/artifact/fingerprint/policy vẫn bắt buộc. Không dùng runbook như quyền mở rộng target/production.
 
-Refs #34 / Epic #31. Base freshly fetched main `a98a1d62e9a2a51b841e548792979e712190774d` after PR42 merged. PostgreSQL is the sole source of truth under ADR-0006; the guarded D1 contract and applied migrations remain unchanged.
-
-## Local rehearsal — safe without provider credentials
-
-Prerequisite: Node22+ and this PR's checkout. No `.env`, Docker, VM or Wrangler is needed. These tests create fresh in-memory PostgreSQL/PGlite, local D1/Miniflare and synthetic storage. They never discover Cloudflare credentials or use the network for D1.
+## Local rehearsal không provider secret
 
 ```sh
 npm ci
 node --test tests/read-model-recovery.test.mjs
 ```
 
-Expected:12tests pass. Follow the named cases in order: disabled CLI; empty-D1 dry-run (no source/outbox/audit/D1 changes); reviewed rebuild and audit; deliberate valid drift and repair; stale source rejection; non-Admin/disabled allowlist rejection; source changing during D1 reads; shared throttle/429; immutable-identity/tombstone/unknown-code/ahead conflicts;101historical tombstones with paging and100code event chunks; legacy missing ETag; bounded SELECT/unchanged-db metadata. Dry-run updates **only PostgreSQL throttle metadata** to reserve shared API slots. It does not bind a new target, enqueue events, alter source/audit or write D1.
+Fresh PG lite/Miniflare/syntheticstorage, không `.env`, Docker/VM hay networkD1. Bao gồm emptyrebuild/driftrepair/source-policyrace/429/conflict/101 tombstone/pageguard. [Independent-reader receipt](validation/2026-10-24-read-model-recovery.md) là kết quả riêng; không cần gọi agent mới để lặp acceptance đã hoàn tất.
 
-An independent reader should run the commands from this section and record the exact commit, command, pass/fail and observed cases in a validation receipt. Author-run tests and CI do not satisfy the separate independent-reader acceptance; that result must be identified explicitly.
+## Trước operator command
 
-## Operator commands — remote execution requires separate approval
+Đúng durable PG source/approvedD1/account/schema/ledger/replication disabled, reviewedsource/image và Admin active PG allowlist. Không token trongargs/chat/Git; loadprotected Nodeenv. READ_MODEL_RECOVERY_ENABLED=1, PROJECTOR_REMOTE_APPROVED=1 và READ_MODEL_OPERATOR_ID hợp lệ phải do operatorcấuhình. Không chạy bằng môi trường web thiếuD1 token hoặc PG fixture vào realtarget.
 
-These are future Node/VM operating instructions, **not permission to run on the pilot**. Before any real run, owner verifies account/database against the private receipt, existing read-model schema/ledger, replication disabled/primary policy, reviewed source and explicit scope. Do not reapply D1 migration0004, deploy Worker, provision resources or use legacy scripts. Only a dedicated authorized operator may access the Node environment; these commands are not an HTTP/Studio endpoint.
+Các bước sau chỉ trong scope được giao; nếu target/pin/identity/ADR conflict thì stop, không “ngoại lệ” bằng SQL. Source mutation/projector có thể invalidateplan, chọn quietwindow được giao thay vì editclock/payload.
 
-Node's secret store supplies the existing `D1_PROJECTOR_ACCOUNT_ID`, `D1_PROJECTOR_DATABASE_ID`, `D1_PROJECTOR_API_TOKEN` policy from [PUBLIC_PROJECTOR](PUBLIC_PROJECTOR.md). Never put values in shell arguments/history, Git, response, PR or chat. `READ_MODEL_RECOVERY_ENABLED` defaults0 and must be explicitly enabled by the operator. Apply also requires `PROJECTOR_REMOTE_APPROVED=1` and `READ_MODEL_OPERATOR_ID` for a PostgreSQL active Admin whose allowlist is active/Admin. Every chunk rechecks/locks the actor policy and site and commits its event/audit together. No privilege comes from a browser role or a D1 record.
+## Dry-run, review, apply, readback
 
-1. **Reconcile first**, for diagnosis or normal verification:
+```sh
+npm run recover:public -- reconcile --dry-run
+npm run recover:public -- rebuild --dry-run
+```
 
-   ```sh
-   npm run recover:public -- reconcile --dry-run
-   ```
+Planredacted chỉ count/code_ref đã hash/fieldnames/fingerprint, không raw code/identity/assets. Dry-run không sửa source/outbox/audit/D1; **có thể ghi PG throttle metadata** để reserve REST slot dùng chung, nên không phải tuyệt đốiread-only trên PG.
 
-   It prints one redacted JSON plan with source/target counts, differences by hashed `code_ref`, affected fields and a64hex `fingerprint`. No raw codes, IDs, R2 keys, assets or provider error text are printed. Compare code presence, status, active version, manifest and projection version; timestamps are recorded but not an independent drift criterion. Exit0 means no differences,2means repairable differences,3means invariant conflicts. Transport/config/source-change errors exit1 with an allowlisted static code. Replan after any change; do not treat an inconclusive scan as a match.
+Reconcileexit 0=no differences,2=repairabledifferences,3=invariantconflicts; transport/config/source changeexit 1. Rebuild gồm mọi historical PG codes/tombstones, không importlegacy D1 management. MissingverifiedETag blocksnapshot; không fabricateETag hoặc readR2 từmigration.
 
-2. For a full rebuild (empty target or deliberate complete reprojection), inspect:
+Sau review đúngfingerprint/scope, chọn **một** thao tác apply cần thiết:
 
-   ```sh
-   npm run recover:public -- rebuild --dry-run
-   ```
+```text
+npm run recover:public -- rebuild --apply --plan <reviewed-64hex-fingerprint>
+npm run recover:public -- reconcile --repair --apply --plan <reviewed-64hex-fingerprint>
+```
 
-   Rebuild selects **all PostgreSQL share codes**, including historical revoked and deleted-site tombstones, without changing management state. Legacy rows predating outbox capture receive fresh source revisions only during apply. Existing published manifests need verified ETags; missing/invalid source manifests block the whole plan. Use verified Node reupload before republish/rotation; denial remains possible. Do not manufacture ETags or query R2 from a migration.
+Toolrecomputesplan, prevalidate toàn bộ source, locksactor/policy/site từngchunk và commitsfreshoutbox+recoveryaudit cùngtransaction. Chỉ existingprojectorcore ghi D1, one batch/event/chunk tối đa 100 codes. Có thể drain các pending event cũ events để giữFIFO. Không atomic toàn bộ qua mọi site/chunk: fail sau một chunk thì giữ validcommits/audit, replan/replay; không xóa chúng hoặc reuse stale fingerprint.
 
-3. After owner approves that concrete plan and remote scope, run exactly one matching apply (substitute the reviewed fingerprint only; it is not a token):
+Successfulapply phải reconcile cuối 0 diff; không gọi HTTP 200/projectedmarker/queue 0 là match. Unknowncode, identityconflict, target ahead hoặc revoked/liveconflict chặn toàn plannedrepair trướcenqueue; cần ownerrestore/newtarget/containmentplan, không overwriteguard hay lấy sequence từD1.
 
-   ```sh
-   npm run recover:public -- rebuild --apply --plan <reviewed-64hex-fingerprint>
-   npm run recover:public -- reconcile --repair --apply --plan <reviewed-64hex-fingerprint>
-   ```
+## Budget và bounds
 
-   The command recomputes the plan; mismatch exits before enqueue. Source is checked before any enqueue and again under each site lock. It commits fresh outbox events plus `public.rebuild`/`public.reconcile` audit records with actor, plan fingerprint, source event ID and run UUID, then drains them through the **existing projector**. Audit `target_id` is `<plan-fingerprint>:<event-id>` and `request_id` is the run UUID. A run may also drain older pending source events to preserve FIFO. Audit actor/plan details stay in PostgreSQL; logs expose only the run UUID/count. Each site/chunk has at most100codes, one event and one guarded D1 batch; no direct/alternate D1 writer, DELETE, REPLACE or sequence reset exists.
+Read/write chia advisorylock 330006 và durableminimum 5 sslot; fixedcase-sensitivekeyset SELECT 20 rows/page.429/auth shared cooldown ít nhất 5 min/longer Retry-After; stopdiscretionaryscans, không loopđểné throttle. Source/target bounded 10000 codes/16MiBpublic JSON; vượtbound stop, không truncate“success”. PG snapshot repeatable-read + fullsourcecomparison sau D1 pages; no distributedsnapshot, source change có thể inconclusive.
 
-4. Successful apply performs a new reconciliation readback. Exit0 requires no remaining differences. Pending/retry/blocked/inconclusive readback exits nonzero; do not report success from a D1 HTTP200 or projected marker alone. Preserve outbox/audit and inspect sanitized errors; rerun dry-run to obtain a fresh plan. If the job crashes after a D1 acknowledgment or between chunks, already committed events/audit remain and can be retried. The run is **not globally atomic across sites/chunks**: a concurrent source/policy change or later COMMIT failure may stop after earlier audited chunks. Never delete those valid events or re-use a stale fingerprint. Existing projector loop may drain pending work independently.
+## Incident và containment
 
-## Consistency, limits and blockers
+- Ordinarypending: inspectsanitizeddepth/age/error/process, restoreexistingprojector nếu sourceổn; drain rồireconcile, không fullrebuild mặc định.
+- REST 429/5 xx/auth: giữ queue/audit, honordeadline, giảm scans. Token theo 90 day/incidentpolicy; no valueexport. Khi healthy lại thì reconcile/rebuildnếu thiếu/lệchdata.
+- Emergencycontentdenial: Node Adminrevoke/unpublish trước để PG/outbox/audit ghi actor thật. Nếu RESTđược nhưng loopbroken, dùng reviewedfingerprint/auditedprojector của recovery, kiểm Worker 404. REST/tokenkhông dùngđược thì statepubliccũ có thể còn; ownerphải quyết định servingcontainment theo authority, giữ blocked đếnkhi projection+readback khớp. Không ad-hocD1 write hoặc coi tokenrevoke là publicblock.
+- Rollback: giữ schema/source/tombstones/events/audit, fix/replan/replay. Không restoreD1 primary/admin Worker, rawR2 publicbypass hoặc resetvolume.
 
-Both read and write requests share the source database's advisory lock330006 and durable minimum5second slot. Reconciliation uses indexed case-sensitive keyset SELECTs,20rows/page, not per-file REST calls.429/auth failure freezes the shared budget for at least5minutes (longer Retry-After respected); CLI stops with a sanitized error, leaves events intact and must be included in the alert collector. This leaves headroom in the shared Cloudflare budget; it cannot reserve capacity against other account clients. Target fingerprint pinning applies to reads and writes; no credential discovery or target replacement is automatic.
-
-Source reads are local repeatable-read snapshots. After D1 pages, the tool reads source again and compares the complete bounded snapshot: a sequence high-water mark alone cannot detect out-of-order commits across sites. There is no distributed snapshot or write lock across REST; active mutations/projector work can invalidate the reviewed plan/readback. Use an owner-approved quiet mutation window for a stable recovery receipt. Source transactions never span D1 REST writes.
-
-Memory is bounded to10000codes and16MiB public JSON per source/target snapshot,20rows per read page. Exceeding the bound stops before enqueue; use a separately reviewed larger-scale plan, not a truncated/partial success. The tool does not purge history or rebuild legacy D1 administration tables. A zero-depth outbox alone is not reconciliation.
-
-Conflicts stop **all planned repair before enqueue**: target site identity differs, an unknown target code exists, target revision exceeds the PostgreSQL high-water mark, or a target revoked tombstone conflicts with a live source code. These cannot be safely overwritten under the existing contract. Preserve evidence, stop affected serving through an owner-controlled containment decision, and obtain a reviewed restore/new-target plan. Do not infer identity or advance a PostgreSQL sequence from D1, resurrect a code, hand-edit D1 or weaken permanent tombstone guards. An account/database replacement also needs an explicit target-pin recovery plan.
-
-## Incident runbook
-
-- **Ordinary lag / job restart:** inspect Admin pending status, sanitized queue depth/age/error and process liveness. If source is sound and only pending work exists, recover the existing projector; no full rebuild is needed. Reconcile after drain. Owner confirmed #38: healthy revoke→public404 p95≤60s and pending>60s warning/Admin pending. During projector/REST outage do not claim60s blocking: record actual lag/depth/recovery/containment separately from healthy p95. [Acceptance preparation](PILOT_APRIME_ACCEPTANCE.md) defines evidence; actual remote execution still needs approval.
-- **REST errors/429 prolonged:** stop discretionary recovery scans, retain queue/audit, respect shared cooldown and investigate provider quota/auth externally. Do not loop commands to defeat throttle. Token401/403 follows the owner-approved90day/incident rotation and emergency-revoke policy; no credential value enters evidence. Reconcile once healthy; rebuild only for missing/drifted data.
-- **Emergency revoke with a broken projector:** owner first revokes the code/unpublishes through the Node Admin flow so PostgreSQL state/outbox/audit record the real actor. If REST works but the loop is broken, separately approve the targeted reconciliation plan and use this recovery command's existing projector core; verify readback and later Worker404. If REST/token access is unavailable, a source revoke alone cannot deny already projected edge state. Owner must decide immediate Cloudflare serving containment (block/disable affected public serving via the authorized operational control), capture a private incident receipt with UTC time/operator/action/scope/provider audit reference when available, and keep serving blocked until projection plus public readback succeeds. This PR does not deploy or automate such containment and never supplies ad-hoc D1 mutation SQL. Do not claim token revocation itself blocks public reads; Worker does not use this token.
-- **Restore / rollback:** stop or disable recovery/projector, preserve source schema/data, pending/projected events, permanent tombstones and receipts. Fix and replan/replay; do not revert management to Cloudflare or restore an old live code. Review the intended target and its pin before any target replacement. Production/#38 approval remains separate.
-
-## Owner workflow update — 2026-10-24
-
-The owner reports each merge in chat; only then continue the next issue (#34 → #36 → #37, prepare #38), one branch/Draft PR per issue. The earlier heartbeat automation was deleted at the owner's request. Do not recreate merge monitoring or poll for future merges. PR45 is now verified MERGED; #33/#34/#36 remain OPEN for unrun pilot gates. Token policy is resolved; the60second healthy SLO/pending warning were confirmed by owner for #38, with incident windows reported separately and no outage blocking guarantee.
-
-Real pilot rebuild/reconcile, VM setup and public Worker verification remain unrun. Local/CI exact-head results and the independent-reader gate are recorded in the validation document/PR.
+Healthy revoke≤60 s và warningpending>60 s không áp dụng như publicblockingguarantee lúc outage. Ownerchọn cảnh báo Studio, không yêu cầu externalcollector; khi jobdừng metricsdừng, không có externaldeliverypromise. [Acceptedledger/limits](PILOT_APRIME_ACCEPTANCE.md).

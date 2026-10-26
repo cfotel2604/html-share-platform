@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Lab VM: domain và nghiệm thu TLS — 2026-10-09
 
 Refs #8, #10, [Draft PR #13](https://github.com/cfotel2604/html-share-platform/pull/13); [domain decision ADR-0004](../adr/0004-domains-and-share-codes.md).

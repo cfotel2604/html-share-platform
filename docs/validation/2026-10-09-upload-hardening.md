@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Issue #9 — upload hardening và Docker validation
 
 Bàn giao **2026-10-09 (Asia/Saigon)**. Code, CI và runtime probes được chạy trong phiên ngày 2026-10-08; trạng thái GitHub/health và preservation được xác nhận lại ở mốc bàn giao. Owner giao sửa [#9](https://github.com/cfotel2604/html-share-platform/issues/9), kiểm thử rồi cập nhật Docker Desktop local, giữ UI Studio.

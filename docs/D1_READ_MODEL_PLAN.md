@@ -1,3 +1,5 @@
+> **Phạm vi đọc26/10/2026:** Kế hoạch A' đã thực hiện: issues32–38/Epic31 đóng sau owner acceptance. Đây là design/acceptance record, không là backlog hoặc lệnh tạo migration/khởi tạo/đóng lại các issue. Các câu hỏi và gate ban đầu đã được quyết định trong authority/ledger hiện hành. Xem [bản đồ](DOCUMENTATION_MAP.md) và [share contract](SHARE_LINKS.md).
+
 # Kế hoạch triển khai — A': PostgreSQL nguồn sự thật, D1 public read model
 
 **Quyết định gốc:** [ADR-0006](adr/0006-postgresql-source-of-truth-d1-public-read-model.md) (Accepted, owner chốt 2026-10-24).

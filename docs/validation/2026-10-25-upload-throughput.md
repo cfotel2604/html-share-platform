@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Issue52 — bounded upload throughput
 
 Refs #52 / #38. Main baseb8ae10f includes owner-merged51. Owner confirmed actual500fileUIcreate/publiclink success but reported slow upload. PGtransaction25312.779ms; Nodeoperator22536.593ms. Read-only R2sweeps verified all500SHA256each:6concurrent7407ms/92.4MiBRSS,12concurrent3489ms/104.8MiBRSS. These single sweeps are not a fullPUT/HTTPperformance guarantee.

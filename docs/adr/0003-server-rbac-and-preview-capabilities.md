@@ -1,3 +1,5 @@
+> **Phạm vi đọc26/10/2026:** RBAC/grant invariants vẫn áp dụng. Public VMviewer/hostname serving bên dưới thuộc môi trường cũ; A' public qua Worker, Node chỉ grantpreview. Owner đã nghiệm thu pilot; broad production status vẫn riêng. Xem [bản đồ](../DOCUMENTATION_MAP.md) và [share contract](../SHARE_LINKS.md).
+
 # ADR-0003: Server RBAC và preview capability theo hostname
 
 > **A' scope clarification25/10:** ADR-0006 governs current Node/PostgreSQL administration, public code-path Worker and Nodegrant preview. Trusted VMviewer/public-hostname descriptions here remain historical for the retained oldlab, not a parallel A' serving path. Isolation/sandbox/actor/grant/security invariants stay unchanged. Owner accepted38pilot; the Proposed broader release status does not imply production approval. [Current pilot-only review](../validation/2026-10-25-aprime-pilot-security.md).

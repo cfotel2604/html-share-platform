@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Issue #36 — public read-model Worker validation, 2026-10-24
 
 Refs #36 / [Draft PR #44](https://github.com/cfotel2604/html-share-platform/pull/44). Base main `f6c78340983060687b969d7aae0e2f7e80ebd381` after owner reported PR43 merged; live GitHub merge verified2026-10-24T11:42:38Z. Native adapter `a0e9582`, corrected local build config `35935ed`, final source/test head **`3601b0b222e720934ac32adea8dbf7bbb8eda35e`**. [Contract and runbook](../PUBLIC_READ_MODEL_WORKER.md).

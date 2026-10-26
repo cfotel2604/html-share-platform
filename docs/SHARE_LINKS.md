@@ -1,67 +1,27 @@
-# Mã viewer ngắn — Issue #14
+# Link chia sẻ A' — contract hiện hành
 
-Implementation [PR #15](https://github.com/cfotel2604/html-share-platform/pull/15) đã retarget main sau #13 và MERGED theo owner giao ngày22/10; [Issue #14](https://github.com/cfotel2604/html-share-platform/issues/14) CLOSED. [Merge/CI record](reviews/2026-10-22-stack-merged.md). [ADR-0004](adr/0004-domains-and-share-codes.md) là quyết định owner. [Kiểm chứng local](validation/2026-10-09-short-viewer-links.md) đã pass; **web/DB lab VM đã cutover** theo [handoff22/10](LAB_HANDOFF.md), owner dùng thử OK. Desktop chưa xác minh cutover; các bước dưới dùng cho upgrade/cutover mới, không yêu cầu lặp lại trên VM đã chạy.
+## Mã và route
 
-## Thiết kế
+Share code 10base62, phân biệt hoa/thường, CSPRNG/UNIQUE/collisionretry. Site ID 32 hex và versionUUID là định danh/storage, không phải alias share. Server trả canonical URL; UI không tự dựng link từ site ID.
 
-`site_share_links` giữ mã 10 base62, site ID, thời điểm tạo/thu hồi; primary key theo exact case và unique partial index cho một link active/site. Giữ mã đã thu hồi làm tombstone để không tái cấp. Tạo/rotate/revoke khóa actor/policy và site, audit bằng site ID; update version/publish không tự cấp lại link bị thu hồi.
-
-Migration 0003 chỉ tạo schema. Backfill riêng dùng CSPRNG phía Node, khóa site và chỉ cấp nếu site chưa từng có mã; không sửa metadata site, version, ownership hoặc asset. Các migration cũ không thay đổi.
-
-Viewer chỉ nhận share code, resolve active + published; không redirect alias host ID cũ. API/Studio nhận URL canonical từ server, kể cả loopback `/view/<code>`. Thu hồi link không unpublish direct content; UI cần giải thích rõ và tiếp tục có action tắt xuất bản.
-
-Lookup phải no-store/no-referrer, bounded trước DB; giới hạn nhiều replica/per-IP vẫn cần edge policy. Kiểm rotate/revoke/rollback/collision/ownership/race, revoked-code 404, code case, sandbox và upload regression trước hoàn tất.
-
-## API và Studio
-
-| Endpoint | Thành công |
+| Route public Worker | Hành vi |
 | --- | --- |
-| GET `/api/sites` | Site có `share_code: string \| null`, `share_url: string \| null`; URL canonical do server sinh |
-| POST `/api/sites/:host-id/share` | Tạo/đổi link: `{ id, share_code, share_url }`; body rỗng |
-| DELETE `/api/sites/:host-id/share` | Thu hồi link: `{ id, share_code: null, share_url: null }` |
+| `/<code>` | Lookup published/manifest hợp lệ,308 sang `/<code>/` |
+| `/<code>/` | Trực tiếp `index.html` từ R2, HTTP sandbox/no-store/no-cookie |
+| `/<code>/<path>` | Asset đúng manifest, fixed primary SELECT và R2 pin; ngoài manifest 404 |
+| Missing/unpublished/revoked | 404; invalidmethod 405; integrity/provider/configfailure 503 |
+| `/raw/<id>` / platform OG shell | Chưa implement; không dùng như link của hiện tại |
 
-Session và exact Origin/Host bắt buộc cho mutation; Employee owner-only, Admin scope theo policy DB mới nhất. Mỗi transaction giữ actor/policy FOR SHARE và site FOR UPDATE. Mã cũ revoked, mã mới/audit cùng COMMIT; lỗi trước commit rollback giữ link cũ, mất response COMMIT trả 503 yêu cầu refresh, không tự cấp lại để bù.
+Code sinh response ở `cloudflare/public/serve.mjs`/`policy.mjs`, query ở resolve.sql. Public HTML không qua vieweriframe, CSP frame-ancestors none; preview riêng là đường riêng Nodegrant.
 
-Update phiên bản và publish/unpublish giữ nguyên lịch sử mã; không tự bật link đã revoked. Audit chỉ site ID/actor/action, không mã hoặc URL. Studio dùng typed adapter, có “Link chia sẻ” → “Đổi link xem”/“Thu hồi link xem”/“Tạo link xem”, cảnh báo tác động và confirmation. Copy/open không fallback sang host ID; mã đổi làm reset trạng thái copied.
+## Mutation và propagation
 
-Viewer tại `view*/<code>`; nếu chưa có VIEWER_PUBLIC_ORIGIN thì canonical `/view/<code>` trên trusted loopback shell. Host-ID alias 32 hex ở cả root và /view trả 404, không redirect. Có HTTP/iframe sandbox, no-store/no-referrer, không Clerk/session admin trên viewer. Direct content hostname vẫn dùng host ID 32 hex, không bị rotation/revoke viewer tác động.
+Node xác minh Clerk/PG policy và ownership/Admin; thay đổi link/audit/outbox cùng transaction dưới site lock. Update activeversion giữ code; rotate tạo code mới và tombstone code cũ trong một event/batch. Revoke giữ mã cũ reserved để không tái sử dụng. Unpublish/rotate/revoke chặn asset public theo code sau projection; không giữ alias raw/site ID để bypass.
 
-## Backfill và deploy được giao sau review
+Healthy revoke p95≤60 s, warningpending>60 s; outage không có 60 s guarantee. Đang tải sẵn trong tab không bị xóa. Reissue sau revoke là code mới theo mutation policy; không hồi sinh tombstone. Xem [projector](PUBLIC_PROJECTOR.md) và [recovery](READ_MODEL_RECOVERY.md).
 
-**Operator pin cập nhật sau EACCES #16:** dùng `dc7560ea1c34cbe060779fbe69bb2f574e170431` / image `html-share-studio:share-dc7560ea1c34`, không dùng candidate b1e cũ. [Khắc phục permissions](validation/2026-10-21-runtime-permissions.md): Dockerfile chuẩn hóa scripts/db, CI checkout hạn chế + non-root image check PASS; runbook umask022 cho source,077 cho private artifact và preflight trước stop web. Khi retry8.2.2, export đúng image mới và lấy baseline metadata mới vì web cũ đã restore. Không chạy migration bằng root hoặc sửa bytes SQL.
+## Preview và môi trường cũ
 
-**Cập nhật22/10 sau merge:** retry8.2.2 và bật web8.2.3 đã xong, migrations/history/manifest đạt. SECURITY_IMAGE đã lưu trong private env và Compose config không shell override PASS; #13/#15 đã merge, #14/#16 CLOSED. Các hướng dẫn retry/kiểm runbook ngày21/10 dưới đây là hồ sơ trước cutover. [LAB_HANDOFF](LAB_HANDOFF.md) và [merge record](MERGE_PLAN.md) ghi baseline hiện tại; không stop web hoặc chạy lại migration/backfill chỉ vì docs mới. Việc tiếp theo là release gates #10.
+Node preview dùng `p-<site-id>--<grant>`/128-bit/TTL 3 phút/hash-only/actor-site-version. Không đổi codepublic khi cấp preview; không đưa grant vào Worker hoặc gửi token Clerk/D1 vào HTML.
 
-### Merge, image và database là các bước riêng
-
-PR #13 đã merge main6d30d22; sau đó #15 retarget main, final-head CI PASS và merge main0c17a09 theo owner giao ngày22/10. [Merge record](MERGE_PLAN.md) ghi exact heads/checks. Lab đã cutover trước đó bằng commitdc7560e; không chạy lại build/migration/backfill chỉ vì merge source. Các bước nâng cấp bên dưới chỉ áp dụng candidate mới đã review và được giao triển khai.
-
-`git fetch/pull` cập nhật source, không đổi container đang chạy. `docker build` tạo image mới; phải chọn đúng SECURITY_IMAGE trong Compose. Service `migrate` chạy `node scripts/migrate.mjs`: kiểm checksum/lịch sử 0001/0002 rồi áp [0003](../db/migrations/0003_site_share_links.sql) nếu chưa có. Migration tạo bảng/index, không cấp mã cho site cũ. [Backfill](../scripts/backfill-share-links.mjs) là lệnh Node riêng; dependency migrate của `compose up` không tự chạy backfill. Do đó cutover phải tách migrate/backfill trước khi bật web candidate.
-
-Runbook operator ngoài Git `RUNBOOK_LAB_VM_TLS_ACME_DNS.vi.md` đã bổ sung mục 8.2 ngày 2026-10-21: SHA candidate phải được review/CI pass, đủ bốn Compose files (base/security/lab/edge), build image có revision label, stop riêng web, fingerprint metadata trước/sau, explicit migrate/backfill, kiểm history, recreate riêng web và rollback theo thời điểm go-live. Mục 8.1 chỉ dành cài mới, không ghi đè env/DB/allowlist hiện hữu; mục 11 tháo hạ tầng, không phải rollback app.
-
-Đã kiểm chỉ đọc VM: SECURITY_IMAGE override điều khiển đúng web/migrate/gateway qua cả bốn overlays; public HTTPS/Clerk và port rỗng giữ nguyên. Sáu Bash blocks mới syntax PASS; SQL metadata fingerprint READ ONLY chạy hai lần ổn định trên VM 2 sites/2 versions. Đây là kiểm runbook, không migrate/backfill/build/restart VM hoặc code review approval.
-
-### Quy trình cutover
-
-Migration 0003 chỉ tạo bảng/index, không sinh mã bằng SQL random. Operator phải chạy backfill bằng candidate image trước mở viewer mới cho các site cũ. Không xóa lịch sử mã để cấp lại: backfill chỉ site không có **bất kỳ** history, kể cả revoked.
-
-1. Chốt candidate commit/image đã kiểm; giữ rollback images và Compose/env/volumes đúng môi trường. Không build checkout owner cũ.
-2. Stop web ngắn để tránh tạo site giữa backfill và đổi runtime; gateway có thể tiếp tục phục vụ content đang published.
-3. Với Compose owner + security overlay + overlay VM hiện hữu, chạy `run --rm --no-deps migrate`, rồi `run --rm --no-deps --entrypoint node web scripts/backfill-share-links.mjs` bằng candidate image. Không dump config/env đầy đủ.
-4. Kiểm count/historical rows, đối chiếu metadata/active pointers/ownership và object keys; backfill audit không chứa mã. Nếu lỗi, dừng cutover và giữ dữ liệu; rerun backfill an toàn kể cả lost COMMIT.
-5. Recreate web bằng candidate, giữ gateway/DB/storage/ports; migration mới không đổi gateway. Kiểm login/list, canonical share URL/code, aliases 404, rotation/revoke/unpublish với fixture riêng. Các viewer URL dài cũ sẽ 404 sau cutover; owner cần gửi link ngắn mới cho người nhận.
-
-Hostname TLS/Clerk/CSRF/frame-ancestors chuyển theo [SECURITY_LAB](SECURITY_LAB.md), không nới sandbox. HTTPS443 vẫn cần override PUBLIC_SITE_PORT rỗng ở web/gateway. Chưa thực hiện các bước này trên VM hoặc owner Desktop ở mốc code/test.
-
-## Limits và rollback
-
-`VIEWER_REQUESTS_PER_MINUTE` mặc định 600, range 1–100000: budget fixed-window mỗi process proxy, chỉ cho paths mã hợp lệ, trả 429/Retry-After/no-store trước DB. Không tin client forwarded IP. Đây không phải per-IP, distributed limit hoặc anti-DDoS; cần edge per-IP policy trên nginx trước public pilot. Lookup active/status qua indexed code, invalid formats/legacy aliases không query DB. Dynamic request có tối đa hai lookup cho metadata/page.
-
-`SHARE_LINK_MUTATIONS_ENABLED=false` trong env private + security overlay tạm khóa POST/DELETE share sau auth (503), giữ viewer lookup, alias denial và mapping hiện hữu. Đây là rollback vận hành ưu tiên; không drop migration/table/tombstones.
-
-Rollback web về image PR #13 sẽ khôi phục viewer alias theo host ID và mất UI/API share lifecycle. **Không rollback binary đó khi viewer còn mở và đã có revocation** nếu chưa chặn cả `/<host-id>` và `/view/<host-id>` 32 hex tại Studio/viewer và được review. Có thể tạm chặn viewer/mutations tại edge, giữ candidate lookup hoặc triển khai fix trên cùng schema. Direct content không bị thu hồi bằng viewer code, nội dung đã tải không thể thu hồi.
-
-## Kiểm chứng
-
-Lint/typecheck/build, 86 unit tests, 9 nhóm upload + 6 auth/origin + 5 share-link integration đã pass tại mốc09/10 và exact final-head #15 trước merge ngày22/10. Chrome154.0.8037.99:4nhóm Studio lifecycle/copy/viewport và6nhóm sandbox/origin regression pass tại mốc09/10; không rerun browser chỉ vì docs. Chi tiết ở [validation local](validation/2026-10-09-short-viewer-links.md). [Snapshot public origins21/10](validation/2026-10-21-lab-public-origins.md) lúc VM chưa cutover đã được [lab handoff22/10](LAB_HANDOFF.md) thay thế: web/0003/backfill xong và owner xác nhận real-session/lifecycle cases đều đạt. #13/#15 đã merge, #14/#16 CLOSED; [exact commit/CI record](reviews/2026-10-22-stack-merged.md). Mobile/Zalo, R2/IAM, toàn log pipeline và pilot còn #10/P6/P7; không đánh đồng code/test hoặc owner functional acceptance với release.
+Oldviewer 4100/`view-lab.ods.vn` do owner giữ cho lab cũ. Nhận xét cũ “revoke viewer không chặn direct URL” chỉ thuộc topology đó, **không mô tả A'Worker**. Migration 0003/backfill cũ không là thao tác cần chạy lại. [Bản trước A'](history/README.md), [authority](PILOT_APRIME_AUTHORITY.md).

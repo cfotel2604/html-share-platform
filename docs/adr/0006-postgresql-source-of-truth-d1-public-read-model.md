@@ -1,3 +1,5 @@
+> **Phạm vi đọc26/10/2026:** ADR-0006 vẫn Accepted và là authority kiến trúc. Chuỗi implementation/pilot đã hoàn tất, audit10 đóng cho currentpilot; việc đó không thay productionapproval, schema/writer/security invariants. Các mô tả kế hoạch theo issue giữ phạm vi lúc quyết định. Xem [bản đồ](../DOCUMENTATION_MAP.md) và [share contract](../SHARE_LINKS.md).
+
 # ADR-0006: PostgreSQL trên VM là nguồn sự thật duy nhất; D1 là public read model
 
 - **Status:** Accepted — owner chốt ngày 2026-10-24. Đây là phê duyệt *quyết định kiến trúc*, không phải phê duyệt release/production; các gate của Issue #10 vẫn áp dụng.

@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Issue #34 — rebuild/reconciliation validation, 2026-10-24
 
 Refs #34 / [Draft PR #43](https://github.com/cfotel2604/html-share-platform/pull/43). Base `a98a1d62e9a2a51b841e548792979e712190774d`, verified main after owner reported PR42 merged. Implementation `3dc38c156c47bb62f4be48570db951b08c2a00dd`; source recheck/regression head **`413a8137747210122999ec2f03cef17090c464dc`**. [Operator/local runbook](../READ_MODEL_RECOVERY.md).

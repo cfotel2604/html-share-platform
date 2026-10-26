@@ -1,3 +1,5 @@
+> **Snapshot bằng chứng theo ngày/head.** Môi trường, số liệu và các câu “Draft/chưa/chờ” trong thân thuộc thời điểm đã ghi; không là trạng thái hay quyền vận hành hiện tại. Xem [status](../PROJECT_STATUS.md) và [bản đồ tài liệu](../DOCUMENTATION_MAP.md). Không chạy lại lệnh lịch sử trên pilot đang dùng.
+
 # Audit chỉ đọc trước pilot — Issue #10
 
 > Historical22/10legacy audit only. Its MinIO/VMviewer/production assumptions do not describe accepted A'. Current pilot-only review: [25/10A' security closeout](2026-10-25-aprime-pilot-security.md). Do not execute its old rollout/backfill suggestions or carry its obsolete blockers into A'.
