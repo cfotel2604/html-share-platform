@@ -6,7 +6,7 @@
 
 **Mô hình truy cập:** A — nhân viên có tài khoản được upload/quản lý; người có link xem công khai, không cần đăng nhập.
 
-**Kiến trúc đích hiện hành (25/10):** [ADR-0006](docs/adr/0006-postgresql-source-of-truth-d1-public-read-model.md) Accepted: quản trị Node/PostgreSQL, outbox/projector/recovery chiếu public read model D1, một public Worker đọc ở code/test + private R2; preview grant ở Node/VM. Main71c57b9 có PR58, runtime2734de5/image2fd14ccc đang chạy. Issues50/40/33/34/36/52/54 hoàn tất;37 chốt tài liệu trong Draft59. Owner xác nhận mobile/Employee/Safari/Zalo; phần fault live bổ sung được bỏ qua có ghi rõ, không coi là PASS. Nghiệm thu38 và security/release10 vẫn là quyết định riêng. [Ledger](docs/validation/2026-10-25-aprime-closeout.md), [disposition](docs/ADR0006_TRANSITION.md). Roadmap/domain/lab bên dưới là nền lịch sử; không trở lại D1-primary/API/preview Worker hay nhập legacy.
+**Kiến trúc đích hiện hành (25/10):** [ADR-0006](docs/adr/0006-postgresql-source-of-truth-d1-public-read-model.md) Accepted: Node/PostgreSQL quản trị, outbox/projector/recovery chiếu D1public model, một Worker + privateR2, preview grant Node. Owner đã merge59/main5e05e4d và nghiệm thu38;38/Epic31 và các issue con đã đóng.10/19 được owner thu hẹp về review pilot hiện tại; [báo cáo](docs/validation/2026-10-25-aprime-pilot-security.md) giữ riêng checklist cho lần production sau. Không tái dùng D1-primary/API/previewWorker, legacyMinIO hay VMviewer làm đường A'.
 
 ## 1. Mục tiêu
 

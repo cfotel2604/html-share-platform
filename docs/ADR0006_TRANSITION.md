@@ -4,7 +4,7 @@
 
 Owner-authorized obsolete PR21/22/23/24/27/29 are CLOSED unmerged; Issues20/25/26/28 are CLOSED not_planned. [Exact historical receipt](validation/2026-10-24-legacy-closeout.md) is preserved from47head87566b2; fresh GitHub reads confirm the states. Draft47 is now CLOSED superseded by59, without merge/ref deletion. Useful serving requirements are in merged44; Node administration41, outbox42 and recovery43 replaced the old management architecture. No old data/code path is imported.
 
-Issues50/40/33/34/36/52/54 are CLOSED completed, not discarded. This Draft59 finishes37's current docs/handoff; owner merge closes37. Owner confirms mobile/Employee/Safari/Zalo and permits omitting optional extra live fault drills, with precise local/injected/actual labels. [Decisions/evidence](validation/2026-10-25-aprime-closeout.md). Issue38/31 stay open pending pilot acceptance after this cleanup;10/audit19 stay open and separate. Oldviewer4100 remains owner-retained; no resource/data deletion or runtime change follows from tracker closure.
+Issues50/40/33/34/36/52/54 are CLOSED completed, not discarded. Owner merged59 and37is CLOSED; owner then accepted38and Epic31closed. Owner confirms mobile/Employee/Safari/Zalo and permits omitting optional extra live fault drills, with precise local/injected/actual labels. [Decisions/evidence](validation/2026-10-25-aprime-closeout.md). Issue38/31 are CLOSED after owner acceptance;10/audit19 now review only the current pilot scope explicitly selected by owner, with production separate. Oldviewer4100 remains owner-retained; no resource/data deletion or runtime change follows from tracker closure.
 
 ## Historical proposal snapshot — before owner disposition and cutover
 

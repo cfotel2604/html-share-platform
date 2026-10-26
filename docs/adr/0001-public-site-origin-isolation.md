@@ -1,5 +1,7 @@
 # ADR-0001: Cô lập origin cho HTML được upload
 
+> **A' scope clarification25/10:** ADR-0006 governs current Node/PostgreSQL administration, public code-path Worker and Nodegrant preview. Trusted VMviewer/public-hostname descriptions here remain historical for the retained oldlab, not a parallel A' serving path. Isolation/sandbox/actor/grant/security invariants stay unchanged. Owner accepted38pilot; the Proposed broader release status does not imply production approval. [Current pilot-only review](../validation/2026-10-25-aprime-pilot-security.md).
+
 - **Status:** Proposed
 - **Date:** 2026-10-08
 - **Updated:** 2026-10-09 — domain/link đã chốt theo [ADR-0004](0004-domains-and-share-codes.md); security/release gates còn Proposed.

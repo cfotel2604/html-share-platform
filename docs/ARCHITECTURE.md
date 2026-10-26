@@ -18,7 +18,7 @@ flowchart TD
   P --> R
 ```
 
-Current pilot25/10: main71c57b9 includes owner-merged58; runtime2734de5/image2fd14ccc is unchanged and read-only rechecked healthy. Node/PG→outbox/projector/recovery→D1/R2 publicWorker and Node grant preview remain the sole A' architecture. Applied0004/0005 stay immutable; old API/previewWorkers and11legacyD1tables were retired under earlier guards. Owner-retained oldviewer4100 is separate from exact p-grant4110; no fallback/import. Owner confirms mobile/Employee/Safari/Zalo; optional extra live fault drills are omitted for this pilot, not tested PASS. [Current decisions/limits](validation/2026-10-25-aprime-closeout.md). Issues50/40/33/34/36/52/54 completed;37 awaits final docs59merge, then38 owner acceptance.10/production separate; no runtime, migration or data changes in this cleanup.
+Current pilot25/10: owner merged59/main5e05e4d and explicitly accepted38;38/Epic31 and all children CLOSED. Runtime remains2734de5/image2fd14ccc; this review makes no code/runtime change. Owner scopes10/19 to current pilot/lab, not production preparation. [Current review](validation/2026-10-25-aprime-pilot-security.md). Oldviewer4100 stays separate; accepted sandbox/Node-only administration/publicWorker/read-model invariants and omitted-live-drill labels are unchanged. Production requires review of its actual future target/config, not resurrection of old VMpublic/API/preview paths.
 
 ## Nền MVP / lab hostname — lịch sử môi trường khác
 

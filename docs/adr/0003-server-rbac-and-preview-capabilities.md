@@ -1,5 +1,7 @@
 # ADR-0003: Server RBAC và preview capability theo hostname
 
+> **A' scope clarification25/10:** ADR-0006 governs current Node/PostgreSQL administration, public code-path Worker and Nodegrant preview. Trusted VMviewer/public-hostname descriptions here remain historical for the retained oldlab, not a parallel A' serving path. Isolation/sandbox/actor/grant/security invariants stay unchanged. Owner accepted38pilot; the Proposed broader release status does not imply production approval. [Current pilot-only review](../validation/2026-10-25-aprime-pilot-security.md).
+
 - Status: Proposed; implementation lab trong PR #13, chờ security/release review. Clerk Development đã bật; owner xác nhận Admin/Employee login thật. Domain được chốt tại [ADR-0004](0004-domains-and-share-codes.md).
 - Date: 2026-10-09
 - Refs: #8, #10; [ADR-0001](0001-public-site-origin-isolation.md)
